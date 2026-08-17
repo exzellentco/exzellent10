@@ -1,0 +1,153 @@
+/*
+ * Dashboard design system — the "learning ecosystem" look for the app's
+ * logged-in areas (admin / student / teacher). Everything is scoped under
+ * .ex-dash so it never touches the public marketing pages.
+ *
+ * Accent per role is set with data-role on the .ex-dash wrapper:
+ *   student -> cyan, teacher -> orange, admin -> violet
+ */
+
+.ex-dash {
+  --ex-bg: #05060b;
+  --ex-bg2: #0a0c14;
+  --ex-surface: #0f1220;
+  --ex-line: rgba(148, 163, 215, 0.14);
+  --ex-text: #eef1fb;
+  --ex-muted: #9aa3c2;
+  --ex-violetL: #a78bfa;
+
+  /* accent (overridden per role below) */
+  --p: #8a4bf5;
+  --pL: #a78bfa;
+  --pRGB: 138, 75, 245;
+  --ex-grad: linear-gradient(100deg, var(--pL), var(--ex-violetL));
+  --ex-ease: cubic-bezier(.16, 1, .3, 1);
+  --ex-font: 'Space Grotesk', system-ui, sans-serif;
+
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(var(--pRGB), 0.10), transparent 60%),
+    radial-gradient(900px 500px at 0% 0%, rgba(138, 75, 245, 0.08), transparent 55%),
+    var(--ex-bg);
+  color: var(--ex-text);
+}
+
+.ex-dash[data-role="student"] { --p: #06B6D4; --pL: #67e8f9; --pRGB: 6, 182, 212; }
+.ex-dash[data-role="teacher"] { --p: #F97316; --pL: #fb923c; --pRGB: 249, 115, 22; }
+.ex-dash[data-role="admin"]   { --p: #8A4BF5; --pL: #a78bfa; --pRGB: 138, 75, 245; }
+
+/* layout ------------------------------------------------------------------ */
+.ex-shell { padding: 120px 0 80px; }               /* clears the fixed navbar */
+.ex-wrap  { width: min(1180px, 92%); margin-inline: auto; }
+
+/* page header ------------------------------------------------------------- */
+.ex-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--ex-font); font-size: .78rem; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--pL);
+  margin-bottom: 14px;
+}
+.ex-eyebrow::before {
+  content: ""; width: 24px; height: 1.5px; border-radius: 2px; background: var(--ex-grad);
+}
+.ex-title {
+  font-family: var(--ex-font); font-weight: 700; line-height: 1.05;
+  font-size: clamp(1.9rem, 4vw, 3rem); letter-spacing: -.01em; margin-bottom: 10px;
+}
+.ex-title .ex-g {
+  background: var(--ex-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ex-lead { color: var(--ex-muted); max-width: 64ch; font-size: 1.02rem; }
+
+/* stat tiles -------------------------------------------------------------- */
+.ex-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 34px 0; }
+.ex-stat {
+  border: 1px solid var(--ex-line); border-radius: 16px; padding: 20px 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
+  position: relative; overflow: hidden;
+  transition: transform .4s var(--ex-ease), border-color .4s var(--ex-ease);
+}
+.ex-stat:hover { transform: translateY(-3px); border-color: rgba(var(--pRGB), .45); }
+.ex-stat::after {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--ex-grad); opacity: .8;
+}
+.ex-stat b { display: block; font-family: var(--ex-font); font-weight: 700; font-size: 2rem; color: var(--ex-text); }
+.ex-stat span { color: var(--ex-muted); font-size: .84rem; }
+
+/* surface card ------------------------------------------------------------ */
+.ex-card {
+  border: 1px solid var(--ex-line); border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .008));
+  padding: 22px;
+}
+.ex-card-hover { transition: transform .4s var(--ex-ease), border-color .4s var(--ex-ease), box-shadow .4s var(--ex-ease); }
+.ex-card-hover:hover { transform: translateY(-4px); border-color: rgba(var(--pRGB), .45); box-shadow: 0 20px 52px rgba(0, 0, 0, .45); }
+
+/* buttons ----------------------------------------------------------------- */
+.ex-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--ex-font); font-weight: 600; font-size: .92rem;
+  padding: 11px 20px; border-radius: 999px; border: 1px solid transparent;
+  cursor: pointer; white-space: nowrap;
+  transition: transform .3s var(--ex-ease), box-shadow .3s var(--ex-ease), background .3s, border-color .3s, color .3s;
+}
+.ex-btn:disabled { opacity: .55; cursor: not-allowed; }
+.ex-btn-primary { background: var(--ex-grad); color: #06121c; box-shadow: 0 10px 30px rgba(var(--pRGB), .32); }
+.ex-btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 42px rgba(var(--pRGB), .46); }
+.ex-btn-ghost { border-color: var(--ex-line); color: var(--ex-text); background: rgba(255, 255, 255, .02); }
+.ex-btn-ghost:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(var(--pRGB), .55); }
+.ex-btn-danger { background: rgba(239, 68, 68, .14); color: #fca5a5; border-color: rgba(239, 68, 68, .35); }
+.ex-btn-danger:hover:not(:disabled) { background: rgba(239, 68, 68, .24); transform: translateY(-2px); }
+
+/* badges ------------------------------------------------------------------ */
+.ex-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .74rem; font-weight: 600; padding: 4px 11px; border-radius: 999px;
+  border: 1px solid var(--ex-line);
+}
+.ex-badge-ok   { color: #6ee7b7; background: rgba(16, 185, 129, .12); border-color: rgba(16, 185, 129, .35); }
+.ex-badge-warn { color: #fdba74; background: rgba(249, 115, 22, .12); border-color: rgba(249, 115, 22, .35); }
+.ex-badge-accent { color: var(--pL); background: rgba(var(--pRGB), .12); border-color: rgba(var(--pRGB), .35); }
+
+/* inputs ------------------------------------------------------------------ */
+.ex-label { display: block; font-size: .82rem; font-weight: 600; color: var(--ex-muted); margin-bottom: 6px; }
+.ex-input {
+  width: 100%; background: rgba(255, 255, 255, .03); color: var(--ex-text);
+  border: 1px solid var(--ex-line); border-radius: 12px; padding: 12px 14px; font-size: .95rem;
+  transition: border-color .3s, box-shadow .3s;
+}
+.ex-input::placeholder { color: rgba(154, 163, 194, .7); }
+.ex-input:focus { outline: none; border-color: rgba(var(--pRGB), .6); box-shadow: 0 0 0 3px rgba(var(--pRGB), .15); }
+
+/* table ------------------------------------------------------------------- */
+.ex-table-wrap { border: 1px solid var(--ex-line); border-radius: 16px; overflow: hidden; }
+.ex-table { width: 100%; border-collapse: collapse; }
+.ex-table thead th {
+  font-family: var(--ex-font); font-size: .76rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ex-muted); text-align: left;
+  padding: 14px 16px; background: rgba(255, 255, 255, .03); border-bottom: 1px solid var(--ex-line);
+}
+.ex-table tbody td { padding: 13px 16px; font-size: .88rem; color: var(--ex-text); border-bottom: 1px solid rgba(148, 163, 215, .08); }
+.ex-table tbody tr { transition: background .25s; }
+.ex-table tbody tr:hover { background: rgba(var(--pRGB), .06); }
+.ex-table tbody tr:last-child td { border-bottom: none; }
+
+/* misc -------------------------------------------------------------------- */
+.ex-spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .25); border-bottom-color: var(--pL);
+  animation: ex-spin .7s linear infinite;
+}
+@keyframes ex-spin { to { transform: rotate(360deg); } }
+
+.ex-reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ex-ease), transform .6s var(--ex-ease); }
+.ex-reveal.ex-on { opacity: 1; transform: none; }
+
+@media (max-width: 900px) { .ex-stats { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .ex-stats { grid-template-columns: 1fr; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-reveal { opacity: 1; transform: none; transition: none; }
+  .ex-stat, .ex-card-hover, .ex-btn { transition: none; }
+}

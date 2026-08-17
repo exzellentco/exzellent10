@@ -1,0 +1,712 @@
+<!doctype html>
+<!-- ============================================================
+     EXZELLENT — Language Lab  ·  Learning Ecosystem
+     Self-contained page. Background effect: constellation of hellos + drifting lotus petals
+     Logo → landing page. Back → the learning ecosystem.
+     ============================================================ -->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Language Lab — EXZELLENT</title>
+<meta name="description" content="The EXZELLENT Language Lab — speak, write and think in a new language, with AI that listens and tutors who care."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --logo-url:url("logo.png");
+  --bg:#05060b; --bg2:#0a0c14; --surface:#0f1220; --line:rgba(148,163,215,.14);
+  --text:#eef1fb; --muted:#9aa3c2;
+  --c:#06B6D4; --cL:#67e8f9; --cRGB:6,182,212;
+  --violetL:#a78bfa;
+  --grad:linear-gradient(100deg,var(--cL),var(--violetL));
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--font-display);line-height:1.1;letter-spacing:-.02em}
+.wrap{width:min(1160px,92%);margin-inline:auto}
+section{position:relative;z-index:2;padding:88px 0}
+
+/* ---------- atmosphere ---------- */
+#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aura{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.5}
+.aura-1{width:52vw;height:52vw;top:-16vw;left:-12vw;background:radial-gradient(circle,rgba(var(--cRGB),.4),transparent 65%);animation:d1 26s var(--ease) infinite alternate}
+.aura-2{width:44vw;height:44vw;top:52vh;right:-12vw;background:radial-gradient(circle,rgba(138,75,245,.28),transparent 65%);animation:d2 32s var(--ease) infinite alternate}
+@keyframes d1{to{transform:translate(6vw,5vw) scale(1.15)}}
+@keyframes d2{to{transform:translate(-5vw,-4vw) scale(1.12)}}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 100% at 50% 36%,transparent 46%,rgba(2,3,9,.74) 100%)}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.04;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:40;transition:background .3s,border-color .3s;
+  border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(5,6,11,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav-in{width:min(1240px,94%);margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
+  padding:15px 0;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;
+  font-size:1rem;letter-spacing:.06em}
+.brand-logo{width:34px;aspect-ratio:880/582;background:var(--logo-url) center/contain no-repeat;
+  filter:drop-shadow(0 0 10px rgba(var(--cRGB),.6))}
+.nav-links{display:flex;align-items:center;gap:22px;font-size:.86rem;color:var(--muted)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-links .here{color:var(--cL);font-weight:600}
+/* --- auth buttons (Log in / Sign up), added for consistency --- */
+.authbar{display:flex;align-items:center;gap:10px}
+.authbar a{font-size:.82rem;font-weight:700;padding:8px 15px;border-radius:999px;white-space:nowrap;
+  letter-spacing:.01em;line-height:1;transition:transform .25s ease,box-shadow .25s ease,
+  background .25s ease,color .25s ease,border-color .25s ease}
+.auth-login{color:var(--text);border:1px solid rgba(255,255,255,.24);background:transparent}
+.auth-login:hover{border-color:var(--cL);color:var(--cL);transform:translateY(-1px)}
+.auth-signup{color:#05121a;background:var(--cL);border:1px solid var(--cL)}
+.auth-signup:hover{transform:translateY(-1px);box-shadow:0 8px 22px -6px rgba(var(--cRGB),.7)}
+@media(max-width:760px){.authbar a{padding:7px 12px;font-size:.78rem}}
+/* back-to-labs button */
+.eco{display:inline-flex;align-items:center;gap:8px;padding:7px 15px 7px 12px;
+  border-radius:999px;border:1px solid rgba(var(--cRGB),.28);background:rgba(var(--cRGB),.06);
+  color:var(--muted);font-weight:600;letter-spacing:.02em;
+  transition:color .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease),
+             transform .4s var(--ease),box-shadow .4s var(--ease)}
+.eco:hover{color:var(--text);border-color:rgba(var(--cRGB),.6);background:rgba(var(--cRGB),.14);
+  transform:translateX(-3px);box-shadow:0 6px 22px -8px rgba(var(--cRGB),.75)}
+.eco:active{transform:translateX(-1px) scale(.97)}
+.eco:focus-visible{outline:2px solid var(--cL);outline-offset:3px}
+.eco-arrow{width:16px;height:16px;flex:none;transition:transform .4s var(--ease)}
+.eco:hover .eco-arrow{transform:translateX(-4px)}
+@media(prefers-reduced-motion:reduce){
+  .eco,.eco-arrow{transition-duration:.01ms}
+  .eco:hover,.eco:hover .eco-arrow,.eco:active{transform:none}
+}
+@media(max-width:760px){.nav-links a:not(.here):not(.eco){display:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;z-index:2;min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:110px 24px 70px}
+.kicker{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);
+  font-size:.7rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--cL);
+  border:1px solid rgba(var(--cRGB),.32);background:rgba(var(--cRGB),.09);
+  padding:7px 15px;border-radius:99px;margin-bottom:34px}
+.kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--cL);
+  box-shadow:0 0 10px var(--cL);animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.35}}
+.rot{position:relative;cursor:pointer;user-select:none;padding:6px 10px}
+.rot-w{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;
+  font-size:clamp(2.9rem,9.5vw,6.6rem);line-height:1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 40px rgba(var(--cRGB),.3))}
+.rot-meta{display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap;
+  margin-top:15px;font-size:clamp(.88rem,1.9vw,1.02rem)}
+.rot-meta .ic{font-size:1.3em;line-height:1}
+.rot-meta b{font-family:var(--font-display);font-weight:600;color:var(--text)}
+.rot-meta .sep{color:rgba(154,163,194,.5)}
+.rot-meta .sub{color:var(--muted)}
+.rot-line{margin-top:10px;color:var(--muted);font-size:clamp(.85rem,1.6vw,.96rem)}
+.rot-line b{color:var(--cL);font-weight:600}
+.rot-w,.rot-meta,.rot-line{transition:opacity .4s var(--ease),transform .4s var(--ease),filter .4s var(--ease)}
+.rot.out .rot-w{opacity:0;transform:translateY(-15px) scale(.97);filter:blur(9px)}
+.rot.out .rot-meta{opacity:0;transform:translateY(-8px)}
+.rot.out .rot-line{opacity:0;transform:translateY(-5px)}
+.rot.in .rot-w{opacity:0;transform:translateY(20px) scale(1.03);filter:blur(11px)}
+.rot.in .rot-meta{opacity:0;transform:translateY(11px)}
+.rot.in .rot-line{opacity:0;transform:translateY(8px)}
+.timer{width:min(300px,58vw);height:2px;border-radius:2px;background:rgba(148,163,215,.16);
+  margin:24px auto 0;overflow:hidden}
+.timer i{display:block;height:100%;width:0;background:var(--grad);border-radius:2px}
+.timer.run i{animation:fill 4200ms linear forwards}
+@keyframes fill{to{width:100%}}
+.hero h1{font-size:clamp(1.7rem,4.2vw,2.9rem);font-weight:700;margin-top:46px;max-width:17ch}
+.hero h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--muted);max-width:54ch;margin:18px auto 0;font-size:clamp(.96rem,1.6vw,1.06rem)}
+.cta{display:flex;gap:13px;flex-wrap:wrap;justify-content:center;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:14px;
+  font-weight:600;font-size:.94rem;border:1px solid transparent;
+  transition:transform .2s var(--ease),box-shadow .2s,border-color .2s}
+.btn-primary{background:var(--grad);color:#07101c;box-shadow:0 10px 32px rgba(var(--cRGB),.32)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(var(--cRGB),.46)}
+.btn-ghost{border-color:var(--line);color:var(--text);background:rgba(255,255,255,.02)}
+.btn-ghost:hover{transform:translateY(-2px);border-color:rgba(var(--cRGB),.5)}
+.btn:focus-visible,.rot:focus-visible,.book:focus-visible{outline:2px solid var(--cL);outline-offset:4px}
+.hint{margin-top:34px;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(154,163,194,.4);font-family:var(--font-display)}
+
+/* ---------- shared blocks ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--cL);margin-bottom:16px;font-family:var(--font-display)}
+.eyebrow::before{content:"";width:24px;height:1.5px;background:var(--grad);border-radius:2px}
+.h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:700;margin-bottom:14px}
+.h2 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);max-width:62ch;font-size:1.02rem}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.on{opacity:1;transform:none}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+.card{background:linear-gradient(180deg,rgba(20,24,46,.6),rgba(9,11,24,.5));
+  border:1px solid var(--line);border-radius:18px;padding:28px 26px;position:relative;overflow:hidden;
+  backdrop-filter:blur(10px);transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.card:hover{transform:translateY(-5px);border-color:rgba(var(--cRGB),.45);box-shadow:0 20px 54px rgba(0,0,0,.45)}
+.card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);
+  transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.card:hover::after{transform:scaleX(1)}
+.ci{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:1.25rem;
+  background:rgba(var(--cRGB),.14);border:1px solid rgba(var(--cRGB),.3);margin-bottom:16px}
+.card h3{font-size:1.14rem;margin-bottom:9px}
+.card p{color:var(--muted);font-size:.92rem}
+/* available courses (loaded from the backend) */
+#courses .course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+.course-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.008));text-decoration:none;color:var(--text);
+  opacity:0;transform:translateY(16px);animation:courseIn .6s var(--ease) forwards;
+  transition:transform .4s var(--ease),border-color .4s var(--ease),box-shadow .4s var(--ease)}
+.course-card:hover{transform:translateY(-5px);border-color:rgba(var(--cRGB),.5);box-shadow:0 20px 54px rgba(0,0,0,.45)}
+@keyframes courseIn{to{opacity:1;transform:none}}
+.course-thumb{aspect-ratio:16/10;background:#0a0c14;overflow:hidden}
+.course-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.course-body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.course-meta{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:.72rem;
+  font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--cL)}
+.course-card h3{font-size:1.1rem;font-weight:700;line-height:1.25}
+.course-card p{color:var(--muted);font-size:.9rem;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.course-go{font-family:var(--font-display);font-weight:600;font-size:.86rem;color:var(--cL)}
+.course-empty{color:var(--muted);grid-column:1/-1;text-align:center;padding:34px 0}
+@media(max-width:900px){#courses .course-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){#courses .course-grid{grid-template-columns:1fr}}
+
+/* ---------- offerings ---------- */
+.offer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:40px}
+.offer{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:rgba(255,255,255,.02);
+  transition:border-color .25s,transform .25s var(--ease),background .25s}
+.offer:hover{border-color:rgba(var(--cRGB),.5);transform:translateY(-3px);background:rgba(var(--cRGB),.06)}
+.offer .on{font-family:var(--font-display);font-weight:600;font-size:1rem;display:flex;align-items:center;gap:9px}
+.offer .om{color:var(--muted);font-size:.78rem;margin-top:6px}
+.offer .ot{color:var(--cL);font-size:.72rem;margin-top:9px;font-family:var(--font-display);letter-spacing:.08em}
+
+/* ---------- tutors ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:34px 0 22px}
+.fchip{font-size:.78rem;padding:7px 14px;border-radius:99px;border:1px solid var(--line);
+  color:var(--muted);background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s}
+.fchip:hover{color:var(--text)}
+.fchip.on{border-color:rgba(var(--cRGB),.55);color:var(--text);background:rgba(var(--cRGB),.12)}
+.tutors{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tutor{border:1px solid var(--line);border-radius:18px;padding:22px;background:linear-gradient(180deg,rgba(20,24,46,.55),rgba(9,11,24,.5));
+  backdrop-filter:blur(10px);transition:transform .3s var(--ease),border-color .3s,box-shadow .3s;display:flex;flex-direction:column}
+.tutor:hover{transform:translateY(-4px);border-color:rgba(var(--cRGB),.45);box-shadow:0 18px 46px rgba(0,0,0,.42)}
+.thead{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.tav{flex:0 0 50px;width:50px;height:50px;border-radius:15px;background:var(--grad);display:grid;place-items:center;
+  font-family:var(--font-display);font-weight:700;color:#07101c;font-size:1rem}
+.tname{font-family:var(--font-display);font-weight:600;font-size:1.02rem}
+.tspec{color:var(--muted);font-size:.82rem}
+.tmeta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tmeta span{font-size:.72rem;padding:4px 10px;border-radius:7px;border:1px solid rgba(var(--cRGB),.32);
+  background:rgba(var(--cRGB),.08);color:#e4ecfb}
+.tfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto}
+.tprice{font-family:var(--font-display);font-size:.9rem}
+.tprice b{color:var(--cL);font-weight:700}
+.tprice small{color:var(--muted);font-weight:400;font-size:.74rem}
+.book{padding:9px 17px;border-radius:10px;border:1px solid rgba(var(--cRGB),.5);
+  background:rgba(var(--cRGB),.12);color:var(--text);font-weight:600;font-size:.83rem;
+  transition:background .2s,transform .2s}
+.book:hover{background:rgba(var(--cRGB),.24);transform:translateY(-1px)}
+.tnote{color:var(--muted);font-size:.78rem;font-style:italic;margin-top:20px}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:44px;counter-reset:s}
+.step{position:relative;padding-right:20px}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--font-display);font-weight:700;
+  font-size:2.1rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  display:block;margin-bottom:12px}
+.step h3{font-size:1.04rem;margin-bottom:7px}
+.step p{color:var(--muted);font-size:.88rem}
+
+/* ---------- cta band + footer ---------- */
+.band{background:linear-gradient(130deg,rgba(var(--cRGB),.16),rgba(138,75,245,.08)),var(--surface);
+  border:1px solid rgba(var(--cRGB),.35);border-radius:26px;padding:60px 44px;text-align:center;
+  position:relative;overflow:hidden}
+.band::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+  background:rgba(var(--cRGB),.2);filter:blur(110px);top:-220px;left:50%;transform:translateX(-50%)}
+.band h2{font-size:clamp(1.6rem,3.1vw,2.3rem);margin-bottom:12px;position:relative}
+.band p{color:var(--muted);max-width:52ch;margin:0 auto 28px;position:relative}
+.band .cta{position:relative;margin-top:0}
+.siblings{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px;position:relative}
+.sib{border:1px solid var(--line);border-radius:14px;padding:13px 18px;display:inline-flex;align-items:center;gap:11px;
+  transition:transform .2s var(--ease),border-color .2s;background:rgba(255,255,255,.02)}
+.sib:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.3)}
+.sib .e{font-size:1.3rem}
+.sib b{font-family:var(--font-display);font-size:.94rem;display:block}
+.sib span{font-size:.76rem;color:var(--muted)}
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px 0;background:rgba(10,12,20,.6)}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;
+  color:var(--muted);font-size:.82rem}
+.foot a:hover{color:var(--text)}
+
+@media(max-width:980px){
+  .grid3,.tutors{grid-template-columns:1fr 1fr}
+  .offer-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:30px}
+}
+@media(max-width:680px){
+  section{padding:66px 0}
+  .grid3,.tutors,.offer-grid,.steps{grid-template-columns:1fr}
+  .band{padding:44px 22px}
+  .cta .btn{width:100%;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .course-card{opacity:1;transform:none}
+  .rot.out .rot-w,.rot.in .rot-w{opacity:1;transform:none;filter:none}
+  .rot.out .rot-meta,.rot.in .rot-meta,.rot.out .rot-line,.rot.in .rot-line{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="aura aura-1"></div>
+<div class="aura aura-2"></div>
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="/" aria-label="EXZELLENT — landing page">
+      <span class="brand-logo" aria-hidden="true"></span><span>EXZELLENT</span>
+    </a>
+    <nav class="nav-links" aria-label="Lab navigation">
+      <a class="eco" href="/learning-ecosystem.html#labs" aria-label="Back to all labs"><svg class="eco-arrow" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back</span></a>
+      <a href="language.html" class="here">Language Lab</a>
+      <a href="skill-lab.html" class="">Skill Lab</a>
+      <a href="growth-lab.html" class="">Growth Lab</a>
+    </nav>
+    <div class="authbar"><a class="auth-login" href="/login">Log in</a><a class="auth-signup" href="/signup">Sign up</a></div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="kicker"><span class="dot"></span> Language Lab · Learning Ecosystem</div>
+  <div class="rot" id="rot" role="button" tabindex="0" aria-live="polite" aria-label="A greeting in another language — activate for the next one">
+    <div class="rot-w" id="rw">Ciao</div>
+    <div class="rot-meta">
+      <span class="ic" id="ri">🇮🇹</span>
+      <b id="rl">Italian</b><span class="sep">·</span><span class="sub" id="rs">Italy</span>
+    </div>
+    <div class="rot-line">means <b id="re">Hello</b> in English</div>
+  </div>
+  <div class="timer" id="timer"><i></i></div>
+  <h1>Enlighten yourself <span class="g">with a new language.</span></h1>
+  <p class="lede">Seven thousand languages, one you haven't spoken yet. Start with hello — we'll take you to fluent, with an AI that listens and teachers who care.</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="#tutors">Book a tutor <span aria-hidden="true">→</span></a>
+    <a class="btn btn-ghost" href="#inside">What's inside</a>
+  </div>
+  <div class="hint">Click the word for another language</div>
+</section>
+
+<section id="courses">
+  <div class="wrap">
+    <span class="eyebrow">Available now</span>
+    <h2 class="h2">Courses you can <span class="g">enroll in</span></h2>
+    <p class="lead">Live language courses on Exzellent right now</p>
+    <div class="course-grid" id="courseGrid">
+      <div class="course-empty" id="courseLoading">Loading courses…</div>
+    </div>
+  </div>
+</section>
+
+<section id="inside">
+  <div class="wrap">
+    <span class="eyebrow">Inside the lab</span>
+    <h2 class="h2">What you <span class="g">do in here</span></h2>
+    <p class="lead">Speaking from day one, corrected as you go. Everything below is included the moment you start.</p>
+    <div class="grid3">      <div class="card reveal" style="transition-delay:0.00s"><div class="ci" aria-hidden="true">🎙️</div><h3>Live conversation rooms</h3><p>Drop into themed rooms and speak with fellow learners and native guides in real time — low pressure, high reps.</p></div>
+      <div class="card reveal" style="transition-delay:0.07s"><div class="ci" aria-hidden="true">✦</div><h3>AI speaking & pronunciation</h3><p>Exzi listens, scores your pronunciation and gives instant, kind feedback so you improve every sentence.</p></div>
+      <div class="card reveal" style="transition-delay:0.14s"><div class="ci" aria-hidden="true">📊</div><h3>CEFR placement A1–C2</h3><p>A short adaptive test pinpoints your exact level and lays out the path forward — no guessing where to start.</p></div>
+      <div class="card reveal" style="transition-delay:0.21s"><div class="ci" aria-hidden="true">🩺</div><h3>Grammar clinic</h3><p>Targeted micro-lessons that fix the specific mistakes you actually make, drawn from your own practice.</p></div>
+      <div class="card reveal" style="transition-delay:0.28s"><div class="ci" aria-hidden="true">🧠</div><h3>Vocabulary that sticks</h3><p>Spaced repetition locks new words into long-term memory without the cramming.</p></div>
+      <div class="card reveal" style="transition-delay:0.35s"><div class="ci" aria-hidden="true">🌍</div><h3>Real-world scenarios</h3><p>Order a coffee, ace an interview, make friends abroad — rehearse the conversations you'll actually have.</p></div></div>
+  </div>
+</section>
+
+<section id="offer">
+  <div class="wrap">
+    <span class="eyebrow">Languages</span>
+    <h2 class="h2">Languages we <span class="g">teach today</span></h2>
+    <p class="lead">Each with native tutors, an AI partner, and a full A1–C2 path. More added every term.</p>
+    <div class="offer-grid">      <div class="offer reveal" style="transition-delay:0.00s"><div class="on">🇩🇪 German</div><div class="om">A1 – C2 · TestDaF & Goethe</div><div class="ot">24 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.06s"><div class="on">🇬🇧 English</div><div class="om">A1 – C2 · IELTS & TOEFL</div><div class="ot">31 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.12s"><div class="on">🇫🇷 French</div><div class="om">A1 – C1 · DELF</div><div class="ot">12 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.18s"><div class="on">🇪🇸 Spanish</div><div class="om">A1 – C1 · DELE</div><div class="ot">14 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.00s"><div class="on">🇮🇹 Italian</div><div class="om">A1 – B2</div><div class="ot">8 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.06s"><div class="on">🇵🇹 Portuguese</div><div class="om">A1 – B2</div><div class="ot">7 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.12s"><div class="on">🇺🇦 Ukrainian</div><div class="om">A1 – B2</div><div class="ot">6 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.18s"><div class="on">🇵🇱 Polish</div><div class="om">A1 – B2</div><div class="ot">5 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.00s"><div class="on">🇸🇦 Arabic</div><div class="om">A1 – B2</div><div class="ot">9 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.06s"><div class="on">🇨🇳 Mandarin</div><div class="om">A1 – B2 · HSK</div><div class="ot">11 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.12s"><div class="on">🇯🇵 Japanese</div><div class="om">A1 – B1 · JLPT</div><div class="ot">7 tutors</div></div>
+      <div class="offer reveal" style="transition-delay:0.18s"><div class="on">➕ More soon</div><div class="om">Vote for the next language</div><div class="ot">coming</div></div></div>
+  </div>
+</section>
+
+<section id="tutors">
+  <div class="wrap">
+    <span class="eyebrow">Book a tutor</span>
+    <h2 class="h2">Real people, <span class="g">real conversations</span></h2>
+    <p class="lead">Browse freely — no account needed. Exzi handles daily practice; these humans handle the moments that matter.</p>
+    <div class="filters" id="filters">      <button class="fchip on" data-f="all" type="button">All</button>
+      <button class="fchip" data-f="de" type="button">German</button>
+      <button class="fchip" data-f="en" type="button">English</button>
+      <button class="fchip" data-f="fr" type="button">French</button>
+      <button class="fchip" data-f="es" type="button">Spanish</button>
+      <button class="fchip" data-f="zh" type="button">Mandarin</button>
+      <button class="fchip" data-f="uk" type="button">Ukrainian</button></div>
+    <div class="tutors" id="tutorGrid">      <div class="tutor reveal" data-tags="de" style="transition-delay:0.00s">
+        <div class="thead"><span class="tav">SM</span><div><div class="tname">Sofia M.</div><div class="tspec">German · native speaker</div></div></div>
+        <div class="tmeta"><span>A1–C2</span><span>TestDaF</span><span>Conversation</span></div>
+        <div class="tfoot"><span class="tprice"><b>€28</b> <small>/ hour</small></span><button class="book" data-who="Sofia M." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="en" style="transition-delay:0.07s">
+        <div class="thead"><span class="tav">EK</span><div><div class="tname">Elena K.</div><div class="tspec">English · exam specialist</div></div></div>
+        <div class="tmeta"><span>IELTS</span><span>TOEFL</span><span>Business</span></div>
+        <div class="tfoot"><span class="tprice"><b>€30</b> <small>/ hour</small></span><button class="book" data-who="Elena K." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="fr" style="transition-delay:0.14s">
+        <div class="thead"><span class="tav">MD</span><div><div class="tname">Marc D.</div><div class="tspec">French · native speaker</div></div></div>
+        <div class="tmeta"><span>A1–C1</span><span>DELF</span><span>Culture</span></div>
+        <div class="tfoot"><span class="tprice"><b>€26</b> <small>/ hour</small></span><button class="book" data-who="Marc D." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="es" style="transition-delay:0.00s">
+        <div class="thead"><span class="tav">RG</span><div><div class="tname">Rosa G.</div><div class="tspec">Spanish · native speaker</div></div></div>
+        <div class="tmeta"><span>A1–C1</span><span>DELE</span><span>Latin America</span></div>
+        <div class="tfoot"><span class="tprice"><b>€25</b> <small>/ hour</small></span><button class="book" data-who="Rosa G." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="zh" style="transition-delay:0.07s">
+        <div class="thead"><span class="tav">ML</span><div><div class="tname">Mei L.</div><div class="tspec">Mandarin · native speaker</div></div></div>
+        <div class="tmeta"><span>A1–B2</span><span>HSK</span><span>Business</span></div>
+        <div class="tfoot"><span class="tprice"><b>€27</b> <small>/ hour</small></span><button class="book" data-who="Mei L." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="uk" style="transition-delay:0.14s">
+        <div class="thead"><span class="tav">AP</span><div><div class="tname">Andrii P.</div><div class="tspec">Ukrainian & Polish</div></div></div>
+        <div class="tmeta"><span>A1–B2</span><span>Conversation</span><span>Relocation</span></div>
+        <div class="tfoot"><span class="tprice"><b>€22</b> <small>/ hour</small></span><button class="book" data-who="Andrii P." type="button">Book</button></div>
+      </div></div>
+    <p class="tnote">Example profiles — the live directory shows real availability, ratings and prices. Booking opens a request; no account needed to browse.</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <span class="eyebrow">How it works</span>
+    <h2 class="h2">From first word <span class="g">to real fluency</span></h2>
+    <div class="steps">      <div class="step reveal" style="transition-delay:0.00s"><h3>Place yourself</h3><p>A ten-minute adaptive test finds your exact CEFR level — or start at zero, that's fine too.</p></div>
+      <div class="step reveal" style="transition-delay:0.07s"><h3>Practise daily</h3><p>Exzi drills speaking, listening and vocabulary around your schedule, correcting you live.</p></div>
+      <div class="step reveal" style="transition-delay:0.14s"><h3>Speak with people</h3><p>Book a tutor or join a conversation room. This is where it stops being theory.</p></div>
+      <div class="step reveal" style="transition-delay:0.21s"><h3>Prove it</h3><p>Track your level as it climbs, and prepare for the certificate that matters to you.</p></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="band reveal">
+      <h2>Your first sentence is <span class="g">one session away.</span></h2>
+      <p>Book a tutor, or start practising with Exzi tonight. Browsing is free — always.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#tutors">Book your first session <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="mailto:exzellent.co@gmail.com?subject=Language Lab — question">Ask a question</a>
+      </div>
+      <div class="siblings">        <a class="sib" href="skill-lab.html"><span class="e">🛠️</span><span><b>Skill Lab</b><span>Build what you can show</span></span></a>
+        <a class="sib" href="growth-lab.html"><span class="e">🌱</span><span><b>Growth Lab</b><span>Become who you're becoming</span></span></a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span> EXZELLENT</a>
+    <span>© 2026 EXZELLENT · Language Lab</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* nav */
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', scrollY > 20);
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* reveal on scroll */
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+    }), {threshold:.14});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('on'));
+  }
+
+  /* ---------- hero rotator ---------- */
+  const ITEMS = [{"w": "Ciao", "i": "🇮🇹", "l": "Italian", "s": "Italy", "e": "Hello"}, {"w": "Hallo", "i": "🇩🇪", "l": "German", "s": "Germany", "e": "Hello"}, {"w": "Bonjour", "i": "🇫🇷", "l": "French", "s": "France", "e": "Good day"}, {"w": "Hola", "i": "🇪🇸", "l": "Spanish", "s": "Spain", "e": "Hello"}, {"w": "Olá", "i": "🇵🇹", "l": "Portuguese", "s": "Portugal", "e": "Hello"}, {"w": "नमस्ते", "i": "🇮🇳", "l": "Hindi", "s": "India", "e": "I bow to you"}, {"w": "নমস্কার", "i": "🇧🇩", "l": "Bengali", "s": "Bangladesh", "e": "Greetings"}, {"w": "مرحبا", "i": "🇪🇬", "l": "Arabic", "s": "Egypt", "e": "Welcome"}, {"w": "你好", "i": "🇨🇳", "l": "Mandarin", "s": "China", "e": "You good"}, {"w": "こんにちは", "i": "🇯🇵", "l": "Japanese", "s": "Japan", "e": "Good afternoon"}, {"w": "안녕하세요", "i": "🇰🇷", "l": "Korean", "s": "South Korea", "e": "Are you at peace?"}, {"w": "Привет", "i": "🇷🇺", "l": "Russian", "s": "Russia", "e": "Hi"}, {"w": "Привіт", "i": "🇺🇦", "l": "Ukrainian", "s": "Ukraine", "e": "Hi"}, {"w": "Cześć", "i": "🇵🇱", "l": "Polish", "s": "Poland", "e": "Hi"}, {"w": "Merhaba", "i": "🇹🇷", "l": "Turkish", "s": "Türkiye", "e": "Hello"}, {"w": "Γειά σου", "i": "🇬🇷", "l": "Greek", "s": "Greece", "e": "Health to you"}, {"w": "שלום", "i": "🇮🇱", "l": "Hebrew", "s": "Israel", "e": "Peace"}, {"w": "Sawubona", "i": "🇿🇦", "l": "Zulu", "s": "South Africa", "e": "I see you"}, {"w": "Jambo", "i": "🇰🇪", "l": "Swahili", "s": "Kenya", "e": "Hello"}, {"w": "Salam", "i": "🇮🇷", "l": "Persian", "s": "Iran", "e": "Peace"}, {"w": "Xin chào", "i": "🇻🇳", "l": "Vietnamese", "s": "Vietnam", "e": "Please, hello"}, {"w": "สวัสดี", "i": "🇹🇭", "l": "Thai", "s": "Thailand", "e": "Blessings"}, {"w": "Halo", "i": "🇮🇩", "l": "Indonesian", "s": "Indonesia", "e": "Hello"}, {"w": "Kamusta", "i": "🇵🇭", "l": "Filipino", "s": "Philippines", "e": "How are you?"}, {"w": "Hej", "i": "🇸🇪", "l": "Swedish", "s": "Sweden", "e": "Hi"}, {"w": "Hei", "i": "🇳🇴", "l": "Norwegian", "s": "Norway", "e": "Hi"}, {"w": "Moi", "i": "🇫🇮", "l": "Finnish", "s": "Finland", "e": "Hi"}, {"w": "Hoi", "i": "🇳🇱", "l": "Dutch", "s": "Netherlands", "e": "Hi"}, {"w": "Ahoj", "i": "🇨🇿", "l": "Czech", "s": "Czechia", "e": "Hi"}, {"w": "Szia", "i": "🇭🇺", "l": "Hungarian", "s": "Hungary", "e": "Hi"}, {"w": "Salut", "i": "🇷🇴", "l": "Romanian", "s": "Romania", "e": "Hi"}, {"w": "Zdravo", "i": "🇭🇷", "l": "Croatian", "s": "Croatia", "e": "Be healthy"}, {"w": "Здравей", "i": "🇧🇬", "l": "Bulgarian", "s": "Bulgaria", "e": "Be healthy"}, {"w": "Sveiki", "i": "🇱🇻", "l": "Latvian", "s": "Latvia", "e": "Greetings"}, {"w": "Dia dhuit", "i": "🇮🇪", "l": "Irish", "s": "Ireland", "e": "God be with you"}, {"w": "Halló", "i": "🇮🇸", "l": "Icelandic", "s": "Iceland", "e": "Hello"}, {"w": "ሰላም", "i": "🇪🇹", "l": "Amharic", "s": "Ethiopia", "e": "Peace"}, {"w": "Bawo ni", "i": "🇳🇬", "l": "Yoruba", "s": "Nigeria", "e": "How is it?"}, {"w": "Kia ora", "i": "🇳🇿", "l": "Māori", "s": "New Zealand", "e": "Be well"}, {"w": "Aloha", "i": "🇺🇸", "l": "Hawaiian", "s": "Hawaii", "e": "Love, breath of life"}];
+  const el = {
+    rot: document.getElementById('rot'), w: document.getElementById('rw'),
+    i: document.getElementById('ri'), l: document.getElementById('rl'),
+    s: document.getElementById('rs'), e: document.getElementById('re'),
+    timer: document.getElementById('timer')
+  };
+  let idx = 0, tick = null, busy = false;
+  function paint(it){
+    el.w.textContent = it.w; el.i.textContent = it.i;
+    el.l.textContent = it.l; el.s.textContent = it.s; el.e.textContent = it.e;
+    if (window.FX && FX.highlight) FX.highlight(it.w);
+  }
+  function restart(){ el.timer.classList.remove('run'); void el.timer.offsetWidth; if (!reduced) el.timer.classList.add('run'); }
+  function show(n){
+    if (busy) return; busy = true;
+    idx = (n + ITEMS.length) % ITEMS.length;
+    if (reduced){ paint(ITEMS[idx]); busy = false; return; }
+    el.rot.classList.add('out');
+    setTimeout(() => {
+      paint(ITEMS[idx]);
+      el.rot.classList.remove('out'); el.rot.classList.add('in');
+      void el.rot.offsetWidth; el.rot.classList.remove('in');
+      restart(); busy = false;
+    }, 410);
+  }
+  function next(){ show(idx + 1); sched(); }
+  function sched(){ clearInterval(tick); if (!reduced) tick = setInterval(next, 4200); }
+  el.rot.addEventListener('click', next);
+  el.rot.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); next(); }});
+  addEventListener('keydown', e => { if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft'){ show(idx-1); sched(); }});
+  document.addEventListener('visibilitychange', () => { if (document.hidden) clearInterval(tick); else sched(); });
+  paint(ITEMS[0]); restart(); sched();
+
+  /* ---------- tutor filters + booking ---------- */
+  const chips = document.querySelectorAll('.fchip');
+  const cards = document.querySelectorAll('.tutor');
+  chips.forEach(c => c.addEventListener('click', () => {
+    chips.forEach(x => x.classList.remove('on')); c.classList.add('on');
+    const f = c.dataset.f;
+    cards.forEach(card => {
+      const show = (f === 'all') || card.dataset.tags.includes(f);
+      card.style.display = show ? '' : 'none';
+    });
+  }));
+  document.querySelectorAll('.book').forEach(b => b.addEventListener('click', () => {
+    const who = b.dataset.who;
+    location.href = 'mailto:exzellent.co@gmail.com?subject=' +
+      encodeURIComponent('Booking request — ' + who + ' (Language Lab)') +
+      '&body=' + encodeURIComponent('Hi EXZELLENT,\n\nI would like to book a session with ' + who + '.\n\nPreferred days/times:\nMy level/goal:\n\nThanks!');
+  }));
+
+  /* ---------- background effect: constellation of hellos + drifting lotus petals ---------- */
+
+  function petalPath(ctx, x, y, s, rot, squash){
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(1, squash);
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.bezierCurveTo(s * .62, -s * .42, s * .52, s * .48, 0, s);
+    ctx.bezierCurveTo(-s * .52, s * .48, -s * .62, -s * .42, 0, -s);
+    ctx.closePath(); ctx.restore();
+  }
+
+  const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+  let W, H, DPR, words = [], petals = [], mx = 0, my = 0, tx = 0, ty = 0, t = 0;
+  const LINK = 185;
+
+  function build(){
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const n = Math.max(20, Math.min(50, Math.round(W * H / 30000)));
+    words = [];
+    for (let k = 0; k < n; k++){
+      const it = ITEMS[k % ITEMS.length];
+      words.push({ w: it.w, x: Math.random()*W, y: Math.random()*H,
+        vx: (Math.random()-.5)*.15, vy: (Math.random()-.5)*.15,
+        z: .35 + Math.random()*.65, tw: Math.random()*6.28, glow: 0 });
+    }
+    const pn = Math.max(10, Math.min(26, Math.round(W * H / 62000)));
+    petals = [];
+    for (let k = 0; k < pn; k++) petals.push(newPetal(true));
+  }
+  function newPetal(seed){
+    return {
+      x: Math.random() * W,
+      y: seed ? Math.random() * H : -40,
+      s: 9 + Math.random() * 22,
+      vy: .18 + Math.random() * .42,
+      vx: (Math.random() - .5) * .34,
+      rot: Math.random() * 6.28,
+      vr: (Math.random() - .5) * .009,
+      sq: .5 + Math.random() * .45,
+      sway: Math.random() * 6.28,
+      a: .05 + Math.random() * .14
+    };
+  }
+  function highlight(word){
+    let best = null, bd = -1;
+    for (const n of words){
+      if (n.w !== word) continue;
+      const d = Math.hypot(n.x - W/2, n.y - H/2);
+      if (d > bd){ bd = d; best = n; }
+    }
+    if (best) best.glow = 1;
+  }
+  function draw(){
+    t += 1/60;
+    mx += (tx - mx) * .045; my += (ty - my) * .045;
+    ctx.clearRect(0, 0, W, H);
+
+    /* lotus petals — drifting down like blossom */
+    for (const p of petals){
+      p.y += p.vy; p.sway += .011;
+      p.x += p.vx + Math.sin(p.sway) * .34;
+      p.rot += p.vr;
+      if (p.y > H + 50){ Object.assign(p, newPetal(false)); p.y = -40; }
+      if (p.x < -60) p.x = W + 60; if (p.x > W + 60) p.x = -60;
+      const px = p.x + mx * 26, py = p.y + my * 16;
+      const g = ctx.createLinearGradient(px, py - p.s, px, py + p.s);
+      g.addColorStop(0, 'rgba(167,139,250,' + (p.a * 1.15).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(103,232,249,' + (p.a * .55).toFixed(3) + ')');
+      petalPath(ctx, px, py, p.s, p.rot, p.sq);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.strokeStyle = 'rgba(196,240,255,' + (p.a * .5).toFixed(3) + ')';
+      ctx.lineWidth = .7; ctx.stroke();
+    }
+
+    /* positions + parallax for words */
+    for (const n of words){
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < -140) n.x = W + 140; if (n.x > W + 140) n.x = -140;
+      if (n.y < -80) n.y = H + 80; if (n.y > H + 80) n.y = -80;
+      n.px = n.x + mx * 42 * n.z; n.py = n.y + my * 28 * n.z;
+      if (n.glow > 0) n.glow = Math.max(0, n.glow - .006);
+    }
+    /* constellation lines */
+    ctx.lineWidth = .7;
+    for (let a = 0; a < words.length; a++){
+      for (let b = a + 1; b < words.length; b++){
+        const A = words[a], B = words[b];
+        const d = Math.hypot(A.px - B.px, A.py - B.py);
+        if (d < LINK){
+          const mxp = (A.px + B.px) / 2, myp = (A.py + B.py) / 2;
+          const dcl = Math.hypot((mxp - W/2)/(W*.52), (myp - H/2)/(H*.5));
+          const cl = Math.min(1, Math.max(.1, dcl * dcl * 1.15));
+          const o = ((1 - d/LINK) * .13 * Math.min(A.z, B.z) + Math.max(A.glow, B.glow) * .22) * cl;
+          ctx.strokeStyle = 'rgba(103,232,249,' + o.toFixed(3) + ')';
+          ctx.beginPath(); ctx.moveTo(A.px, A.py); ctx.lineTo(B.px, B.py); ctx.stroke();
+        }
+      }
+    }
+    /* the greetings */
+    for (const n of words){
+      const size = 11 + n.z * 16;
+      const twk = .5 + .5 * Math.sin(t * .55 + n.tw);
+      const dc = Math.hypot((n.px - W/2)/(W*.52), (n.py - H/2)/(H*.5));
+      const clear = Math.min(1, Math.max(.12, dc * dc * 1.15));
+      const a = Math.min(1, (.10 + .20 * n.z) * (.55 + .45 * twk) * clear + n.glow * .55 * clear);
+      ctx.font = '600 ' + size.toFixed(1) + "px 'Space Grotesk', system-ui, sans-serif";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if (n.glow > .02){
+        ctx.shadowColor = 'rgba(103,232,249,' + (n.glow * .9).toFixed(3) + ')';
+        ctx.shadowBlur = 20 * n.glow;
+        ctx.fillStyle = 'rgba(196,240,255,' + a.toFixed(3) + ')';
+      } else { ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(167,190,235,' + a.toFixed(3) + ')'; }
+      ctx.fillText(n.w, n.px, n.py); ctx.shadowBlur = 0;
+    }
+    requestAnimationFrame(draw);
+  }
+  build(); addEventListener('resize', build);
+  addEventListener('pointermove', e => { tx = e.clientX/innerWidth - .5; ty = e.clientY/innerHeight - .5; });
+  if (!reduced) draw(); else { for (const n of words){ n.px = n.x; n.py = n.y; } }
+  window.FX = { highlight };
+  highlight(ITEMS[0].w);
+
+})();
+</script>
+<script>
+/* Load real courses from the Exzellent backend and show them in #courseGrid.
+   Public endpoint, no login needed. */
+(function () {
+  var grid = document.getElementById("courseGrid");
+  if (!grid) return;
+
+  var API = "https://exzellent-backend-1.onrender.com";
+
+  function isPublishedCourse(c) {
+    return c.isPublished !== false;
+  }
+
+  function message(text) {
+    grid.innerHTML = "";
+    var d = document.createElement("div");
+    d.className = "course-empty";
+    d.textContent = text;
+    grid.appendChild(d);
+  }
+
+  var BASES = ["https://exzellent-backend-1.onrender.com", "http://localhost:5000"];
+
+  function tryBases(i) {
+    if (i >= BASES.length) { message("Couldn't load courses right now. Please try again later."); return; }
+    fetch(BASES[i] + "/api/courses")
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (list) {
+        if (!Array.isArray(list)) { message("Couldn't load courses right now."); return; }
+        var courses = list.filter(isPublishedCourse);
+        if (courses.length === 0) {
+          message("No language courses available yet — check back soon.");
+          return;
+        }
+        grid.innerHTML = "";
+        courses.forEach(function (c, i) {
+          var card = document.createElement("a");
+          card.className = "course-card";
+          card.href = "/courses";
+          card.style.animationDelay = (i * 0.06) + "s";
+
+          var body = document.createElement("div");
+          body.className = "course-body";
+
+          var meta = document.createElement("span");
+          meta.className = "course-meta";
+          meta.textContent = [c.language, c.level].filter(Boolean).join(" · ") || "Course";
+
+          var h = document.createElement("h3");
+          h.textContent = c.title || "Untitled course";
+
+          var p = document.createElement("p");
+          p.textContent = c.description || "";
+
+          var go = document.createElement("span");
+          go.className = "course-go";
+          go.textContent = "View course →";
+
+          body.appendChild(meta);
+          body.appendChild(h);
+          body.appendChild(p);
+          body.appendChild(go);
+          card.appendChild(body);
+          grid.appendChild(card);
+        });
+      })
+      .catch(function () { tryBases(i + 1); });
+  }
+
+  tryBases(0);
+})();
+</script>
+</body>
+</html>

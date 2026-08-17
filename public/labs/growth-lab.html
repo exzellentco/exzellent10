@@ -1,0 +1,622 @@
+<!doctype html>
+<!-- ============================================================
+     EXZELLENT — Growth Lab  ·  Learning Ecosystem
+     Self-contained page. Background effect: climbing vines, opening buds, rising leaves
+     Logo → landing page. Back → the learning ecosystem.
+     ============================================================ -->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Growth Lab — EXZELLENT</title>
+<meta name="description" content="The EXZELLENT Growth Lab — focus, habits, confidence and direction. The work behind the work."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --logo-url:url("logo.png");
+  --bg:#05060b; --bg2:#0a0c14; --surface:#0f1220; --line:rgba(148,163,215,.14);
+  --text:#eef1fb; --muted:#9aa3c2;
+  --c:#10B981; --cL:#6ee7b7; --cRGB:16,185,129;
+  --violetL:#a78bfa;
+  --grad:linear-gradient(100deg,var(--cL),#67e8f9);
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--font-display);line-height:1.1;letter-spacing:-.02em}
+.wrap{width:min(1160px,92%);margin-inline:auto}
+section{position:relative;z-index:2;padding:88px 0}
+
+/* ---------- atmosphere ---------- */
+#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aura{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.5}
+.aura-1{width:52vw;height:52vw;top:-16vw;left:-12vw;background:radial-gradient(circle,rgba(var(--cRGB),.4),transparent 65%);animation:d1 26s var(--ease) infinite alternate}
+.aura-2{width:44vw;height:44vw;top:52vh;right:-12vw;background:radial-gradient(circle,rgba(138,75,245,.28),transparent 65%);animation:d2 32s var(--ease) infinite alternate}
+@keyframes d1{to{transform:translate(6vw,5vw) scale(1.15)}}
+@keyframes d2{to{transform:translate(-5vw,-4vw) scale(1.12)}}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 100% at 50% 36%,transparent 46%,rgba(2,3,9,.74) 100%)}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.04;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:40;transition:background .3s,border-color .3s;
+  border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(5,6,11,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav-in{width:min(1240px,94%);margin-inline:auto;display:flex;align-items:center;justify-content:space-between;
+  padding:15px 0;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;
+  font-size:1rem;letter-spacing:.06em}
+.brand-logo{width:34px;aspect-ratio:880/582;background:var(--logo-url) center/contain no-repeat;
+  filter:drop-shadow(0 0 10px rgba(var(--cRGB),.6))}
+.nav-links{display:flex;align-items:center;gap:22px;font-size:.86rem;color:var(--muted)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-links .here{color:var(--cL);font-weight:600}
+/* --- auth buttons (Log in / Sign up), added for consistency --- */
+.authbar{display:flex;align-items:center;gap:10px}
+.authbar a{font-size:.82rem;font-weight:700;padding:8px 15px;border-radius:999px;white-space:nowrap;
+  letter-spacing:.01em;line-height:1;transition:transform .25s ease,box-shadow .25s ease,
+  background .25s ease,color .25s ease,border-color .25s ease}
+.auth-login{color:var(--text);border:1px solid rgba(255,255,255,.24);background:transparent}
+.auth-login:hover{border-color:var(--cL);color:var(--cL);transform:translateY(-1px)}
+.auth-signup{color:#05121a;background:var(--cL);border:1px solid var(--cL)}
+.auth-signup:hover{transform:translateY(-1px);box-shadow:0 8px 22px -6px rgba(var(--cRGB),.7)}
+@media(max-width:760px){.authbar a{padding:7px 12px;font-size:.78rem}}
+/* back-to-labs button */
+.eco{display:inline-flex;align-items:center;gap:8px;padding:7px 15px 7px 12px;
+  border-radius:999px;border:1px solid rgba(var(--cRGB),.28);background:rgba(var(--cRGB),.06);
+  color:var(--muted);font-weight:600;letter-spacing:.02em;
+  transition:color .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease),
+             transform .4s var(--ease),box-shadow .4s var(--ease)}
+.eco:hover{color:var(--text);border-color:rgba(var(--cRGB),.6);background:rgba(var(--cRGB),.14);
+  transform:translateX(-3px);box-shadow:0 6px 22px -8px rgba(var(--cRGB),.75)}
+.eco:active{transform:translateX(-1px) scale(.97)}
+.eco:focus-visible{outline:2px solid var(--cL);outline-offset:3px}
+.eco-arrow{width:16px;height:16px;flex:none;transition:transform .4s var(--ease)}
+.eco:hover .eco-arrow{transform:translateX(-4px)}
+@media(prefers-reduced-motion:reduce){
+  .eco,.eco-arrow{transition-duration:.01ms}
+  .eco:hover,.eco:hover .eco-arrow,.eco:active{transform:none}
+}
+@media(max-width:760px){.nav-links a:not(.here):not(.eco){display:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;z-index:2;min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:110px 24px 70px}
+.kicker{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);
+  font-size:.7rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--cL);
+  border:1px solid rgba(var(--cRGB),.32);background:rgba(var(--cRGB),.09);
+  padding:7px 15px;border-radius:99px;margin-bottom:34px}
+.kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--cL);
+  box-shadow:0 0 10px var(--cL);animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.35}}
+.rot{position:relative;cursor:pointer;user-select:none;padding:6px 10px}
+.rot-w{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;
+  font-size:clamp(2.9rem,9.5vw,6.6rem);line-height:1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 40px rgba(var(--cRGB),.3))}
+.rot-meta{display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap;
+  margin-top:15px;font-size:clamp(.88rem,1.9vw,1.02rem)}
+.rot-meta .ic{font-size:1.3em;line-height:1}
+.rot-meta b{font-family:var(--font-display);font-weight:600;color:var(--text)}
+.rot-meta .sep{color:rgba(154,163,194,.5)}
+.rot-meta .sub{color:var(--muted)}
+.rot-line{margin-top:10px;color:var(--muted);font-size:clamp(.85rem,1.6vw,.96rem)}
+.rot-line b{color:var(--cL);font-weight:600}
+.rot-w,.rot-meta,.rot-line{transition:opacity .4s var(--ease),transform .4s var(--ease),filter .4s var(--ease)}
+.rot.out .rot-w{opacity:0;transform:translateY(-15px) scale(.97);filter:blur(9px)}
+.rot.out .rot-meta{opacity:0;transform:translateY(-8px)}
+.rot.out .rot-line{opacity:0;transform:translateY(-5px)}
+.rot.in .rot-w{opacity:0;transform:translateY(20px) scale(1.03);filter:blur(11px)}
+.rot.in .rot-meta{opacity:0;transform:translateY(11px)}
+.rot.in .rot-line{opacity:0;transform:translateY(8px)}
+.timer{width:min(300px,58vw);height:2px;border-radius:2px;background:rgba(148,163,215,.16);
+  margin:24px auto 0;overflow:hidden}
+.timer i{display:block;height:100%;width:0;background:var(--grad);border-radius:2px}
+.timer.run i{animation:fill 4200ms linear forwards}
+@keyframes fill{to{width:100%}}
+.hero h1{font-size:clamp(1.7rem,4.2vw,2.9rem);font-weight:700;margin-top:46px;max-width:17ch}
+.hero h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--muted);max-width:54ch;margin:18px auto 0;font-size:clamp(.96rem,1.6vw,1.06rem)}
+.cta{display:flex;gap:13px;flex-wrap:wrap;justify-content:center;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:14px;
+  font-weight:600;font-size:.94rem;border:1px solid transparent;
+  transition:transform .2s var(--ease),box-shadow .2s,border-color .2s}
+.btn-primary{background:var(--grad);color:#07101c;box-shadow:0 10px 32px rgba(var(--cRGB),.32)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(var(--cRGB),.46)}
+.btn-ghost{border-color:var(--line);color:var(--text);background:rgba(255,255,255,.02)}
+.btn-ghost:hover{transform:translateY(-2px);border-color:rgba(var(--cRGB),.5)}
+.btn:focus-visible,.rot:focus-visible,.book:focus-visible{outline:2px solid var(--cL);outline-offset:4px}
+.hint{margin-top:34px;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(154,163,194,.4);font-family:var(--font-display)}
+
+/* ---------- shared blocks ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--cL);margin-bottom:16px;font-family:var(--font-display)}
+.eyebrow::before{content:"";width:24px;height:1.5px;background:var(--grad);border-radius:2px}
+.h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:700;margin-bottom:14px}
+.h2 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);max-width:62ch;font-size:1.02rem}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.on{opacity:1;transform:none}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+.card{background:linear-gradient(180deg,rgba(20,24,46,.6),rgba(9,11,24,.5));
+  border:1px solid var(--line);border-radius:18px;padding:28px 26px;position:relative;overflow:hidden;
+  backdrop-filter:blur(10px);transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.card:hover{transform:translateY(-5px);border-color:rgba(var(--cRGB),.45);box-shadow:0 20px 54px rgba(0,0,0,.45)}
+.card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);
+  transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.card:hover::after{transform:scaleX(1)}
+.ci{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:1.25rem;
+  background:rgba(var(--cRGB),.14);border:1px solid rgba(var(--cRGB),.3);margin-bottom:16px}
+.card h3{font-size:1.14rem;margin-bottom:9px}
+.card p{color:var(--muted);font-size:.92rem}
+
+/* ---------- offerings ---------- */
+.offer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:40px}
+.offer{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:rgba(255,255,255,.02);
+  transition:border-color .25s,transform .25s var(--ease),background .25s}
+.offer:hover{border-color:rgba(var(--cRGB),.5);transform:translateY(-3px);background:rgba(var(--cRGB),.06)}
+.offer .on{font-family:var(--font-display);font-weight:600;font-size:1rem;display:flex;align-items:center;gap:9px}
+.offer .om{color:var(--muted);font-size:.78rem;margin-top:6px}
+.offer .ot{color:var(--cL);font-size:.72rem;margin-top:9px;font-family:var(--font-display);letter-spacing:.08em}
+
+/* ---------- tutors ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:34px 0 22px}
+.fchip{font-size:.78rem;padding:7px 14px;border-radius:99px;border:1px solid var(--line);
+  color:var(--muted);background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s}
+.fchip:hover{color:var(--text)}
+.fchip.on{border-color:rgba(var(--cRGB),.55);color:var(--text);background:rgba(var(--cRGB),.12)}
+.tutors{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tutor{border:1px solid var(--line);border-radius:18px;padding:22px;background:linear-gradient(180deg,rgba(20,24,46,.55),rgba(9,11,24,.5));
+  backdrop-filter:blur(10px);transition:transform .3s var(--ease),border-color .3s,box-shadow .3s;display:flex;flex-direction:column}
+.tutor:hover{transform:translateY(-4px);border-color:rgba(var(--cRGB),.45);box-shadow:0 18px 46px rgba(0,0,0,.42)}
+.thead{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.tav{flex:0 0 50px;width:50px;height:50px;border-radius:15px;background:var(--grad);display:grid;place-items:center;
+  font-family:var(--font-display);font-weight:700;color:#07101c;font-size:1rem}
+.tname{font-family:var(--font-display);font-weight:600;font-size:1.02rem}
+.tspec{color:var(--muted);font-size:.82rem}
+.tmeta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tmeta span{font-size:.72rem;padding:4px 10px;border-radius:7px;border:1px solid rgba(var(--cRGB),.32);
+  background:rgba(var(--cRGB),.08);color:#e4ecfb}
+.tfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto}
+.tprice{font-family:var(--font-display);font-size:.9rem}
+.tprice b{color:var(--cL);font-weight:700}
+.tprice small{color:var(--muted);font-weight:400;font-size:.74rem}
+.book{padding:9px 17px;border-radius:10px;border:1px solid rgba(var(--cRGB),.5);
+  background:rgba(var(--cRGB),.12);color:var(--text);font-weight:600;font-size:.83rem;
+  transition:background .2s,transform .2s}
+.book:hover{background:rgba(var(--cRGB),.24);transform:translateY(-1px)}
+.tnote{color:var(--muted);font-size:.78rem;font-style:italic;margin-top:20px}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:44px;counter-reset:s}
+.step{position:relative;padding-right:20px}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--font-display);font-weight:700;
+  font-size:2.1rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  display:block;margin-bottom:12px}
+.step h3{font-size:1.04rem;margin-bottom:7px}
+.step p{color:var(--muted);font-size:.88rem}
+
+/* ---------- cta band + footer ---------- */
+.band{background:linear-gradient(130deg,rgba(var(--cRGB),.16),rgba(138,75,245,.08)),var(--surface);
+  border:1px solid rgba(var(--cRGB),.35);border-radius:26px;padding:60px 44px;text-align:center;
+  position:relative;overflow:hidden}
+.band::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+  background:rgba(var(--cRGB),.2);filter:blur(110px);top:-220px;left:50%;transform:translateX(-50%)}
+.band h2{font-size:clamp(1.6rem,3.1vw,2.3rem);margin-bottom:12px;position:relative}
+.band p{color:var(--muted);max-width:52ch;margin:0 auto 28px;position:relative}
+.band .cta{position:relative;margin-top:0}
+.siblings{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px;position:relative}
+.sib{border:1px solid var(--line);border-radius:14px;padding:13px 18px;display:inline-flex;align-items:center;gap:11px;
+  transition:transform .2s var(--ease),border-color .2s;background:rgba(255,255,255,.02)}
+.sib:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.3)}
+.sib .e{font-size:1.3rem}
+.sib b{font-family:var(--font-display);font-size:.94rem;display:block}
+.sib span{font-size:.76rem;color:var(--muted)}
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px 0;background:rgba(10,12,20,.6)}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;
+  color:var(--muted);font-size:.82rem}
+.foot a:hover{color:var(--text)}
+
+@media(max-width:980px){
+  .grid3,.tutors{grid-template-columns:1fr 1fr}
+  .offer-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:30px}
+}
+@media(max-width:680px){
+  section{padding:66px 0}
+  .grid3,.tutors,.offer-grid,.steps{grid-template-columns:1fr}
+  .band{padding:44px 22px}
+  .cta .btn{width:100%;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .rot.out .rot-w,.rot.in .rot-w{opacity:1;transform:none;filter:none}
+  .rot.out .rot-meta,.rot.in .rot-meta,.rot.out .rot-line,.rot.in .rot-line{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="aura aura-1"></div>
+<div class="aura aura-2"></div>
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="/" aria-label="EXZELLENT — landing page">
+      <span class="brand-logo" aria-hidden="true"></span><span>EXZELLENT</span>
+    </a>
+    <nav class="nav-links" aria-label="Lab navigation">
+      <a class="eco" href="/learning-ecosystem.html#labs" aria-label="Back to all labs"><svg class="eco-arrow" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back</span></a>
+      <a href="language.html" class="">Language Lab</a>
+      <a href="skill-lab.html" class="">Skill Lab</a>
+      <a href="growth-lab.html" class="here">Growth Lab</a>
+    </nav>
+    <div class="authbar"><a class="auth-login" href="/login">Log in</a><a class="auth-signup" href="/signup">Sign up</a></div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="kicker"><span class="dot"></span> Growth Lab · Learning Ecosystem</div>
+  <div class="rot" id="rot" role="button" tabindex="0" aria-live="polite" aria-label="A growth programme — activate for the next one">
+    <div class="rot-w" id="rw">Focus</div>
+    <div class="rot-meta">
+      <span class="ic" id="ri">🎯</span>
+      <b id="rl">Deep Work</b><span class="sep">·</span><span class="sub" id="rs">4 weeks</span>
+    </div>
+    <div class="rot-line">you'll get <b id="re">from scattered to 90-minute sessions</b></div>
+  </div>
+  <div class="timer" id="timer"><i></i></div>
+  <h1>Grow the part <span class="g">nobody teaches.</span></h1>
+  <p class="lede">You can know the language and have the skill and still not move. This lab is the work behind the work — focus, consistency, confidence, direction.</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="#tutors">Book a coach <span aria-hidden="true">→</span></a>
+    <a class="btn btn-ghost" href="#inside">What's inside</a>
+  </div>
+  <div class="hint">Click the word for another programme</div>
+</section>
+
+<section id="inside">
+  <div class="wrap">
+    <span class="eyebrow">Inside the lab</span>
+    <h2 class="h2">What you <span class="g">do in here</span></h2>
+    <p class="lead">Small systems, honestly reviewed, until the change survives a bad week.</p>
+    <div class="grid3">      <div class="card reveal" style="transition-delay:0.00s"><div class="ci" aria-hidden="true">🎯</div><h3>Focus systems</h3><p>Build the ability to work deeply for ninety minutes — the single highest-leverage skill nobody teaches.</p></div>
+      <div class="card reveal" style="transition-delay:0.07s"><div class="ci" aria-hidden="true">🔁</div><h3>Habits that survive</h3><p>Streaks are easy for eleven days. We design for the twelfth, when motivation is gone.</p></div>
+      <div class="card reveal" style="transition-delay:0.14s"><div class="ci" aria-hidden="true">🗓️</div><h3>Weekly reviews with Exzi</h3><p>Fifteen honest minutes a week: what moved, what didn't, what changes on Monday.</p></div>
+      <div class="card reveal" style="transition-delay:0.21s"><div class="ci" aria-hidden="true">🧭</div><h3>Direction, not just drive</h3><p>Working hard in the wrong direction is still the wrong direction. We start with where you're actually going.</p></div>
+      <div class="card reveal" style="transition-delay:0.28s"><div class="ci" aria-hidden="true">🤝</div><h3>Accountability that's kind</h3><p>A coach and a small group who notice when you go quiet — and check in without judgement.</p></div>
+      <div class="card reveal" style="transition-delay:0.35s"><div class="ci" aria-hidden="true">📈</div><h3>Progress you can see</h3><p>Momentum tracked on your dashboard, so you can prove to yourself that it's working.</p></div></div>
+  </div>
+</section>
+
+<section id="offer">
+  <div class="wrap">
+    <span class="eyebrow">Programmes</span>
+    <h2 class="h2">Programmes <span class="g">you can join</span></h2>
+    <p class="lead">Short, structured, and built around one change at a time. Join one — not five.</p>
+    <div class="offer-grid">      <div class="offer reveal" style="transition-delay:0.00s"><div class="on">🎯 Deep Focus</div><div class="om">4 weeks · 20 min/day</div><div class="ot">Foundational</div></div>
+      <div class="offer reveal" style="transition-delay:0.06s"><div class="on">🔁 Habit Building</div><div class="om">6 weeks · daily</div><div class="ot">Foundational</div></div>
+      <div class="offer reveal" style="transition-delay:0.12s"><div class="on">🌟 Confidence & Voice</div><div class="om">5 weeks · weekly group</div><div class="ot">Popular</div></div>
+      <div class="offer reveal" style="transition-delay:0.18s"><div class="on">🧭 Career Direction</div><div class="om">4 weeks · 1:1</div><div class="ot">1:1 coaching</div></div>
+      <div class="offer reveal" style="transition-delay:0.00s"><div class="on">⏳ Time Mastery</div><div class="om">4 weeks · 20 min/day</div><div class="ot">Foundational</div></div>
+      <div class="offer reveal" style="transition-delay:0.06s"><div class="on">🛡️ Resilience</div><div class="om">6 weeks · weekly group</div><div class="ot">Deep work</div></div>
+      <div class="offer reveal" style="transition-delay:0.12s"><div class="on">🎤 Interview Mastery</div><div class="om">3 weeks · 1:1</div><div class="ot">1:1 coaching</div></div>
+      <div class="offer reveal" style="transition-delay:0.18s"><div class="on">🧘 Calm & Clarity</div><div class="om">4 weeks · daily</div><div class="ot">Wellbeing</div></div>
+      <div class="offer reveal" style="transition-delay:0.00s"><div class="on">⚙️ Study Systems</div><div class="om">5 weeks · for students</div><div class="ot">For students</div></div>
+      <div class="offer reveal" style="transition-delay:0.06s"><div class="on">💬 Difficult Conversations</div><div class="om">3 weeks · weekly group</div><div class="ot">Practical</div></div>
+      <div class="offer reveal" style="transition-delay:0.12s"><div class="on">📓 Reflection Practice</div><div class="om">Ongoing · weekly</div><div class="ot">Ongoing</div></div>
+      <div class="offer reveal" style="transition-delay:0.18s"><div class="on">➕ More soon</div><div class="om">Tell us what you're working on</div><div class="ot">coming</div></div></div>
+  </div>
+</section>
+
+<section id="tutors">
+  <div class="wrap">
+    <span class="eyebrow">Book a coach</span>
+    <h2 class="h2">Coaches who <span class="g">have been there</span></h2>
+    <p class="lead">Not gurus. People trained in this work, who will ask you the question you've been avoiding.</p>
+    <div class="filters" id="filters">      <button class="fchip on" data-f="all" type="button">All</button>
+      <button class="fchip" data-f="focus" type="button">Focus & habits</button>
+      <button class="fchip" data-f="career" type="button">Career</button>
+      <button class="fchip" data-f="speak" type="button">Confidence</button>
+      <button class="fchip" data-f="study" type="button">Study</button>
+      <button class="fchip" data-f="mind" type="button">Mindset</button></div>
+    <div class="tutors" id="tutorGrid">      <div class="tutor reveal" data-tags="focus" style="transition-delay:0.00s">
+        <div class="thead"><span class="tav">MR</span><div><div class="tname">Maya R.</div><div class="tspec">Focus, habits & deep work</div></div></div>
+        <div class="tmeta"><span>Deep work</span><span>Habits</span><span>ADHD-aware</span></div>
+        <div class="tfoot"><span class="tprice"><b>€35</b> <small>/ hour</small></span><button class="book" data-who="Maya R." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="career" style="transition-delay:0.07s">
+        <div class="thead"><span class="tav">DO</span><div><div class="tname">David O.</div><div class="tspec">Career direction & CVs</div></div></div>
+        <div class="tmeta"><span>Direction</span><span>CV & LinkedIn</span><span>Interviews</span></div>
+        <div class="tfoot"><span class="tprice"><b>€38</b> <small>/ hour</small></span><button class="book" data-who="David O." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="speak" style="transition-delay:0.14s">
+        <div class="thead"><span class="tav">KS</span><div><div class="tname">Kai S.</div><div class="tspec">Confidence & public speaking</div></div></div>
+        <div class="tmeta"><span>Speaking</span><span>Presence</span><span>Nerves</span></div>
+        <div class="tfoot"><span class="tprice"><b>€33</b> <small>/ hour</small></span><button class="book" data-who="Kai S." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="study focus" style="transition-delay:0.00s">
+        <div class="thead"><span class="tav">NB</span><div><div class="tname">Nina B.</div><div class="tspec">Study systems for students</div></div></div>
+        <div class="tmeta"><span>Exam prep</span><span>Planning</span><span>Procrastination</span></div>
+        <div class="tfoot"><span class="tprice"><b>€26</b> <small>/ hour</small></span><button class="book" data-who="Nina B." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="focus career" style="transition-delay:0.07s">
+        <div class="thead"><span class="tav">OH</span><div><div class="tname">Omar H.</div><div class="tspec">Time management & systems</div></div></div>
+        <div class="tmeta"><span>Calendars</span><span>Priorities</span><span>Overwhelm</span></div>
+        <div class="tfoot"><span class="tprice"><b>€30</b> <small>/ hour</small></span><button class="book" data-who="Omar H." type="button">Book</button></div>
+      </div>
+      <div class="tutor reveal" data-tags="mind" style="transition-delay:0.14s">
+        <div class="thead"><span class="tav">LV</span><div><div class="tname">Lucia V.</div><div class="tspec">Resilience & mindset</div></div></div>
+        <div class="tmeta"><span>Setbacks</span><span>Burnout</span><span>Self-talk</span></div>
+        <div class="tfoot"><span class="tprice"><b>€36</b> <small>/ hour</small></span><button class="book" data-who="Lucia V." type="button">Book</button></div>
+      </div></div>
+    <p class="tnote">Example profiles — the live directory shows real availability, ratings and prices. Booking opens a request; no account needed to browse.</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <span class="eyebrow">How it works</span>
+    <h2 class="h2">From knowing better <span class="g">to doing better</span></h2>
+    <div class="steps">      <div class="step reveal" style="transition-delay:0.00s"><h3>Name the block</h3><p>One honest conversation about what's actually in the way. Usually it isn't what you think.</p></div>
+      <div class="step reveal" style="transition-delay:0.07s"><h3>Pick one change</h3><p>One programme, one habit, one direction. Doing five things is how nothing changes.</p></div>
+      <div class="step reveal" style="transition-delay:0.14s"><h3>Run the week</h3><p>Small daily actions, tracked. Exzi checks in; your coach and group hold the line.</p></div>
+      <div class="step reveal" style="transition-delay:0.21s"><h3>Review honestly</h3><p>Every week: what moved, what didn't, what changes. Repeat until it's just who you are.</p></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="band reveal">
+      <h2>The work behind the work <span class="g">starts this week.</span></h2>
+      <p>Book a coach, or join a programme with the next cohort. Browsing is free — always.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#tutors">Book your first session <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="mailto:exzellent.co@gmail.com?subject=Growth Lab — question">Ask a question</a>
+      </div>
+      <div class="siblings">        <a class="sib" href="language.html"><span class="e">🗣️</span><span><b>Language Lab</b><span>Speak a new language</span></span></a>
+        <a class="sib" href="skill-lab.html"><span class="e">🛠️</span><span><b>Skill Lab</b><span>Build what you can show</span></span></a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span> EXZELLENT</a>
+    <span>© 2026 EXZELLENT · Growth Lab</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* nav */
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', scrollY > 20);
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* reveal on scroll */
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+    }), {threshold:.14});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('on'));
+  }
+
+  /* ---------- hero rotator ---------- */
+  const ITEMS = [{"w": "Focus", "i": "🎯", "l": "Deep Work", "s": "4 weeks", "e": "from scattered to 90-minute sessions"}, {"w": "Consistency", "i": "🔁", "l": "Habit Building", "s": "6 weeks", "e": "a streak that survives a bad week"}, {"w": "Confidence", "i": "🌟", "l": "Communication", "s": "5 weeks", "e": "speaking up before you feel ready"}, {"w": "Direction", "i": "🧭", "l": "Career Clarity", "s": "4 weeks", "e": "a next step you actually believe in"}, {"w": "Time", "i": "⏳", "l": "Time Mastery", "s": "4 weeks", "e": "a week that fits your life"}, {"w": "Resilience", "i": "🛡️", "l": "Mindset", "s": "6 weeks", "e": "setbacks that stop derailing you"}, {"w": "Discipline", "i": "⚙️", "l": "Systems", "s": "5 weeks", "e": "progress without motivation"}, {"w": "Presence", "i": "🧘", "l": "Calm & Clarity", "s": "4 weeks", "e": "a mind that stops racing at night"}];
+  const el = {
+    rot: document.getElementById('rot'), w: document.getElementById('rw'),
+    i: document.getElementById('ri'), l: document.getElementById('rl'),
+    s: document.getElementById('rs'), e: document.getElementById('re'),
+    timer: document.getElementById('timer')
+  };
+  let idx = 0, tick = null, busy = false;
+  function paint(it){
+    el.w.textContent = it.w; el.i.textContent = it.i;
+    el.l.textContent = it.l; el.s.textContent = it.s; el.e.textContent = it.e;
+    if (window.FX && FX.highlight) FX.highlight(it.w);
+  }
+  function restart(){ el.timer.classList.remove('run'); void el.timer.offsetWidth; if (!reduced) el.timer.classList.add('run'); }
+  function show(n){
+    if (busy) return; busy = true;
+    idx = (n + ITEMS.length) % ITEMS.length;
+    if (reduced){ paint(ITEMS[idx]); busy = false; return; }
+    el.rot.classList.add('out');
+    setTimeout(() => {
+      paint(ITEMS[idx]);
+      el.rot.classList.remove('out'); el.rot.classList.add('in');
+      void el.rot.offsetWidth; el.rot.classList.remove('in');
+      restart(); busy = false;
+    }, 410);
+  }
+  function next(){ show(idx + 1); sched(); }
+  function sched(){ clearInterval(tick); if (!reduced) tick = setInterval(next, 4200); }
+  el.rot.addEventListener('click', next);
+  el.rot.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); next(); }});
+  addEventListener('keydown', e => { if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft'){ show(idx-1); sched(); }});
+  document.addEventListener('visibilitychange', () => { if (document.hidden) clearInterval(tick); else sched(); });
+  paint(ITEMS[0]); restart(); sched();
+
+  /* ---------- tutor filters + booking ---------- */
+  const chips = document.querySelectorAll('.fchip');
+  const cards = document.querySelectorAll('.tutor');
+  chips.forEach(c => c.addEventListener('click', () => {
+    chips.forEach(x => x.classList.remove('on')); c.classList.add('on');
+    const f = c.dataset.f;
+    cards.forEach(card => {
+      const show = (f === 'all') || card.dataset.tags.includes(f);
+      card.style.display = show ? '' : 'none';
+    });
+  }));
+  document.querySelectorAll('.book').forEach(b => b.addEventListener('click', () => {
+    const who = b.dataset.who;
+    location.href = 'mailto:exzellent.co@gmail.com?subject=' +
+      encodeURIComponent('Booking request — ' + who + ' (Growth Lab)') +
+      '&body=' + encodeURIComponent('Hi EXZELLENT,\n\nI would like to book a session with ' + who + '.\n\nPreferred days/times:\nMy level/goal:\n\nThanks!');
+  }));
+
+  /* ---------- background effect: climbing vines, opening buds, rising leaves ---------- */
+
+  function petalPath(ctx, x, y, s, rot, squash){
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(1, squash);
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.bezierCurveTo(s * .62, -s * .42, s * .52, s * .48, 0, s);
+    ctx.bezierCurveTo(-s * .52, s * .48, -s * .62, -s * .42, 0, -s);
+    ctx.closePath(); ctx.restore();
+  }
+
+  const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+  let W, H, DPR, vines = [], leaves = [], motes = [], mx = 0, my = 0, tx = 0, ty = 0, t = 0;
+
+  function build(){
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const vn = Math.max(3, Math.min(8, Math.round(W / 260)));
+    vines = [];
+    for (let k = 0; k < vn; k++) vines.push(newVine(Math.random() * 14, (k + .5) / vn));
+    const ln = Math.max(10, Math.min(26, Math.round(W * H / 58000)));
+    leaves = [];
+    for (let k = 0; k < ln; k++) leaves.push(newLeaf(true));
+    const mn = Math.max(14, Math.min(40, Math.round(W * H / 40000)));
+    motes = [];
+    for (let k = 0; k < mn; k++) motes.push({ x: Math.random()*W, y: Math.random()*H,
+      vy: -(.06 + Math.random()*.2), vx: (Math.random()-.5)*.06,
+      r: .6 + Math.random()*1.5, tw: Math.random()*6.28 });
+  }
+  function newVine(phase, frac){
+    const segs = [];
+    let x = frac * W + (Math.random() - .5) * 90, y = H + 10;
+    let ang = -Math.PI/2 + (Math.random() - .5) * .3;
+    const n = 26 + Math.floor(Math.random() * 16);
+    for (let i = 0; i < n; i++){
+      ang += (Math.random() - .5) * .34;
+      ang = Math.max(-Math.PI * .86, Math.min(-Math.PI * .14, ang));
+      const len = 12 + Math.random() * 16;
+      x += Math.cos(ang) * len; y += Math.sin(ang) * len;
+      segs.push({ x, y, bud: Math.random() < .22, ang });
+    }
+    return { segs, life: phase, dur: 15 + Math.random() * 8, sway: Math.random() * 6.28 };
+  }
+  function newLeaf(seed){
+    return { x: Math.random() * W, y: seed ? Math.random() * H : H + 30,
+      s: 7 + Math.random() * 15, vy: -(.14 + Math.random() * .34),
+      vx: (Math.random() - .5) * .26, rot: Math.random() * 6.28,
+      vr: (Math.random() - .5) * .008, sq: .42 + Math.random() * .4,
+      sway: Math.random() * 6.28, a: .06 + Math.random() * .13 };
+  }
+  function draw(){
+    t += 1/60;
+    mx += (tx - mx) * .045; my += (ty - my) * .045;
+    ctx.clearRect(0, 0, W, H);
+
+    /* climbing vines — they grow, bud, then fade and start again */
+    for (const v of vines){
+      v.life += 1/60; v.sway += .006;
+      if (v.life > v.dur) Object.assign(v, newVine(0, Math.random()));
+      const u = v.life / v.dur;
+      const grow = Math.min(1, u / .55);
+      const fade = u > .8 ? 1 - (u - .8) / .2 : 1;
+      const n = Math.floor(grow * v.segs.length);
+      const swayAmt = Math.sin(v.sway) * 6;
+      ctx.beginPath();
+      for (let i = 0; i < n; i++){
+        const s = v.segs[i];
+        const k = i / v.segs.length;
+        const px = s.x + mx * 30 * (1 - k * .5) + swayAmt * k;
+        const py = s.y + my * 18 * (1 - k * .5);
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = 'rgba(52,211,153,' + (.20 * fade).toFixed(3) + ')';
+      ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.stroke();
+      /* buds along the stem — small lotus petals opening */
+      for (let i = 0; i < n; i++){
+        const s = v.segs[i];
+        if (!s.bud) continue;
+        const k = i / v.segs.length;
+        const px = s.x + mx * 30 * (1 - k * .5) + swayAmt * k;
+        const py = s.y + my * 18 * (1 - k * .5);
+        const open = Math.min(1, Math.max(0, (grow * v.segs.length - i) / 5));
+        const size = 3 + open * 7;
+        petalPath(ctx, px, py, size, s.ang + Math.PI/2, .55);
+        ctx.fillStyle = 'rgba(110,231,183,' + (.16 * open * fade).toFixed(3) + ')';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(52,211,153,' + (.3 * open * fade).toFixed(3) + ')';
+        ctx.lineWidth = .8; ctx.stroke();
+      }
+      /* growing tip */
+      if (n > 0 && n < v.segs.length){
+        const s = v.segs[n - 1], k = n / v.segs.length;
+        const px = s.x + mx * 30 * (1 - k * .5) + swayAmt * k;
+        const py = s.y + my * 18 * (1 - k * .5);
+        ctx.fillStyle = 'rgba(167,243,208,' + (.5 * fade).toFixed(3) + ')';
+        ctx.shadowColor = 'rgba(52,211,153,.8)'; ctx.shadowBlur = 10;
+        ctx.beginPath(); ctx.arc(px, py, 2.2, 0, 6.283); ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    /* leaves rising — growth lifting off */
+    for (const l of leaves){
+      l.y += l.vy; l.sway += .012;
+      l.x += l.vx + Math.sin(l.sway) * .3;
+      l.rot += l.vr;
+      if (l.y < -40) Object.assign(l, newLeaf(false));
+      if (l.x < -50) l.x = W + 50; if (l.x > W + 50) l.x = -50;
+      const px = l.x + mx * 24, py = l.y + my * 14;
+      const dc = Math.hypot((px - W/2)/(W*.54), (py - H/2)/(H*.5));
+      const clear = Math.min(1, Math.max(.16, dc * dc * 1.1));
+      const a = l.a * clear;
+      const g = ctx.createLinearGradient(px, py - l.s, px, py + l.s);
+      g.addColorStop(0, 'rgba(167,243,208,' + (a * 1.2).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(16,185,129,' + (a * .5).toFixed(3) + ')');
+      petalPath(ctx, px, py, l.s, l.rot, l.sq);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.strokeStyle = 'rgba(209,250,229,' + (a * .5).toFixed(3) + ')';
+      ctx.lineWidth = .7; ctx.stroke();
+    }
+
+    /* pollen motes */
+    for (const m of motes){
+      m.y += m.vy; m.x += m.vx;
+      if (m.y < -10){ m.y = H + 10; m.x = Math.random() * W; }
+      const px = m.x + mx * 14, py = m.y + my * 9;
+      const a = (.12 + .16 * Math.abs(Math.sin(t * .8 + m.tw)));
+      ctx.fillStyle = 'rgba(209,250,229,' + a.toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(px, py, m.r, 0, 6.283); ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  build(); addEventListener('resize', build);
+  addEventListener('pointermove', e => { tx = e.clientX/innerWidth - .5; ty = e.clientY/innerHeight - .5; });
+  if (!reduced) draw();
+  window.FX = { highlight(){} };
+
+})();
+</script>
+</body>
+</html>
