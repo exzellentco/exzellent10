@@ -55,12 +55,13 @@ if (isLoggedIn) {
     centerNavItems = [
       { name: "Students", to: "/get-student" },
       { name: "Teachers", to: "/teachers" },
-      { name: "Add referral", to: "/add-referral" },
-      { name: "Add Course", to: "/add-course" },
+      { name: "Invites", to: "/invite-requests" },
+      { name: "Referrals", to: "/add-referral" },
+      { name: "New course", to: "/add-course" },
       { name: "Courses", to: "/courses" },
-      { name: "Add Webinars", to: "/add-webinar" },
-      { name: "Free webinars", to: "/webinars" },
-      { name: "Add Jobs", to: "/add-job" },
+      { name: "New webinar", to: "/add-webinar" },
+      { name: "Webinars", to: "/webinars" },
+      { name: "Jobs", to: "/add-job" },
       { name: "Careers", to: "/careers" },
     ];
   } else if (userRole === "Student") {
@@ -68,27 +69,33 @@ if (isLoggedIn) {
       { name: "Dashboard", to: "/student-dashboard" },
       { name: "Courses", to: "/courses" },
       { name: "Free webinars", to: "/webinars" },
+      { name: "Book a class", to: "/book" },
+      { name: "Community", to: "/community" },
     ];
   } else if (userRole === "Teacher") {
     centerNavItems = [
       { name: "Dashboard", to: "/teacher-dashboard" },
+      { name: "Community", to: "/community" },
       { name: "Careers", to: "/careers" },
     ];
   }
 } else {
   centerNavItems = [
     { name: "Home", to: "/" },
+    { name: "Pricing", to: "/pricing" },
+    { name: "Community", to: "/community" },
+    { name: "Affiliates", to: "/affiliates" },
+    { name: "Ambassadors", to: "/ambassadors" },
     { name: "Careers", to: "/careers" },
     { name: "Learning Ecosystem", href: "/learning-ecosystem.html" },
     { name: "Exzi ✨", href: "/exzi" },
     { name: "Contact Us!", to: "/contact" },
-    { name: "Pricing", to: "/offer" },
   ];
 }
 
   const renderNavItem = (item) => {
-    const itemClass = `relative p-3 text-white font-bold transition-all duration-500 group overflow-hidden rounded-xl hover:scale-125 hover:text-secondary
-    ${location.pathname === item.to ? "scale-125 text-primary" : ""}`;
+    const itemClass = `relative px-2.5 py-2 text-white font-bold whitespace-nowrap shrink-0 transition-all duration-300 group rounded-xl hover:text-secondary
+    ${location.pathname === item.to ? "text-primary" : ""}`;
     const spanClass = `relative z-10 transition-all duration-500  ${location.pathname === item.to ? "text-primary" : ""}`;
 
     // Static pages (e.g. the Learning Ecosystem HTML in /public) live outside
@@ -121,7 +128,7 @@ if (isLoggedIn) {
           {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        <div className="hidden lg:flex flex-1 items-center justify-end space-x-8 px-8">
+        <div className="hidden lg:flex flex-1 items-center justify-end gap-1 px-4 overflow-x-auto">
           {centerNavItems.map(renderNavItem)}
         </div>
 

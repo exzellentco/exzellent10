@@ -33,6 +33,7 @@ const Courses = () => {
   const [isPaid, setIsPaid] = useState(false);
   const [studentCredits, setStudentCredits] = useState(null);
   const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
+  const [enrollmentMap, setEnrollmentMap] = useState({});
 
   const navigate = useNavigate();
   const PAGE_SIZE = 20;
@@ -54,7 +55,17 @@ const Courses = () => {
 
         // Fetch enrolled courses
         const enrolled = await fetchEnrolledCourses();
-        setEnrolledCourseIds(enrolled.map(e => e.course?._id || e.course));
+        setEnrolledCourseIds(enrolled.map(e => e.course?._id || e.courseId || e.course));
+
+        // Build a courseId -> enrollmentId map so already-enrolled cards can
+        // thread the correct enrollmentId (keeps progress + certificate).
+        const map = {};
+        enrolled.forEach((e) => {
+          const courseId = e.course?._id || e.courseId || e.course;
+          const enrollmentId = e._id || e.enrollmentId;
+          if (courseId && enrollmentId) map[courseId.toString()] = enrollmentId;
+        });
+        setEnrollmentMap(map);
       } catch (err) {
         console.error("Error fetching student profile:", err);
         setIsPaid(false);
@@ -296,7 +307,9 @@ const Courses = () => {
         comingSoonPageSize={COMING_SOON_PAGE_SIZE}
         onComingSoonPageChange={handleComingSoonPageChange}
         isPaid={isPaid}
+        studentCredits={studentCredits}
         enrolledCourseIds={enrolledCourseIds}
+        enrollmentMap={enrollmentMap}
       />
     </>
   );

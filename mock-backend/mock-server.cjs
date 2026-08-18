@@ -18,6 +18,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const PORT = process.env.PORT || 5000;
 
@@ -90,6 +91,7 @@ const TEACHER = {
   firstName: "Lena",
   lastName: "Hoffmann",
   email: "teacher@test.com",
+  password: "Teacher123",
   userType: "Teacher",
   role: "Teacher",
   countryOfResidence: "Germany",
@@ -111,11 +113,23 @@ const TEACHER = {
 // The admin "teachers" database. Starts with Lena; admins can add/approve/delete.
 const TEACHERS = [TEACHER];
 
+// The instructor shown on a course's "Meet your Teacher" — the real teacher, not a placeholder.
+const INSTRUCTOR_DETAILS = [{
+  name: TEACHER.name,
+  profileImage: TEACHER.profileImage,
+  academicDegrees: (TEACHER.academicDegrees || [])[0] || "",
+  yearsExperience: TEACHER.yearsExperience,
+}];
+
 // Pending email OTPs during signup (email -> { otp, userType }). In-memory only.
 const PENDING_OTPS = {};
 
 // Every AI study-kit generation produces this many format variants per lesson.
 const FORMATS_PER_LESSON = 9;
+
+// Safe, always-available placeholder lesson video (first-ever YouTube upload, SFW).
+// Replace with real lesson URLs in production content.
+const DEMO_VIDEO = "https://www.youtube.com/watch?v=jNQXAC9IVRw";
 
 // Courses are a MUTABLE store: create/update/delete/section/publish routes
 // mutate this array in place, so the dashboard reflects changes in real time.
@@ -130,17 +144,45 @@ const COURSES = [
     duration: "3 Months",
     price: 149,
     instructor: TEACHER_ID,
-    thumbnail: "https://via.placeholder.com/400x300?text=German+A1",
+    thumbnail: "https://placehold.co/400x300?text=German+A1",
     tags: ["Speaking", "Grammar", "Listening"],
     isPublished: true,
     createdAt: "2026-02-10T09:00:00Z",
-    instructorDetails: [{ name: "Demo Teacher" }],
+    instructorDetails: INSTRUCTOR_DETAILS,
     sections: [
-      { _id: "sec-1", title: "Greetings & Introductions", lectures: [] },
-      { _id: "sec-2", title: "Numbers, Dates & Time", lectures: [] },
-      { _id: "sec-3", title: "Everyday Vocabulary", lectures: [] },
-      { _id: "sec-4", title: "Present Tense Verbs", lectures: [] },
+      { _id: "sec-1", title: "Greetings & Introductions", sectionType: "language-training", lectures: [
+        { _id: "lec-1", title: "Hallo! Saying hello & goodbye", youtubeUrl: DEMO_VIDEO, duration: "06:20", description: "Core greetings for everyday German." },
+        { _id: "lec-2", title: "Introducing yourself", youtubeUrl: DEMO_VIDEO, duration: "07:45", description: "Name, origin and simple small talk." },
+      ] },
+      { _id: "sec-2", title: "Numbers, Dates & Time", sectionType: "language-training", lectures: [
+        { _id: "lec-3", title: "Numbers 0–100", youtubeUrl: DEMO_VIDEO, duration: "08:10", description: "Counting and prices." },
+        { _id: "lec-4", title: "Telling the time", youtubeUrl: DEMO_VIDEO, duration: "05:55", description: "Clock time and daily routine." },
+      ] },
+      { _id: "sec-3", title: "Everyday Vocabulary", sectionType: "language-training", lectures: [
+        { _id: "lec-5", title: "Food & drink", youtubeUrl: DEMO_VIDEO, duration: "09:30", description: "Ordering in a café." },
+      ] },
+      { _id: "sec-4", title: "Present Tense Verbs", sectionType: "language-training", lectures: [
+        { _id: "lec-6", title: "Regular verbs in the present", youtubeUrl: DEMO_VIDEO, duration: "10:15", description: "Conjugating -en verbs." },
+      ] },
     ],
+    studyKit: {
+      summary: "The essentials of German A1: greetings, numbers, everyday vocabulary and present-tense verbs.",
+      keyTerms: ["Hallo", "Danke", "Bitte", "Guten Morgen", "Tschüss", "Wie geht's?"],
+      flashcards: [
+        { front: "Hello", back: "Hallo" },
+        { front: "Thank you", back: "Danke" },
+        { front: "Please / You're welcome", back: "Bitte" },
+        { front: "Good morning", back: "Guten Morgen" },
+        { front: "Goodbye", back: "Tschüss" },
+        { front: "How are you?", back: "Wie geht es dir?" },
+      ],
+      quiz: [
+        { question: "How do you say “thank you” in German?", options: ["Bitte", "Danke", "Hallo", "Tschüss"], answer: 1, explanation: "“Danke” means thank you." },
+        { question: "“Guten Morgen” means…", options: ["Good night", "Good morning", "Goodbye", "Welcome"], answer: 1, explanation: "It's the morning greeting." },
+        { question: "Which word is a farewell?", options: ["Hallo", "Danke", "Tschüss", "Bitte"], answer: 2, explanation: "“Tschüss” = bye." },
+        { question: "“Wie geht es dir?” asks…", options: ["Where are you?", "How are you?", "What's your name?", "How old are you?"], answer: 1, explanation: "It asks how someone is." },
+      ],
+    },
   },
   {
     _id: "course-002",
@@ -152,16 +194,39 @@ const COURSES = [
     duration: "4 Months",
     price: 199,
     instructor: TEACHER_ID,
-    thumbnail: "https://via.placeholder.com/400x300?text=English+B2",
+    thumbnail: "https://placehold.co/400x300?text=English+B2",
     tags: ["Business English", "Writing"],
     isPublished: true,
     createdAt: "2026-03-05T09:00:00Z",
-    instructorDetails: [{ name: "Demo Teacher" }],
+    instructorDetails: INSTRUCTOR_DETAILS,
     sections: [
-      { _id: "sec-5", title: "Business Writing", lectures: [] },
-      { _id: "sec-6", title: "Advanced Grammar", lectures: [] },
-      { _id: "sec-7", title: "Presentations & Public Speaking", lectures: [] },
+      { _id: "sec-5", title: "Business Writing", sectionType: "language-training", lectures: [
+        { _id: "lec-7", title: "Professional emails", youtubeUrl: DEMO_VIDEO, duration: "11:00", description: "Tone and structure for work emails." },
+        { _id: "lec-8", title: "Reports & summaries", youtubeUrl: DEMO_VIDEO, duration: "09:20", description: "Writing clear summaries." },
+      ] },
+      { _id: "sec-6", title: "Advanced Grammar", sectionType: "language-training", lectures: [
+        { _id: "lec-9", title: "Conditionals", youtubeUrl: DEMO_VIDEO, duration: "12:40", description: "First, second and third conditionals." },
+      ] },
+      { _id: "sec-7", title: "Presentations & Public Speaking", sectionType: "language-training", lectures: [
+        { _id: "lec-10", title: "Structuring a talk", youtubeUrl: DEMO_VIDEO, duration: "08:50", description: "Openings, signposting and closings." },
+      ] },
     ],
+    studyKit: {
+      summary: "Upper-intermediate English for the workplace: emails, reports, advanced grammar and presentations.",
+      keyTerms: ["Furthermore", "However", "In conclusion", "On the other hand", "To summarise"],
+      flashcards: [
+        { front: "A word to add information", back: "Furthermore / Moreover" },
+        { front: "A word to show contrast", back: "However / On the other hand" },
+        { front: "A phrase to close a talk", back: "In conclusion / To sum up" },
+        { front: "Formal way to say 'get'", back: "Receive / Obtain" },
+        { front: "Formal greeting in an email", back: "Dear Sir or Madam" },
+      ],
+      quiz: [
+        { question: "Which word signals a contrast?", options: ["Furthermore", "However", "Moreover", "Also"], answer: 1, explanation: "“However” introduces a contrast." },
+        { question: "A formal email greeting is…", options: ["Hey!", "Dear Sir or Madam", "What's up", "Yo"], answer: 1, explanation: "Use a formal salutation in business emails." },
+        { question: "“To sum up” is used to…", options: ["Start a talk", "Add a point", "Conclude", "Ask a question"], answer: 2, explanation: "It signals a conclusion." },
+      ],
+    },
   },
   {
     _id: "course-003",
@@ -173,18 +238,32 @@ const COURSES = [
     duration: "6 Weeks",
     price: 99,
     instructor: TEACHER_ID,
-    thumbnail: "https://via.placeholder.com/400x300?text=AI+Fundamentals",
+    thumbnail: "https://placehold.co/400x300?text=AI+Fundamentals",
     tags: ["AI", "Automation", "No-Code"],
     isPublished: false,
     createdAt: "2026-07-20T09:00:00Z",
-    instructorDetails: [{ name: "Demo Teacher" }],
+    instructorDetails: INSTRUCTOR_DETAILS,
     sections: [
-      { _id: "sec-8", title: "What is AI?", lectures: [] },
+      { _id: "sec-8", title: "What is AI?", sectionType: "language-training", lectures: [
+        { _id: "lec-11", title: "AI in everyday life", youtubeUrl: DEMO_VIDEO, duration: "07:30", description: "Where AI already helps you." },
+        { _id: "lec-12", title: "Prompting basics", youtubeUrl: DEMO_VIDEO, duration: "10:00", description: "How to ask AI for good results." },
+      ] },
     ],
   },
 ];
 
+// Snapshot the seed lectures NOW (before any data.json load mutates COURSES) so
+// we can backfill the demo courses whose saved copy predates the lecture content.
+const SEED_LECTURES = Object.fromEntries(COURSES.map((c) => [c._id, JSON.parse(JSON.stringify(c.sections))]));
+const SEED_STUDYKITS = Object.fromEntries(COURSES.filter((c) => c.studyKit).map((c) => [c._id, JSON.parse(JSON.stringify(c.studyKit))]));
+
+// The primary demo student is a REAL account tied to this email. Logging in with
+// it returns this record (see findAccountByEmail), so profile edits persist and
+// it appears in the admin students list like any other student.
+const PRIMARY_STUDENT = { _id: "stu-kos", name: "Kos", firstName: "Kos", lastName: "", email: "koszoz99@gmail.com", password: "Kos12345", paid: true, country: "Germany", credits: 5000, phone: "", gender: "", dateOfBirth: null, referral: "Direct" };
+
 const STUDENTS = [
+  PRIMARY_STUDENT,
   { _id: "stu-1", name: "Anna Müller", firstName: "Anna", lastName: "Müller", email: "anna@test.com", paid: true, country: "Germany", credits: 1200, phone: "+49 151 2345678", gender: "Female", dateOfBirth: "1998-04-12", referral: "Instagram" },
   { _id: "stu-2", name: "Ben Okafor", firstName: "Ben", lastName: "Okafor", email: "ben@test.com", paid: true, country: "Nigeria", credits: 300, phone: "+234 803 1122334", gender: "Male", dateOfBirth: "2000-09-03", referral: "Friend" },
   { _id: "stu-3", name: "Chloé Martin", firstName: "Chloé", lastName: "Martin", email: "chloe@test.com", paid: true, country: "France", credits: 800, phone: "+33 6 12 34 56 78", gender: "Female", dateOfBirth: "1997-01-22", referral: "Google" },
@@ -193,7 +272,191 @@ const STUDENTS = [
   { _id: "stu-6", name: "Farid Hassan", firstName: "Farid", lastName: "Hassan", email: "farid@test.com", paid: true, country: "Egypt", credits: 420, phone: "+20 100 1234567", gender: "Male", dateOfBirth: "1996-08-08", referral: "Friend" },
 ];
 // Seeded students are existing, active members (already email-verified + approved).
-STUDENTS.forEach((s) => { s.isApproved = true; s.status = "active"; s.userType = "Student"; });
+// Demo password for every seed student except the primary one is "Student123".
+STUDENTS.forEach((s) => { s.isApproved = true; s.status = "active"; s.userType = "Student"; s.password = s.password || "Student123"; });
+
+// ---- a student's OWN enrollments + credit balance (student dashboard side) ----
+const MY_ENROLLMENTS = []; // { _id, studentId, courseId, progress, completedPercentage, enrolledAt }
+let MYENR_SEQ = 1;
+const MY_CREDITS = {};     // studentId -> remaining credits (overrides the default)
+const PROFILE_EDITS = {};  // userId -> saved profile-field overrides (name, phone, country, …)
+const DEFAULT_CREDITS = 5000;
+
+// ---- teaching features: spaced repetition, streaks, assignments, bookings ----
+const REVIEW = {};         // studentId -> { cardId: { due(ISO date), interval(days), reps, ease } }
+const STREAKS = {};        // studentId -> { count, lastDay(YYYY-MM-DD) }
+const ASSIGNMENTS = [];    // { _id, teacherId, teacherName, studentId, courseId, title, prompt, targetText, createdAt }
+let ASSIGNMENT_SEQ = 1;
+const SUBMISSIONS = [];    // { _id, assignmentId, studentId, studentName, score, transcript, feedback, submittedAt }
+let SUBMISSION_SEQ = 1;
+const LESSON_COST = 500;   // credits a student spends to book a 1-to-1 lesson
+
+// ---- subscription plans + credit allowances (edit prices/credits freely) -----
+// paymentLink = the Stripe Payment Link for that tier (paste real links here).
+const SIGNUP_BONUS = 200;  // free credits every new member gets on sign-up
+const PLANS = [
+  { id: "starter",  name: "Starter",  price: 8.99,   credits: 500,   popular: false, paymentLink: "",
+    features: ["500 credits / month", "AI tutor & tools", "Community access", "Group classes"] },
+  { id: "plus",     name: "Plus",     price: 14.99,  credits: 1200,  popular: true,  paymentLink: "",
+    features: ["1,200 credits / month", "Everything in Starter", "Priority AI tools", "Webinars included"] },
+  { id: "pro",      name: "Pro",      price: 29.99,  credits: 3000,  popular: false, paymentLink: "",
+    features: ["3,000 credits / month", "Everything in Plus", "1-to-1 lesson credits", "Certificates"] },
+  { id: "premium",  name: "Premium",  price: 99.99,  credits: 12000, popular: false, paymentLink: "",
+    features: ["12,000 credits / month", "Everything in Pro", "Priority booking", "Dedicated support"] },
+  { id: "ultimate", name: "Ultimate", price: 121.99, credits: 16000, popular: false, paymentLink: "",
+    features: ["16,000 credits / month", "Everything in Premium", "Unlimited community", "Early access"] },
+];
+const planById = (id) => PLANS.find((p) => p.id === id);
+
+// ---- AI credit costs (students spend credits per use; teachers/admins free) --
+const AI_COSTS = { "study-kit": 30, "generate-exam": 20, "build-course": 30, "progress-report": 15, "analyze-speech": 10, "chat": 5 };
+const aiCostFor = (path) => {
+  const key = Object.keys(AI_COSTS).find((k) => path.includes("/ai/" + k) || path.endsWith("/" + k));
+  return key ? AI_COSTS[key] : 10; // default 10 credits for any other AI call
+};
+
+// ---- invite-only waitlist (BestSecret-style "request an invite") -------------
+const WAITLIST = []; // { _id, email, name, note, invited, inviteCode, createdAt }
+let WAITLIST_SEQ = 1;
+const INVITE_ONLY = true; // require a valid invite/referral code to register
+const findReferral = (code) => REFERRALS.find((r) => (r.code || "").toLowerCase() === String(code || "").toLowerCase() && r.active !== false);
+const AFFILIATE_COMMISSION = 5;    // € earned per converted referral — affiliates/ambassadors (real payout)
+const CREDITS_PER_REFERRAL = 100;  // credits a STUDENT earns when someone they invited becomes paid
+const slugCode = (s) => (String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) || "MEMBER");
+// Every member/ambassador has one personal invite code; created on demand.
+const ensureReferralFor = (userId, name) => {
+  let r = REFERRALS.find((x) => x.ownerId === userId);
+  if (!r) {
+    const base = slugCode(name || userId);
+    let code = base, n = 1;
+    while (REFERRALS.some((x) => (x.code || "").toLowerCase() === code.toLowerCase())) code = base + (++n);
+    r = { _id: `ref-${REFERRAL_SEQ++}`, code, ownerId: userId, ownerName: name || "", description: "Personal invite code", uses: 0, active: true, reward: "", createdAt: new Date().toISOString() };
+    REFERRALS.push(r);
+  }
+  return r;
+};
+const referralStats = (userId, name) => {
+  const r = ensureReferralFor(userId, name);
+  const invited = STUDENTS.filter((s) => s.invitedBy === userId || (s.invitedByCode || "").toLowerCase() === r.code.toLowerCase());
+  const converted = invited.filter((s) => s.paid).length;
+  return {
+    code: r.code, link: `/signup?ref=${r.code}`,
+    invitedCount: invited.length, converted, uses: r.uses || 0,
+    // Students earn CREDITS; affiliates/ambassadors also get a € figure for payout.
+    creditsEarned: converted * CREDITS_PER_REFERRAL, creditsPer: CREDITS_PER_REFERRAL,
+    earnings: converted * AFFILIATE_COMMISSION, commissionPer: AFFILIATE_COMMISSION,
+    invited: invited.map((s) => ({ _id: s._id, name: s.name, joinedAt: s.createdAt, paid: !!s.paid })),
+  };
+};
+
+// ---- community (Skool-style feed) -------------------------------------------
+const POSTS = []; // { _id, authorId, authorName, authorRole, space, text, likes:[ids], comments:[{_id,authorId,authorName,text,createdAt}], createdAt }
+let POST_SEQ = 1;
+const COMMUNITY_SPACES = ["General", "Wins", "Questions", "Study buddies", "Germany life"];
+const userDisplay = (role, id) => {
+  if (role === "Teacher") return { name: TEACHER.name, role: "Teacher" };
+  if (role === "Admin") return { name: "Admin", role: "Admin" };
+  const s = STUDENTS.find((x) => x._id === id);
+  return { name: (s && s.name) || "Member", role: "Student" };
+};
+// Seed a little life into the community.
+POSTS.push(
+  { _id: `post-${POST_SEQ++}`, authorId: TEACHER_ID, authorName: TEACHER.name, authorRole: "Teacher", space: "General",
+    text: "Willkommen! 👋 Drop an intro — where are you learning from and what's your goal (job, telc exam, study)?",
+    likes: ["stu-1", "stu-3"], comments: [{ _id: "c1", authorId: "stu-1", authorName: "Anna Müller", text: "Hallo from Berlin — going for telc B2!", createdAt: "2026-08-10T10:00:00Z" }], createdAt: "2026-08-10T09:00:00Z" },
+  { _id: `post-${POST_SEQ++}`, authorId: "stu-3", authorName: "Chloé Martin", authorRole: "Student", space: "Wins",
+    text: "Passed my A2 mock quiz at 92% today 🎉 The flashcards really work.", likes: ["stu-4", "stu-5", TEACHER_ID], comments: [], createdAt: "2026-08-12T14:20:00Z" },
+);
+
+// A Zoom meeting link for a lesson (placeholder; swap for real Zoom API links).
+const zoomUrl = () => `https://zoom.us/j/${Math.floor(1000000000 + Math.random() * 8999999999)}?pwd=exzellent`;
+const myCredits = (id) => {
+  if (id in MY_CREDITS) return MY_CREDITS[id];
+  const s = STUDENTS.find((x) => x._id === id);
+  return s ? (s.credits ?? 0) : DEFAULT_CREDITS;
+};
+const creditCostFor = (groupType) => (groupType === "one-to-one" ? 1000 : groupType === "class" ? 250 : 50);
+// The demo login token is "mock.<Role>.<id>" — pull the user id out of it.
+const userIdFromToken = (t = "") => { const p = String(t).split("."); return p[0] === "mock" ? p[2] : null; };
+
+// Resolve a student's live profile: prefer the real STUDENTS record (persisted,
+// shown in the admin list); fall back to the synthetic demo student + saved edits.
+const studentById = (id) => STUDENTS.find((s) => s._id === id);
+const studentProfile = (id, role) => {
+  const s = studentById(id);
+  if (s) { const { password, ...rest } = s; return { ...rest, userType: "Student", role: "Student", credits: myCredits(id) }; }
+  const u = userFor(role || "Student");
+  u._id = id;
+  u.credits = myCredits(id);
+  Object.assign(u, PROFILE_EDITS[id] || {});
+  return u;
+};
+
+// ---- student lecture-progress helpers --------------------------------------
+const countLectures = (course) => (course.sections || []).reduce((t, s) => t + (s.lectures?.length || 0), 0);
+// Recompute an enrollment's percentage from its completed-lecture list.
+const recalcEnrollment = (e) => {
+  const c = COURSES.find((x) => x._id === e.courseId) || {};
+  const total = countLectures(c);
+  const done = (e.completed || []).length;
+  e.completedPercentage = total ? Math.round((done / total) * 100) : 0;
+  e.progress = e.completedPercentage;
+  return e;
+};
+// Shape a full progress payload for GET /api/enrollments/:id (feeds ProgressModal + CourseDetails).
+const enrollmentDetail = (e) => {
+  const c = COURSES.find((x) => x._id === e.courseId) || {};
+  const total = countLectures(c);
+  const done = (e.completed || []).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  return {
+    success: true,
+    completedPercentage: pct,
+    completedLectures: done,
+    totalLectures: total,
+    course: c,
+    enrollment: { _id: e._id, courseId: e.courseId, course: c, progress: e.completed || [], completedPercentage: pct },
+    // A certificate is earned once every lecture is complete.
+    certificateEligible: total > 0 && done >= total,
+    quiz: e.quiz || null,
+  };
+};
+
+// ---- spaced repetition (a light SM-2 / Leitner scheduler) -------------------
+const todayStr = (d = new Date()) => new Date(d).toISOString().slice(0, 10);
+const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+// Grade a card: 0 = Again, 1 = Hard, 2 = Good, 3 = Easy. Returns the new schedule.
+const scheduleCard = (prev, grade) => {
+  let { interval = 0, reps = 0, ease = 2.5 } = prev || {};
+  if (grade <= 0) { reps = 0; interval = 0; ease = Math.max(1.3, ease - 0.2); }
+  else {
+    reps += 1;
+    ease = Math.max(1.3, ease + (grade === 3 ? 0.15 : grade === 2 ? 0 : -0.15));
+    interval = reps === 1 ? 1 : reps === 2 ? 3 : Math.round(interval * ease) || 1;
+    if (grade === 1) interval = Math.max(1, Math.round(interval / 2));
+  }
+  return { interval, reps, ease, due: addDays(interval) };
+};
+// All flashcards from a student's enrolled courses, tagged with a stable cardId.
+const reviewCardsFor = (studentId) => {
+  const cards = [];
+  MY_ENROLLMENTS.filter((e) => e.studentId === studentId).forEach((e) => {
+    const c = COURSES.find((x) => x._id === e.courseId);
+    const fcs = c?.studyKit?.flashcards || [];
+    fcs.forEach((f, i) => cards.push({ cardId: `${e.courseId}::${i}`, courseId: e.courseId, courseTitle: c.title, front: f.front, back: f.back }));
+  });
+  return cards;
+};
+const bumpStreak = (studentId) => {
+  const t = todayStr();
+  const s = STREAKS[studentId] || { count: 0, lastDay: "" };
+  if (s.lastDay === t) return s;                       // already counted today
+  const yesterday = addDays(-1);
+  s.count = s.lastDay === yesterday ? s.count + 1 : 1; // consecutive day or reset
+  s.lastDay = t;
+  STREAKS[studentId] = s;
+  return s;
+};
 
 // Enrollments are the SINGLE source of truth for earnings + active students +
 // the monthly chart. `monthsAgo` is resolved to a real date at request time so
@@ -496,14 +759,27 @@ function scoreSpeech(transcript, referenceText, language) {
 
 // Call Groq chat completions. cb(err, result): result is text, or a parsed
 // object when { json:true }. Powers the AI generators (exam / course / report).
+// Pull a JSON object out of model text (handles reasoning/prose around it).
+function extractJson(content) {
+  const cleaned = String(content).replace(/<think>[\s\S]*?<\/think>/gi, "").replace(/```(?:json)?/gi, "");
+  try { return JSON.parse(cleaned.trim()); } catch { /* fall through */ }
+  const first = cleaned.indexOf("{");
+  const last = cleaned.lastIndexOf("}");
+  if (first >= 0 && last > first) { try { return JSON.parse(cleaned.slice(first, last + 1)); } catch { /* nope */ } }
+  return null;
+}
+
 function groqChat({ system, user, json = false, maxTokens = 1400, temperature = 0.6 }, cb) {
   if (!GROQ_API_KEY) { cb(new Error("GROQ_API_KEY is not set on the mock backend.")); return; }
+  const sys = json ? system + " Output ONLY the JSON object — no markdown fences." : system;
   const payload = JSON.stringify({
-    model: "llama-3.3-70b-versatile",
-    messages: [{ role: "system", content: system }, { role: "user", content: user }],
-    max_tokens: maxTokens,
+    model: "qwen/qwen3.6-27b",
+    // qwen3.6 is a reasoning model; reasoning_effort:"none" (+ /no_think) turns off
+    // the <think> block so the answer fits the budget and doesn't burn tokens.
+    reasoning_effort: "none",
+    messages: [{ role: "system", content: sys }, { role: "user", content: "/no_think\n" + user }],
+    max_tokens: json ? Math.max(maxTokens, 2048) : maxTokens,
     temperature,
-    ...(json ? { response_format: { type: "json_object" } } : {}),
   });
   const gReq = https.request({
     hostname: "api.groq.com", port: 443, path: "/openai/v1/chat/completions", method: "POST",
@@ -517,8 +793,9 @@ function groqChat({ system, user, json = false, maxTokens = 1400, temperature = 
         const content = parsed.choices?.[0]?.message?.content;
         if (!content) { cb(new Error(parsed.error?.message || "No response from the model.")); return; }
         if (json) {
-          try { cb(null, JSON.parse(content)); }
-          catch { cb(new Error("The model did not return valid JSON. Please try again.")); }
+          const obj = extractJson(content);
+          if (obj) cb(null, obj);
+          else cb(new Error("The model did not return valid JSON. Please try again."));
         } else cb(null, content);
       } catch (e) { cb(new Error("Model response was invalid: " + e.message)); }
     });
@@ -547,6 +824,38 @@ const AVAILABILITY = {
 };
 const BOOKINGS = [];
 let BOOKING_SEQ = 1;
+
+// ---- messaging (students ↔ teachers ↔ admin) ----
+const ADMIN_CONTACT = { id: "mock-admin-001", name: "Admin", role: "Admin" };
+const MESSAGES = [];
+let MESSAGE_SEQ = 1;
+
+// Who a given user may message.
+function messageContacts(role, userId) {
+  if (role === "Admin") {
+    return [
+      ...TEACHERS.map((t) => ({ id: t._id, name: t.name, role: "Teacher" })),
+      ...STUDENTS.map((s) => ({ id: s._id, name: s.name, role: "Student" })),
+    ];
+  }
+  if (role === "Teacher") {
+    return [ADMIN_CONTACT, ...teacherStudents().map((s) => ({ id: s._id, name: s.name, role: "Student" }))];
+  }
+  // Student → all teachers + admin
+  return [ADMIN_CONTACT, ...TEACHERS.map((t) => ({ id: t._id, name: t.name, role: "Teacher" }))];
+}
+
+function seedMessages() {
+  if (MESSAGES.length) return false;
+  const now = new Date();
+  const at = (minsAgo) => new Date(now.getTime() - minsAgo * 60000).toISOString();
+  const push = (fromId, fromName, fromRole, toId, toName, toRole, text, minsAgo, read) =>
+    MESSAGES.push({ _id: `msg-${MESSAGE_SEQ++}`, fromId, fromName, fromRole, toId, toName, toRole, text, date: at(minsAgo), read: !!read });
+  push("mock-admin-001", "Admin", "Admin", TEACHER_ID, "Lena Hoffmann", "Teacher", "Welcome aboard, Lena! Let us know if you need anything.", 2880, true);
+  push(TEACHER_ID, "Lena Hoffmann", "Teacher", "mock-admin-001", "Admin", "Admin", "Thanks! All set up and loving it.", 2820, true);
+  push("stu-1", "Anna Müller", "Student", TEACHER_ID, "Lena Hoffmann", "Teacher", "Hi Lena, could we reschedule Thursday's lesson?", 120, false);
+  return true;
+}
 
 // Bookable people across the three labs. Lena is also the demo teacher.
 // role: tutor (language) | mentor (skill) | coach (growth). location = where.
@@ -605,21 +914,27 @@ function computeSlots(teacherId, fromISO, toISO) {
   return out;
 }
 
-// Seed a couple of demo bookings on the next open days so calendars aren't empty.
+// Seed a few demo LESSONS across the coming days so calendars aren't empty.
 function seedBookings() {
   if (BOOKINGS.length) return false;
-  const slots = computeSlots(TEACHER_ID, dateStr(new Date()), dateStr(new Date(Date.now() + 12 * 864e5)));
-  const picks = [slots[1], slots[6]].filter(Boolean);
-  const students = [{ id: "stu-1", name: "Anna Müller" }, { id: "stu-3", name: "Chloé Martin" }];
-  picks.forEach((s, i) => {
+  const now = new Date();
+  const mk = (daysAhead, start, end, title, studentId, studentName) => {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysAhead);
     BOOKINGS.push({
-      _id: `bk-${BOOKING_SEQ++}`, teacherId: TEACHER_ID, teacherName: "Lena Hoffmann",
-      studentId: students[i].id, studentName: students[i].name,
-      date: s.date, start: s.start, end: s.end, topic: i === 0 ? "German A1 · speaking" : "English B2 · interview prep",
-      status: "confirmed", createdAt: new Date().toISOString(),
+      _id: `bk-${BOOKING_SEQ++}`, teacherId: TEACHER_ID, providerId: TEACHER_ID,
+      teacherName: "Lena Hoffmann", providerName: "Lena Hoffmann", providerRole: "tutor",
+      location: "Online", lab: "language",
+      studentId: studentId || "", studentName: studentName || "",
+      date: dateStr(d), start, end, title, topic: title,
+      status: "confirmed", meetingUrl: zoomUrl(), createdAt: now.toISOString(),
     });
-  });
-  return picks.length > 0;
+  };
+  mk(1, "10:00", "11:00", "German A1 · speaking", "stu-1", "Anna Müller");
+  mk(1, "14:00", "15:00", "English B2 · interview prep", "stu-3", "Chloé Martin");
+  mk(3, "09:30", "10:30", "German A1 · grammar", "stu-4", "Diego Alvarez");
+  mk(4, "16:00", "17:00", "English B2 · writing", "stu-5", "Emine Yıldız");
+  mk(7, "11:00", "12:00", "German A1 · vocabulary", "stu-1", "Anna Müller");
+  return true;
 }
 
 let SECTION_SEQ = 100;
@@ -633,7 +948,7 @@ const DATA_FILE = path.join(__dirname, "data.json");
 
 function saveData() {
   try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({ COURSES, ENROLLMENTS, TEACHERS, STUDENTS, AVAILABILITY, BOOKINGS, BOOKING_SEQ, PROVIDERS, SECTION_SEQ }, null, 2));
+    fs.writeFileSync(DATA_FILE, JSON.stringify({ COURSES, ENROLLMENTS, TEACHERS, STUDENTS, AVAILABILITY, BOOKINGS, BOOKING_SEQ, PROVIDERS, MESSAGES, MESSAGE_SEQ, MY_ENROLLMENTS, MYENR_SEQ, MY_CREDITS, PROFILE_EDITS, WEBINARS, WEBINAR_SEQ, CAREERS, CAREER_SEQ, REFERRALS, REFERRAL_SEQ, JOB_APPLICANTS, REVIEW, STREAKS, ASSIGNMENTS, ASSIGNMENT_SEQ, SUBMISSIONS, SUBMISSION_SEQ, WAITLIST, WAITLIST_SEQ, POSTS, POST_SEQ, SECTION_SEQ }, null, 2));
   } catch (e) {
     console.log("  ! could not save data.json:", e.message);
   }
@@ -643,13 +958,59 @@ function loadData() {
   try {
     if (!fs.existsSync(DATA_FILE)) return false;
     const d = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-    if (Array.isArray(d.COURSES)) { COURSES.length = 0; COURSES.push(...d.COURSES); }
+    if (Array.isArray(d.COURSES)) {
+      COURSES.length = 0;
+      COURSES.push(...d.COURSES);
+      // Backfill demo-course lectures for saves made before lecture content existed
+      // (only when the saved course has zero lectures, so teacher edits are kept).
+      COURSES.forEach((c) => {
+        const seed = SEED_LECTURES[c._id];
+        const lectureCount = (c.sections || []).reduce((t, s) => t + (s.lectures?.length || 0), 0);
+        if (seed && lectureCount === 0) c.sections = JSON.parse(JSON.stringify(seed));
+        // Backfill the demo study kit (flashcards/quiz) for saves that predate it.
+        if (SEED_STUDYKITS[c._id] && !c.studyKit) c.studyKit = JSON.parse(JSON.stringify(SEED_STUDYKITS[c._id]));
+      });
+    }
     if (Array.isArray(d.ENROLLMENTS)) { ENROLLMENTS.length = 0; ENROLLMENTS.push(...d.ENROLLMENTS); }
-    if (Array.isArray(d.STUDENTS)) { STUDENTS.length = 0; STUDENTS.push(...d.STUDENTS); }
+    if (Array.isArray(d.STUDENTS)) {
+      STUDENTS.length = 0;
+      STUDENTS.push(...d.STUDENTS);
+      // Make sure the primary demo student exists even in an older save.
+      if (!STUDENTS.some((s) => (s.email || "").toLowerCase() === PRIMARY_STUDENT.email)) STUDENTS.unshift(PRIMARY_STUDENT);
+      // Backfill demo passwords for accounts saved before passwords existed.
+      STUDENTS.forEach((s) => {
+        if (!s.password) s.password = (s.email || "").toLowerCase() === PRIMARY_STUDENT.email ? "Kos12345" : "Student123";
+        if (s.isApproved === undefined) s.isApproved = true;
+        if (!s.status) s.status = "active";
+      });
+    }
     if (d.AVAILABILITY && typeof d.AVAILABILITY === "object") { Object.keys(AVAILABILITY).forEach((k) => delete AVAILABILITY[k]); Object.assign(AVAILABILITY, d.AVAILABILITY); }
     if (Array.isArray(d.BOOKINGS)) { BOOKINGS.length = 0; BOOKINGS.push(...d.BOOKINGS); }
     if (typeof d.BOOKING_SEQ === "number") BOOKING_SEQ = d.BOOKING_SEQ;
     if (Array.isArray(d.PROVIDERS)) { PROVIDERS.length = 0; PROVIDERS.push(...d.PROVIDERS); }
+    if (Array.isArray(d.MESSAGES)) { MESSAGES.length = 0; MESSAGES.push(...d.MESSAGES); }
+    if (typeof d.MESSAGE_SEQ === "number") MESSAGE_SEQ = d.MESSAGE_SEQ;
+    if (Array.isArray(d.MY_ENROLLMENTS)) { MY_ENROLLMENTS.length = 0; MY_ENROLLMENTS.push(...d.MY_ENROLLMENTS); }
+    if (typeof d.MYENR_SEQ === "number") MYENR_SEQ = d.MYENR_SEQ;
+    if (d.MY_CREDITS && typeof d.MY_CREDITS === "object") { Object.keys(MY_CREDITS).forEach((k) => delete MY_CREDITS[k]); Object.assign(MY_CREDITS, d.MY_CREDITS); }
+    if (d.PROFILE_EDITS && typeof d.PROFILE_EDITS === "object") { Object.keys(PROFILE_EDITS).forEach((k) => delete PROFILE_EDITS[k]); Object.assign(PROFILE_EDITS, d.PROFILE_EDITS); }
+    if (Array.isArray(d.WEBINARS)) { WEBINARS.length = 0; WEBINARS.push(...d.WEBINARS); }
+    if (typeof d.WEBINAR_SEQ === "number") WEBINAR_SEQ = d.WEBINAR_SEQ;
+    if (Array.isArray(d.CAREERS)) { CAREERS.length = 0; CAREERS.push(...d.CAREERS); }
+    if (typeof d.CAREER_SEQ === "number") CAREER_SEQ = d.CAREER_SEQ;
+    if (Array.isArray(d.REFERRALS)) { REFERRALS.length = 0; REFERRALS.push(...d.REFERRALS); }
+    if (typeof d.REFERRAL_SEQ === "number") REFERRAL_SEQ = d.REFERRAL_SEQ;
+    if (d.JOB_APPLICANTS && typeof d.JOB_APPLICANTS === "object") { Object.keys(JOB_APPLICANTS).forEach((k) => delete JOB_APPLICANTS[k]); Object.assign(JOB_APPLICANTS, d.JOB_APPLICANTS); }
+    if (d.REVIEW && typeof d.REVIEW === "object") { Object.keys(REVIEW).forEach((k) => delete REVIEW[k]); Object.assign(REVIEW, d.REVIEW); }
+    if (d.STREAKS && typeof d.STREAKS === "object") { Object.keys(STREAKS).forEach((k) => delete STREAKS[k]); Object.assign(STREAKS, d.STREAKS); }
+    if (Array.isArray(d.ASSIGNMENTS)) { ASSIGNMENTS.length = 0; ASSIGNMENTS.push(...d.ASSIGNMENTS); }
+    if (typeof d.ASSIGNMENT_SEQ === "number") ASSIGNMENT_SEQ = d.ASSIGNMENT_SEQ;
+    if (Array.isArray(d.SUBMISSIONS)) { SUBMISSIONS.length = 0; SUBMISSIONS.push(...d.SUBMISSIONS); }
+    if (typeof d.SUBMISSION_SEQ === "number") SUBMISSION_SEQ = d.SUBMISSION_SEQ;
+    if (Array.isArray(d.WAITLIST)) { WAITLIST.length = 0; WAITLIST.push(...d.WAITLIST); }
+    if (typeof d.WAITLIST_SEQ === "number") WAITLIST_SEQ = d.WAITLIST_SEQ;
+    if (Array.isArray(d.POSTS)) { POSTS.length = 0; POSTS.push(...d.POSTS); }
+    if (typeof d.POST_SEQ === "number") POST_SEQ = d.POST_SEQ;
     if (Array.isArray(d.TEACHERS)) {
       // Reuse the TEACHER reference for the main teacher so /me and the admin
       // list never diverge; keep any admin-added teachers as-is.
@@ -668,14 +1029,46 @@ function loadData() {
 }
 
 const WEBINARS = [
-  { _id: "web-1", title: "A1 Level Kickoff Webinar", date: "2026-09-01", description: "Free intro session.", participants: [] },
-  { _id: "web-2", title: "Career Growth in Germany", date: "2026-09-15", description: "Positioning and CV mastery.", participants: [] },
+  {
+    _id: "web-1", title: "A1 Level Kickoff Webinar",
+    date: "2026-09-01", scheduledAt: "2026-09-01T17:00:00Z", endsAt: "2026-09-01T18:00:00Z",
+    description: "Free intro session for new A1 learners.",
+    language: "German", level: "A1", isPublic: true,
+    thumbnail: "https://placehold.co/400x225?text=A1+Kickoff",
+    meetingLink: "https://zoom.us/j/9001112223?pwd=exzellent", platform: "Zoom",
+    instructors: [{ name: "Lena Hoffmann" }],
+    // A generic logged-in student (mock-student-001) is pre-registered so the
+    // "My webinars" card and calendar have something to show out of the box.
+    registeredStudents: ["mock-student-001", "stu-1"],
+    participants: ["mock-student-001", "stu-1"],
+  },
+  {
+    _id: "web-2", title: "Career Growth in Germany",
+    date: "2026-09-15", scheduledAt: "2026-09-15T16:00:00Z", endsAt: "2026-09-15T17:00:00Z",
+    description: "Positioning, CV mastery and interview prep.",
+    language: "English", level: "B2", isPublic: true,
+    thumbnail: "https://placehold.co/400x225?text=Career+Growth",
+    meetingLink: "https://zoom.us/j/9004445556?pwd=exzellent", platform: "Zoom",
+    instructors: [{ name: "Lena Hoffmann" }],
+    registeredStudents: ["stu-3"],
+    participants: ["stu-3"],
+  },
 ];
+let WEBINAR_SEQ = 3;
 
 const CAREERS = [
-  { _id: "job-1", title: "Language Tutor (German)", location: "Remote", type: "Part-time", description: "Teach A1–B2 German online." },
-  { _id: "job-2", title: "Frontend Developer", location: "Cottbus / Remote", type: "Full-time", description: "React + Tailwind." },
+  { _id: "job-1", jobTitle: "Language Tutor (German)", department: "Teaching", location: "Remote", jobType: "Part-time", isActive: true, salary: "€18–28 / hr", description: "Teach A1–B2 German online.", keyResponsibilities: ["Run live lessons", "Give feedback"], requirements: ["C2 German", "Teaching experience"] },
+  { _id: "job-2", jobTitle: "Frontend Developer", department: "Engineering", location: "Cottbus / Remote", jobType: "Full-time", isActive: true, salary: "€48k–62k", description: "Build the Exzellent learning platform.", keyResponsibilities: ["Ship React features", "Own UI quality"], requirements: ["React + Tailwind", "3+ years"] },
 ];
+let CAREER_SEQ = 3;
+
+// Referral codes (admin-managed)
+const REFERRALS = [
+  { _id: "ref-1", code: "WELCOME10", description: "10% off first course", uses: 12, reward: "10% discount", active: true, createdAt: "2026-06-01T09:00:00Z" },
+];
+let REFERRAL_SEQ = 2;
+// Job applications + webinar registrations (per id)
+const JOB_APPLICANTS = {}; // jobId -> [{ name, email, appliedAt }]
 
 /* ------------------------------------------------------------------- router */
 
@@ -696,12 +1089,23 @@ const createCourseFrom = (body = {}) => {
     duration: body.duration || "",
     price: Number(body.price) || 0,
     instructor: TEACHER_ID,
-    thumbnail: body.thumbnail || "https://via.placeholder.com/400x300?text=New+Course",
+    thumbnail: body.thumbnail || "https://placehold.co/400x300?text=New+Course",
     tags: Array.isArray(body.tags) ? body.tags : [],
     isPublished: false,
     createdAt: new Date().toISOString(),
-    instructorDetails: [{ name: "Demo Teacher" }],
-    sections: [],
+    instructorDetails: INSTRUCTOR_DETAILS,
+    // Keep AI-generated structure: sections with their lectures.
+    sections: Array.isArray(body.sections)
+      ? body.sections.map((s, i) => ({
+          _id: genId("sec"),
+          title: (s && s.title) || `Section ${i + 1}`,
+          lectures: Array.isArray(s && s.lectures)
+            ? s.lectures.map((l, li) => ({ _id: genId("lec"), title: typeof l === "string" ? l : (l && l.title) || `Lecture ${li + 1}`, duration: 0 }))
+            : [],
+        }))
+      : [],
+    // Keep the AI study kit (flashcards / quiz / summary / key terms) on the course.
+    studyKit: body.studyKit && typeof body.studyKit === "object" ? body.studyKit : null,
   };
   COURSES.push(c);
   return c;
@@ -715,23 +1119,60 @@ const parseSignupToken = (t = "") => {
   if (p[0] !== "signup") return null;
   try { return { email: Buffer.from(p[1], "base64").toString("utf8"), role: p[2] }; } catch { return null; }
 };
+// Demo admin account (real login: admin@test.com / Admin123).
+const ADMIN_ACCOUNT = { _id: "admin-001", name: "Admin", firstName: "Admin", lastName: "", email: "admin@test.com", password: "Admin123", userType: "Admin", role: "Admin", isApproved: true, status: "active" };
 const findAccountByEmail = (email = "") => {
   const e = String(email).toLowerCase();
+  if (ADMIN_ACCOUNT.email.toLowerCase() === e) return ADMIN_ACCOUNT;
   return TEACHERS.find((t) => (t.email || "").toLowerCase() === e)
       || STUDENTS.find((s) => (s.email || "").toLowerCase() === e)
       || null;
 };
+// Strip the password before returning an account to the client.
+const pub = (o) => { if (!o || typeof o !== "object") return o; const { password, ...rest } = o; return rest; };
 const createStudentAccount = (email, body = {}) => {
   const name = body.name || email;
   const [firstName, ...rest] = String(name).split(" ");
+  // Attribute the sign-up to whoever's invite code was used (powers affiliate payouts).
+  const ref = findReferral(body.inviteCode || body.referralCode);
+  if (ref) ref.uses = (ref.uses || 0) + 1;
   const s = {
     _id: genId("stu"), name, firstName: firstName || name, lastName: rest.join(" "),
-    email, userType: "Student", role: "Student", paid: false, credits: 0,
+    email, password: body.password || "", userType: "Student", role: "Student", paid: false,
+    credits: SIGNUP_BONUS,                       // welcome credits for every new member
     country: body.country || "", phone: body.phone || "", gender: body.gender || "",
-    dateOfBirth: body.dateOfBirth || null, referral: body.referral || "-",
-    isApproved: false, status: "pending", emailVerified: true, createdAt: new Date().toISOString(),
+    dateOfBirth: body.dateOfBirth || null,
+    referral: (body.inviteCode || body.referralCode || body.referral || "-"),
+    invitedByCode: ref ? ref.code : (body.inviteCode || body.referralCode || null),
+    invitedBy: ref ? (ref.ownerId || null) : null,
+    // Active immediately so you can sign up and log in right away (demo).
+    isApproved: true, status: "active", emailVerified: true, createdAt: new Date().toISOString(),
   };
   STUDENTS.push(s);
+  return s;
+};
+// Turn an email into a readable name: "john.doe@x.com" -> "John Doe".
+const prettyNameFromEmail = (email = "") => {
+  const local = String(email).split("@")[0] || "Member";
+  const name = local.split(/[._\-+]+/).filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  return name || "Member";
+};
+// Fetch the STUDENTS record for an email, creating an active one on first login
+// so every demo student has their own persistent, editable identity.
+const ensureStudentByEmail = (email) => {
+  let s = STUDENTS.find((x) => (x.email || "").toLowerCase() === String(email).toLowerCase());
+  if (!s) {
+    const name = prettyNameFromEmail(email);
+    const [firstName, ...rest] = name.split(" ");
+    s = {
+      _id: genId("stu"), name, firstName: firstName || name, lastName: rest.join(" "),
+      email, userType: "Student", role: "Student", paid: false, credits: DEFAULT_CREDITS,
+      country: "", phone: "", gender: "", dateOfBirth: null, referral: "-",
+      isApproved: true, status: "active", emailVerified: true, createdAt: new Date().toISOString(),
+    };
+    STUDENTS.push(s);
+  }
   return s;
 };
 const createTeacherAccount = (email, body = {}) => {
@@ -758,22 +1199,33 @@ const createTeacherAccount = (email, body = {}) => {
 const routes = [
   // ---- auth
   ["POST", /^\/api\/users\/login$/, (body) => {
-    // A real signed-up account takes priority over the demo convenience login,
-    // and is gated on admin approval.
+    // Real email + password auth. The account must exist (seeded or signed up).
     const acct = findAccountByEmail(body.email);
-    if (acct) {
-      if (acct.isApproved === false) {
-        return { success: false, message: "Your account is pending admin approval. Please check back once an admin has reviewed it." };
-      }
-      const role = acct.userType || roleFromEmail(body.email);
-      return { success: true, accessToken: makeToken(role, acct._id), ...acct };
+    if (!acct) {
+      return { success: false, message: "No account found with that email. Please sign up first." };
+    }
+    if (acct.isApproved === false) {
+      return { success: false, message: "Your account is pending admin approval. Please check back once an admin has reviewed it." };
+    }
+    // Validate the password when the account has one (Google/OAuth accounts don't).
+    if (acct.password && String(body.password || "") !== acct.password) {
+      return { success: false, message: "Incorrect password. Please try again." };
+    }
+    const role = acct.userType || roleFromEmail(body.email);
+    return { success: true, accessToken: makeToken(role, acct._id), ...pub(acct) };
+  }],
+  // Google/OAuth: no password — fetch-or-create the account for that email.
+  ["POST", /^\/api\/users\/(google-auth|google-signup)$/, (body) => {
+    const existing = findAccountByEmail(body.email);
+    if (existing) {
+      const role = existing.userType || roleFromEmail(body.email);
+      return { success: true, accessToken: makeToken(role, existing._id), ...pub(existing) };
     }
     const role = roleFromEmail(body.email);
-    const u = userFor(role, body.email || undefined);
-    return { success: true, accessToken: makeToken(role, u._id), ...u };
-  }],
-  ["POST", /^\/api\/users\/(google-auth|google-signup)$/, (body) => {
-    const role = roleFromEmail(body.email);
+    if (role === "Student" && body.email) {
+      const s = ensureStudentByEmail(body.email);
+      return { success: true, accessToken: makeToken("Student", s._id), ...pub(s) };
+    }
     const u = userFor(role, body.email || undefined);
     return { success: true, accessToken: makeToken(role, u._id), ...u };
   }],
@@ -782,8 +1234,15 @@ const routes = [
   ["POST", /^\/api\/users\/pre-signup$/, (body) => {
     const email = (body && body.email) || "";
     if (findAccountByEmail(email)) return { success: false, message: "An account with this email already exists." };
+    // Invite-only gate: registration requires a valid invite/referral code.
+    // Visitors without one are pointed to the waitlist instead.
+    if (INVITE_ONLY && (body && body.userType) !== "Teacher") {
+      if (!findReferral(body && (body.inviteCode || body.referralCode))) {
+        return { success: false, needInvite: true, message: "Exzellent is invite-only. Enter a valid invite code, or request an invite." };
+      }
+    }
     const otp = genOtp();
-    PENDING_OTPS[email.toLowerCase()] = { otp, userType: (body && body.userType) || "Student" };
+    PENDING_OTPS[email.toLowerCase()] = { otp, userType: (body && body.userType) || "Student", inviteCode: (body && (body.inviteCode || body.referralCode)) || "" };
     console.log(`\n  ✉️   Signup code for ${email}:  ${otp}\n       (dev only — no real email is sent from the mock)\n`);
     return { success: true, message: "Verification code sent to your email.", devOtp: otp };
   }],
@@ -800,9 +1259,12 @@ const routes = [
     const parsed = parseSignupToken(token) || {};
     const email = parsed.email || (body && body.email);
     if (!email) return { success: false, message: "Missing or invalid verification token." };
-    const s = createStudentAccount(email, body || {});
+    const rec = PENDING_OTPS[email.toLowerCase()];
+    const payload = { ...(body || {}) };
+    if (!payload.inviteCode && rec && rec.inviteCode) payload.inviteCode = rec.inviteCode; // carry code from pre-signup
+    const s = createStudentAccount(email, payload);
     delete PENDING_OTPS[email.toLowerCase()];
-    return { success: true, message: "Account created — pending admin approval.", data: s };
+    return { success: true, message: "Account created — you can log in now.", data: pub(s) };
   }],
   ["POST", /^\/api\/users\/complete-teacher-signup$/, (body, _p, _r, token) => {
     const parsed = parseSignupToken(token) || {};
@@ -810,7 +1272,7 @@ const routes = [
     if (!email) return { success: false, message: "Missing or invalid verification token." };
     const t = createTeacherAccount(email, body || {});
     delete PENDING_OTPS[email.toLowerCase()];
-    return { success: true, message: "Teacher application submitted — pending admin approval.", data: t };
+    return { success: true, message: "Teacher application submitted — pending admin approval.", data: pub(t) };
   }],
   ["PUT", /^\/api\/users\/approve-student\/[^/]+$/, (_b, path) => {
     const id = path.split("/").pop();
@@ -834,15 +1296,29 @@ const routes = [
     success: true, accessToken: makeToken(role || "Student", "mock-refresh"),
   })],
   ["POST", /^\/api\/users\/logout$/, () => ({ success: true })],
-  ["GET", /^\/api\/users\/profile$/, (_b, _p, role) => ({
-    success: true, data: userFor(role || "Student"),
-  })],
-  ["GET", /^\/api\/users\/getprofile\/[^/]+$/, (_b, _p, role) => ({
-    success: true, data: userFor(role || "Student"),
-  })],
-  ["PUT", /^\/api\/users\/updateprofile\/[^/]+$/, (body, _p, role) => ({
-    success: true, data: { ...userFor(role || "Student"), ...body },
-  })],
+  ["GET", /^\/api\/users\/profile$/, (_b, _p, role, token) => {
+    if ((role || "Student") !== "Student") return { success: true, data: userFor(role || "Student") };
+    const id = userIdFromToken(token) || "mock-student-001";
+    return { success: true, data: studentProfile(id, role) };
+  }],
+  ["GET", /^\/api\/users\/getprofile\/[^/]+$/, (_b, path, role) => {
+    const id = path.split("?")[0].split("/").pop();
+    if ((role || "Student") !== "Student") { const u = userFor(role || "Student"); u._id = id; return { success: true, data: u }; }
+    return { success: true, data: studentProfile(id, role) };
+  }],
+  ["PUT", /^\/api\/users\/updateprofile\/[^/]+$/, (body, path, role) => {
+    const id = path.split("?")[0].split("/").pop();
+    // Prefer mutating the real STUDENTS record (persists + shows in admin list).
+    const s = studentById(id);
+    if (s) {
+      Object.assign(s, body || {});
+      if (body && (body.firstName || body.lastName) && !body.name) s.name = `${s.firstName || ""} ${s.lastName || ""}`.trim();
+      return { success: true, data: { ...s, credits: myCredits(id) } };
+    }
+    // Legacy synthetic demo student — keep saving edits to PROFILE_EDITS.
+    PROFILE_EDITS[id] = { ...(PROFILE_EDITS[id] || {}), ...(body || {}) };
+    return { success: true, data: studentProfile(id, role) };
+  }],
   ["GET", /^\/api\/users\/admin\/students$/, () => ({ success: true, data: adminStudents() })],
 
   // ---- admin teachers database (list / create / approve / edit / delete)
@@ -946,7 +1422,45 @@ const routes = [
     if (i >= 0) COURSES.splice(i, 1);
     return { success: true, message: "Course deleted" };
   }],
-  ["GET", /^\/api\/courses\/[^/]+$/, (_b, path) => findCourse(path) || COURSES[0]],
+  ["GET", /^\/api\/courses\/[^/]+$/, (_b, path) => {
+    const c = findCourse(path);
+    // Don't substitute a different real course for an unknown/deleted id —
+    // return a safe empty shell so the UI degrades instead of showing the wrong course.
+    return c || { _id: path.split("?")[0].split("/").pop(), title: "", sections: [], notFound: true };
+  }],
+
+  // ---- messaging (students ↔ teachers ↔ admin)
+  ["GET", /^\/api\/messages\/contacts(\?.*)?$/, (_b, path) => {
+    const u = new URL(path, "http://localhost");
+    return { success: true, data: messageContacts(u.searchParams.get("role"), u.searchParams.get("userId")) };
+  }],
+  ["PUT", /^\/api\/messages\/read(\?.*)?$/, (_b, path) => {
+    const u = new URL(path, "http://localhost");
+    const userId = u.searchParams.get("userId");
+    const withId = u.searchParams.get("with");
+    MESSAGES.forEach((m) => { if (m.toId === userId && m.fromId === withId) m.read = true; });
+    return { success: true };
+  }],
+  ["GET", /^\/api\/messages(\?.*)?$/, (_b, path) => {
+    const u = new URL(path, "http://localhost");
+    const userId = u.searchParams.get("userId");
+    const withId = u.searchParams.get("with");
+    let list = MESSAGES.filter((m) => m.fromId === userId || m.toId === userId);
+    if (withId) list = list.filter((m) => m.fromId === withId || m.toId === withId);
+    list = [...list].sort((a, b) => (a.date < b.date ? -1 : 1));
+    return { success: true, data: list };
+  }],
+  ["POST", /^\/api\/messages$/, (body) => {
+    const { fromId, fromName, fromRole, toId, toName, toRole, text } = body || {};
+    if (!fromId || !toId || !String(text || "").trim()) return { success: false, message: "Missing message details." };
+    const m = {
+      _id: `msg-${MESSAGE_SEQ++}`, fromId, fromName: fromName || "", fromRole: fromRole || "",
+      toId, toName: toName || "", toRole: toRole || "",
+      text: String(text).trim().slice(0, 2000), date: new Date().toISOString(), read: false,
+    };
+    MESSAGES.push(m);
+    return { success: true, data: m };
+  }],
 
   // ---- calendar / scheduling (Cal.com-style)
   ["GET", /^\/api\/calendar\/providers(\?.*)?$/, (_b, path) => {
@@ -968,29 +1482,41 @@ const routes = [
     const id = u.pathname.split("/").pop();
     return { success: true, data: computeSlots(id, u.searchParams.get("from"), u.searchParams.get("to")) };
   }],
+  // Create a LESSON. A teacher (or admin, on a teacher's behalf) places a lesson
+  // on any day + hour; free-form duration/title; optionally assign a student.
   ["POST", /^\/api\/calendar\/bookings$/, (body) => {
-    const providerId = (body && (body.providerId || body.teacherId)) || "";
-    const { date, start, studentId, studentName, topic } = body || {};
-    if (!providerId || !date || !start) return { success: false, message: "Missing booking details." };
-    const provider = providerById(providerId);
-    const av = AVAILABILITY[providerId];
-    const end = minToHhmm(hhmmToMin(start) + (av?.slotMinutes || 30));
-    const clash = BOOKINGS.find((b) => (b.providerId || b.teacherId) === providerId && b.date === date && b.start === start && b.status !== "cancelled");
-    if (clash) return { success: false, message: "That slot was just taken — please pick another." };
-    const name = provider?.name || body.providerName || body.teacherName || "Provider";
+    const teacherId = (body && (body.teacherId || body.providerId)) || "";
+    const { date, start } = body || {};
+    if (!teacherId || !date || !start) return { success: false, message: "Missing lesson details (teacher, date, time)." };
+    const title = (body && (body.title || body.topic)) || "Lesson";
+    let end = body && body.end;
+    if (!end) { const dur = Number(body && body.durationMin) || 60; end = minToHhmm(hhmmToMin(start) + dur); }
+    const provider = providerById(teacherId);
+    const name = provider?.name || body.teacherName || "Teacher";
     const bk = {
       _id: `bk-${BOOKING_SEQ++}`,
-      providerId, teacherId: providerId, // teacherId kept as an alias for existing filters
-      providerName: name, teacherName: name,
+      teacherId, providerId: teacherId,
+      teacherName: name, providerName: name,
       providerRole: provider?.role || "tutor",
       location: provider?.location || body.location || "Online",
       lab: provider?.lab || null,
-      studentId: studentId || "", studentName: studentName || "Student",
-      date, start, end, topic: topic || "Session",
-      status: "confirmed", createdAt: new Date().toISOString(),
+      studentId: body.studentId || "", studentName: body.studentName || "",
+      date, start, end, title, topic: title,
+      status: "confirmed", meetingUrl: zoomUrl(), createdAt: new Date().toISOString(),
     };
     BOOKINGS.push(bk);
     return { success: true, data: bk };
+  }],
+  // Edit a lesson (teacher edits own; admin edits any — enforced in the UI).
+  ["PUT", /^\/api\/calendar\/bookings\/[^/]+$/, (body, path) => {
+    const id = path.split("/").pop();
+    const b = BOOKINGS.find((x) => x._id === id);
+    if (!b) return { success: false, message: "Lesson not found." };
+    ["date", "start", "end", "title", "studentId", "studentName", "location"].forEach((k) => {
+      if (body && body[k] !== undefined) b[k] = body[k];
+    });
+    if (body && body.title !== undefined) b.topic = body.title;
+    return { success: true, data: b };
   }],
   ["GET", /^\/api\/calendar\/bookings(\?.*)?$/, (_b, path) => {
     const u = new URL(path, "http://localhost");
@@ -1004,26 +1530,500 @@ const routes = [
   }],
   ["DELETE", /^\/api\/calendar\/bookings\/[^/]+$/, (_b, path) => {
     const id = path.split("/").pop();
+    const i = BOOKINGS.findIndex((x) => x._id === id);
+    if (i >= 0) BOOKINGS.splice(i, 1);
+    return { success: true, message: "Lesson deleted" };
+  }],
+  // Attendance: a student joining the class marks themselves present (once).
+  ["POST", /^\/api\/calendar\/bookings\/[^/]+\/attend$/, (_b, path, role, token) => {
+    const id = path.split("?")[0].split("/")[4];
     const b = BOOKINGS.find((x) => x._id === id);
-    if (b) b.status = "cancelled";
-    return { success: true, message: "Booking cancelled" };
+    if (!b) return { success: false, message: "Class not found." };
+    const sid = userIdFromToken(token) || "mock-student-001";
+    b.attendance = b.attendance || [];
+    if (!b.attendance.some((a) => a.studentId === sid)) {
+      const s = studentById(sid);
+      b.attendance.push({ studentId: sid, name: (s && s.name) || "Student", joinedAt: new Date().toISOString() });
+    }
+    return { success: true, data: b };
+  }],
+  // Who attended a given class (teacher/admin view).
+  ["GET", /^\/api\/calendar\/bookings\/[^/]+\/attendance$/, (_b, path) => {
+    const id = path.split("?")[0].split("/")[4];
+    const b = BOOKINGS.find((x) => x._id === id);
+    return { success: true, data: (b && b.attendance) || [], title: (b && b.title) || "" };
+  }],
+  // A student's own attendance summary (classes attended vs. booked).
+  ["GET", /^\/api\/calendar\/my-attendance$/, (_b, _p, _r, token) => {
+    const sid = userIdFromToken(token) || "mock-student-001";
+    const mine = BOOKINGS.filter((b) => b.studentId === sid && b.status !== "cancelled");
+    const attended = mine.filter((b) => (b.attendance || []).some((a) => a.studentId === sid));
+    return { success: true, attendedCount: attended.length, bookedCount: mine.length,
+      classes: mine.map((b) => ({ _id: b._id, title: b.title, date: b.date, start: b.start, teacherName: b.teacherName || b.providerName, attended: (b.attendance || []).some((a) => a.studentId === sid) })) };
+  }],
+  // Single class/booking (for the in-site classroom page).
+  ["GET", /^\/api\/calendar\/bookings\/[^/]+$/, (_b, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const b = BOOKINGS.find((x) => x._id === id);
+    if (!b) return { success: false, message: "Class not found." };
+    return { success: true, data: b };
+  }],
+  // Zoom Meeting SDK signature — generated only when ZOOM_SDK_KEY/SECRET are set;
+  // otherwise the classroom page falls back to a "join in Zoom" panel.
+  ["POST", /^\/api\/zoom\/signature$/, (body) => {
+    const key = process.env.ZOOM_SDK_KEY, secret = process.env.ZOOM_SDK_SECRET;
+    if (!key || !secret) {
+      return { success: true, configured: false, message: "Zoom SDK not configured. Set ZOOM_SDK_KEY and ZOOM_SDK_SECRET in mock-backend/.env to enable in-site embedding." };
+    }
+    const mn = String((body && body.meetingNumber) || "");
+    const role = Number((body && body.role) || 0); // 0 = attendant, 1 = host
+    const iat = Math.floor(Date.now() / 1000) - 30;
+    const exp = iat + 60 * 60 * 2;
+    const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
+    const header = b64({ alg: "HS256", typ: "JWT" });
+    const payload = b64({ appKey: key, sdkKey: key, mn, role, iat, exp, tokenExp: exp });
+    const sig = crypto.createHmac("sha256", secret).update(`${header}.${payload}`).digest("base64url");
+    return { success: true, configured: true, sdkKey: key, signature: `${header}.${payload}.${sig}` };
+  }],
+  // A STUDENT books a 1-to-1 lesson with a teacher and spends credits for it.
+  ["POST", /^\/api\/calendar\/student-book$/, (body, _p, _r, token) => {
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    const { teacherId, date, start } = body || {};
+    if (!teacherId || !date || !start) return { success: false, message: "Pick a teacher, date and time." };
+    const have = myCredits(studentId);
+    if (have < LESSON_COST) return { success: false, message: `Not enough credits — a lesson costs ${LESSON_COST}, you have ${have}.` };
+    // Prevent double-booking the same teacher/time.
+    if (BOOKINGS.some((b) => b.status !== "cancelled" && (b.providerId || b.teacherId) === teacherId && b.date === date && b.start === start)) {
+      return { success: false, message: "That slot is already taken — pick another time." };
+    }
+    let end = body.end;
+    if (!end) { const dur = Number(body.durationMin) || 60; end = minToHhmm(hhmmToMin(start) + dur); }
+    const provider = providerById(teacherId);
+    const name = provider?.name || body.teacherName || "Teacher";
+    const student = studentById(studentId);
+    MY_CREDITS[studentId] = have - LESSON_COST;
+    const bk = {
+      _id: `bk-${BOOKING_SEQ++}`, teacherId, providerId: teacherId, teacherName: name, providerName: name,
+      providerRole: provider?.role || "tutor", location: provider?.location || "Online", lab: provider?.lab || null,
+      studentId, studentName: student?.name || body.studentName || "Student",
+      date, start, end, title: body.title || "1-to-1 lesson", topic: body.title || "1-to-1 lesson",
+      status: "confirmed", bookedByStudent: true, meetingUrl: zoomUrl(), createdAt: new Date().toISOString(),
+    };
+    BOOKINGS.push(bk);
+    return { success: true, data: bk, creditsRemaining: MY_CREDITS[studentId] };
   }],
 
-  // ---- enrollments
-  ["GET", /^\/api\/enrollments\/my$/, () => ({ success: true, enrollments: [] })],
+  // ---- enrollments (student side: real records + credit deduction)
+  ["POST", /^\/api\/enrollments\/[^/]+\/enroll$/, (_b, path, _r, token) => {
+    const courseId = path.split("?")[0].split("/")[3];
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    const course = COURSES.find((c) => c._id === courseId);
+    if (!course) return { success: false, message: "Course not found." };
+    const existing = MY_ENROLLMENTS.find((e) => e.studentId === studentId && e.courseId === courseId);
+    if (existing) return { success: false, message: "You are already enrolled in this course." };
+    const cost = creditCostFor(course.groupType);
+    const have = myCredits(studentId);
+    if (have < cost) return { success: false, message: `Not enough credits — you need ${cost} but have ${have}.` };
+    MY_CREDITS[studentId] = have - cost;
+    const enr = { _id: `myenr-${MYENR_SEQ++}`, studentId, courseId, progress: 0, completedPercentage: 0, completed: [], enrolledAt: new Date().toISOString() };
+    MY_ENROLLMENTS.push(enr);
+    return { success: true, enrollment: enr, creditsRemaining: MY_CREDITS[studentId] };
+  }],
+  // Mark a lecture complete / incomplete — persists real progress on the enrollment.
+  ["POST", /^\/api\/enrollments\/[^/]+\/complete-lecture$/, (body, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const e = MY_ENROLLMENTS.find((x) => x._id === id);
+    if (!e) return { success: false, message: "Enrollment not found." };
+    e.completed = e.completed || [];
+    const { sectionId, lectureId } = body || {};
+    if (lectureId && !e.completed.some((p) => p.lectureId === lectureId)) e.completed.push({ sectionId: sectionId || "", lectureId });
+    recalcEnrollment(e);
+    return enrollmentDetail(e);
+  }],
+  ["POST", /^\/api\/enrollments\/[^/]+\/uncomplete-lecture$/, (body, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const e = MY_ENROLLMENTS.find((x) => x._id === id);
+    if (!e) return { success: false, message: "Enrollment not found." };
+    const { lectureId } = body || {};
+    e.completed = (e.completed || []).filter((p) => p.lectureId !== lectureId);
+    recalcEnrollment(e);
+    return enrollmentDetail(e);
+  }],
+  // Record a study-kit quiz attempt; keep the best score on the enrollment.
+  ["POST", /^\/api\/enrollments\/[^/]+\/quiz$/, (body, path, _r, token) => {
+    const id = path.split("?")[0].split("/")[3];
+    const e = MY_ENROLLMENTS.find((x) => x._id === id);
+    if (!e) return { success: false, message: "Enrollment not found." };
+    const score = Number(body?.score) || 0;
+    const total = Number(body?.total) || 0;
+    const pct = total ? Math.round((score / total) * 100) : 0;
+    const prevBest = e.quiz?.bestPct || 0;
+    e.quiz = { bestScore: pct >= prevBest ? score : e.quiz.bestScore, total, bestPct: Math.max(prevBest, pct), attempts: (e.quiz?.attempts || 0) + 1, lastPct: pct, lastAt: new Date().toISOString() };
+    bumpStreak(userIdFromToken(token) || e.studentId);
+    return { success: true, quiz: e.quiz, passed: pct >= 70 };
+  }],
+  // Certificate data (only meaningful once the course is 100% complete).
+  ["GET", /^\/api\/enrollments\/[^/]+\/certificate$/, (_b, path, _r, token) => {
+    const id = path.split("?")[0].split("/")[3];
+    const e = MY_ENROLLMENTS.find((x) => x._id === id);
+    if (!e) return { success: false, message: "Enrollment not found." };
+    const c = COURSES.find((x) => x._id === e.courseId) || {};
+    const total = countLectures(c);
+    const done = (e.completed || []).length;
+    const eligible = total > 0 && done >= total;
+    const student = studentProfile(userIdFromToken(token) || e.studentId);
+    return {
+      success: true, eligible,
+      certificate: {
+        studentName: student?.name || "Student",
+        courseTitle: c.title || "Course", language: c.language || "", level: c.level || "",
+        instructor: (c.instructorDetails && c.instructorDetails[0]?.name) || "Exzellent",
+        issuedAt: eligible ? todayStr() : null,
+        quizBestPct: e.quiz?.bestPct ?? null,
+        id: `EXZ-${(e._id || "").toUpperCase()}`,
+      },
+    };
+  }],
+  ["GET", /^\/api\/enrollments\/my$/, (_b, _p, _r, token) => {
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    const enrollments = MY_ENROLLMENTS
+      .filter((e) => e.studentId === studentId)
+      .map((e) => {
+        const c = COURSES.find((x) => x._id === e.courseId) || {};
+        recalcEnrollment(e);
+        // Spread the course first, THEN _id — so the enrollment id (needed as
+        // enrollmentId for progress/complete-lecture) isn't overwritten by course._id.
+        return { courseId: e.courseId, course: c, ...c, _id: e._id, enrollmentId: e._id, completedPercentage: e.completedPercentage || 0, progress: e.progress || 0 };
+      });
+    return { success: true, enrollments };
+  }],
   ["GET", /^\/api\/enrollments\/course\/[^/]+\/leaderboard$/, (_b, path) => {
     const cid = path.split("/")[4];
+    // Rank enrolled students by their real course progress (falls back to a
+    // deterministic score so the board isn't empty for demo courses).
     const ids = new Set(ENROLLMENTS.filter((e) => e.courseId === cid).map((e) => e.student));
-    const leaderboard = STUDENTS.filter((s) => ids.has(s._id)).map((s, i) => ({ ...s, rank: i + 1, points: s.credits }));
+    const rows = STUDENTS.filter((s) => ids.has(s._id)).map((s) => {
+      const mine = MY_ENROLLMENTS.find((e) => e.studentId === s._id && e.courseId === cid);
+      const pct = mine ? (recalcEnrollment(mine), mine.completedPercentage) : Math.min(95, (s.credits || 0) % 100);
+      return { student: { _id: s._id, name: s.name }, name: s.name, completedPercentage: pct, points: pct };
+    });
+    rows.sort((a, b) => b.completedPercentage - a.completedPercentage);
+    const leaderboard = rows.map((r, i) => ({ ...r, rank: i + 1 }));
     return { success: true, leaderboard };
   }],
-  ["GET", /^\/api\/enrollments\/[^/]+$/, () => ({ success: true, data: {}, progress: 0 })],
+  ["GET", /^\/api\/enrollments\/[^/]+$/, (_b, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const e = MY_ENROLLMENTS.find((x) => x._id === id);
+    if (!e) return { success: true, completedPercentage: 0, completedLectures: 0, totalLectures: 0, course: {}, enrollment: { progress: [] } };
+    return enrollmentDetail(e);
+  }],
 
-  // ---- webinars / careers / referrals
-  ["GET", /^\/api\/webinars\/my-webinars$/, () => WEBINARS],
+  // ---- spaced-repetition review + streak (student study side)
+  ["GET", /^\/api\/review\/due(\?.*)?$/, (_b, path, _r, token) => {
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    const state = REVIEW[studentId] || {};
+    const t = todayStr();
+    const all = reviewCardsFor(studentId);
+    // A card is "due" if never reviewed, or its due date is today/past.
+    const due = all.filter((c) => { const st = state[c.cardId]; return !st || !st.due || st.due <= t; })
+      .map((c) => ({ ...c, ...(state[c.cardId] || {}) }));
+    const streak = STREAKS[studentId] || { count: 0, lastDay: "" };
+    return { success: true, data: due, total: all.length, dueCount: due.length, streak };
+  }],
+  ["POST", /^\/api\/review\/grade$/, (body, _p, _r, token) => {
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    const { cardId, grade } = body || {};
+    if (!cardId) return { success: false, message: "Missing card." };
+    REVIEW[studentId] = REVIEW[studentId] || {};
+    REVIEW[studentId][cardId] = scheduleCard(REVIEW[studentId][cardId], Number(grade));
+    const streak = bumpStreak(studentId);
+    return { success: true, card: REVIEW[studentId][cardId], streak };
+  }],
+  ["GET", /^\/api\/streak$/, (_b, _p, _r, token) => {
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    return { success: true, streak: STREAKS[studentId] || { count: 0, lastDay: "" } };
+  }],
+
+  // ---- assignments & feedback (teacher ⇄ student speaking practice loop)
+  ["POST", /^\/api\/assignments$/, (body, _p, _r, token) => {
+    const teacherId = userIdFromToken(token) || TEACHER_ID;
+    const a = {
+      _id: `asg-${ASSIGNMENT_SEQ++}`, teacherId,
+      teacherName: (providerById(teacherId)?.name) || TEACHER.name,
+      studentId: body?.studentId || "", courseId: body?.courseId || "",
+      title: body?.title || "Speaking practice", prompt: body?.prompt || "",
+      targetText: body?.targetText || "", createdAt: new Date().toISOString(),
+    };
+    ASSIGNMENTS.push(a);
+    return { success: true, data: a };
+  }],
+  ["GET", /^\/api\/assignments(\?.*)?$/, (_b, path) => {
+    const u = new URL(path, "http://localhost");
+    const studentId = u.searchParams.get("studentId");
+    const teacherId = u.searchParams.get("teacherId");
+    let list = ASSIGNMENTS.slice();
+    if (studentId) list = list.filter((a) => !a.studentId || a.studentId === studentId);
+    if (teacherId) list = list.filter((a) => a.teacherId === teacherId);
+    // Attach each assignment's submissions.
+    const data = list.map((a) => ({ ...a, submissions: SUBMISSIONS.filter((s) => s.assignmentId === a._id) }));
+    return { success: true, data };
+  }],
+  ["POST", /^\/api\/assignments\/[^/]+\/submit$/, (body, path, _r, token) => {
+    const assignmentId = path.split("?")[0].split("/")[3];
+    const a = ASSIGNMENTS.find((x) => x._id === assignmentId);
+    if (!a) return { success: false, message: "Assignment not found." };
+    const studentId = userIdFromToken(token) || body?.studentId || "mock-student-001";
+    const sub = {
+      _id: `sub-${SUBMISSION_SEQ++}`, assignmentId, studentId,
+      studentName: studentById(studentId)?.name || body?.studentName || "Student",
+      score: Number(body?.score) || 0, transcript: body?.transcript || "",
+      feedback: "", submittedAt: new Date().toISOString(),
+    };
+    SUBMISSIONS.push(sub);
+    bumpStreak(studentId);
+    return { success: true, data: sub };
+  }],
+  ["POST", /^\/api\/submissions\/[^/]+\/feedback$/, (body, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const s = SUBMISSIONS.find((x) => x._id === id);
+    if (!s) return { success: false, message: "Submission not found." };
+    s.feedback = String(body?.feedback || "").slice(0, 2000);
+    return { success: true, data: s };
+  }],
+
+  // ---- webinars (admin CRUD + student "my webinars")
+  // Each webinar is tagged with `registered` for the requesting student so the
+  // "Your registered webinars" section can filter on it.
+  ["GET", /^\/api\/webinars\/my-webinars$/, (_b, _p, _r, token) => {
+    const sid = userIdFromToken(token) || "mock-student-001";
+    return WEBINARS.map((w) => ({ ...w, registered: (w.registeredStudents || []).includes(sid) }));
+  }],
+  ["GET", /^\/api\/webinars\/[^/]+\/registrations$/, (_b, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const w = WEBINARS.find((x) => x._id === id);
+    const regs = (w?.registeredStudents || []).map((sid) => {
+      const s = STUDENTS.find((x) => x._id === sid);
+      return { _id: sid, name: s?.name || sid, email: s?.email || "", registeredAt: w?.createdAt || w?.scheduledAt || "" };
+    });
+    return { success: true, data: regs, webinarTitle: w?.title || "" };
+  }],
+  // Same list under /participants (some admin views call this path).
+  ["GET", /^\/api\/webinars\/[^/]+\/participants$/, (_b, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const w = WEBINARS.find((x) => x._id === id);
+    const regs = (w?.registeredStudents || []).map((sid) => {
+      const s = STUDENTS.find((x) => x._id === sid);
+      return { _id: sid, name: s?.name || sid, email: s?.email || "", registeredAt: w?.createdAt || w?.scheduledAt || "" };
+    });
+    return { success: true, data: regs, webinarTitle: w?.title || "" };
+  }],
+  // Is the current student registered for this webinar?
+  ["GET", /^\/api\/webinars\/[^/]+\/is-registered$/, (_b, path, _r, token) => {
+    const id = path.split("?")[0].split("/")[3];
+    const sid = userIdFromToken(token) || "mock-student-001";
+    const w = WEBINARS.find((x) => x._id === id);
+    return { success: true, isRegistered: !!w && (w.registeredStudents || []).includes(sid) };
+  }],
+  // Register the current student for a webinar.
+  ["POST", /^\/api\/webinars\/[^/]+\/register$/, (_b, path, _r, token) => {
+    const id = path.split("?")[0].split("/")[3];
+    const sid = userIdFromToken(token) || "mock-student-001";
+    const w = WEBINARS.find((x) => x._id === id);
+    if (!w) return { success: false, message: "Webinar not found." };
+    w.registeredStudents = w.registeredStudents || [];
+    w.participants = w.participants || [];
+    if (!w.registeredStudents.includes(sid)) { w.registeredStudents.push(sid); w.participants.push(sid); }
+    return { success: true, message: "You're registered — see you there!", data: { ...w, registered: true } };
+  }],
+  // Single webinar (detail page).
+  ["GET", /^\/api\/webinars\/[^/]+$/, (_b, path, _r, token) => {
+    const id = path.split("?")[0].split("/").pop();
+    const sid = userIdFromToken(token) || "mock-student-001";
+    const w = WEBINARS.find((x) => x._id === id);
+    if (!w) return { success: false, message: "Webinar not found." };
+    return { success: true, data: { ...w, registered: (w.registeredStudents || []).includes(sid) } };
+  }],
   ["GET", /^\/api\/webinars$/, () => WEBINARS],
+  ["POST", /^\/api\/webinars$/, (body) => {
+    const w = { _id: `web-${WEBINAR_SEQ++}`, registeredStudents: [], participants: [], instructors: [], isPublic: true, ...(body || {}) };
+    if (body && body.scheduledAt && !body.date) w.date = String(body.scheduledAt).slice(0, 10);
+    WEBINARS.push(w);
+    return { success: true, data: w };
+  }],
+  ["PUT", /^\/api\/webinars\/[^/]+$/, (body, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const w = WEBINARS.find((x) => x._id === id);
+    if (!w) return { success: false, message: "Webinar not found." };
+    Object.assign(w, body || {});
+    return { success: true, data: w };
+  }],
+  ["DELETE", /^\/api\/webinars\/[^/]+$/, (_b, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const i = WEBINARS.findIndex((x) => x._id === id);
+    if (i >= 0) WEBINARS.splice(i, 1);
+    return { success: true, message: "Webinar deleted" };
+  }],
+  ["POST", /^\/api\/webinars\/[^/]+\/send-invites$/, () => ({ success: true, message: "Invites sent (mock)." })],
+
+  // ---- careers / jobs (admin CRUD + applicants)
+  ["GET", /^\/api\/careers\/[^/]+\/applicants$/, (_b, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const job = CAREERS.find((x) => x._id === id);
+    return { success: true, data: JOB_APPLICANTS[id] || [], applicants: JOB_APPLICANTS[id] || [], jobTitle: job?.jobTitle || "" };
+  }],
+  ["GET", /^\/api\/careers\/[^/]+$/, (_b, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    return CAREERS.find((x) => x._id === id) || {};
+  }],
   ["GET", /^\/api\/careers$/, () => CAREERS],
-  ["GET", /^\/api\/referrals$/, () => ({ success: true, data: [] })],
+  ["POST", /^\/api\/careers$/, (body) => {
+    const j = { _id: `job-${CAREER_SEQ++}`, isActive: true, ...(body || {}) };
+    CAREERS.push(j);
+    return { success: true, data: j };
+  }],
+  ["PUT", /^\/api\/careers\/[^/]+$/, (body, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const j = CAREERS.find((x) => x._id === id);
+    if (!j) return { success: false, message: "Job not found." };
+    Object.assign(j, body || {});
+    return { success: true, data: j };
+  }],
+  ["DELETE", /^\/api\/careers\/[^/]+$/, (_b, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const i = CAREERS.findIndex((x) => x._id === id);
+    if (i >= 0) CAREERS.splice(i, 1);
+    return { success: true, message: "Job deleted" };
+  }],
+
+  // ---- referrals (admin CRUD)
+  ["GET", /^\/api\/referrals$/, () => ({ success: true, data: REFERRALS })],
+  ["POST", /^\/api\/referrals$/, (body) => {
+    const r = { _id: `ref-${REFERRAL_SEQ++}`, uses: 0, active: true, createdAt: new Date().toISOString(), ...(body || {}) };
+    REFERRALS.push(r);
+    return { success: true, data: r };
+  }],
+  ["PUT", /^\/api\/referrals\/[^/]+$/, (body, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const r = REFERRALS.find((x) => x._id === id);
+    if (!r) return { success: false, message: "Referral not found." };
+    Object.assign(r, body || {});
+    return { success: true, data: r };
+  }],
+  ["DELETE", /^\/api\/referrals\/[^/]+$/, (_b, path) => {
+    const id = path.split("?")[0].split("/").pop();
+    const i = REFERRALS.findIndex((x) => x._id === id);
+    if (i >= 0) REFERRALS.splice(i, 1);
+    return { success: true, message: "Referral deleted" };
+  }],
+
+  // ---- image uploads (mock: return a placeholder URL so file flows don't stall)
+  ["POST", /^\/api\/upload\/[^/]+$/, () => {
+    const url = "https://placehold.co/400x400?text=Uploaded";
+    return { success: true, url, imageUrl: url, secure_url: url, data: { url } };
+  }],
+  // ---- marketing email blast (mock)
+  ["POST", /^\/api\/emails\/marketing$/, () => ({ success: true, message: `Queued to ${STUDENTS.length} students (mock).` })],
+
+  // ---- subscription plans + credits
+  ["GET", /^\/api\/plans$/, () => ({ success: true, data: PLANS, signupBonus: SIGNUP_BONUS })],
+  // Confirm a subscription (after Stripe payment) → allocate the plan's credits.
+  ["POST", /^\/api\/subscribe$/, (body, _p, _r, token) => {
+    const studentId = userIdFromToken(token) || "mock-student-001";
+    const plan = planById(body && body.planId);
+    if (!plan) return { success: false, message: "Unknown plan." };
+    const s = studentById(studentId);
+    const have = myCredits(studentId);
+    MY_CREDITS[studentId] = have + plan.credits;
+    const wasPaid = s && s.paid;
+    if (s) { s.plan = plan.id; s.planName = plan.name; s.paid = true; s.credits = MY_CREDITS[studentId]; }
+    // Reward the inviter with credits the first time this member converts to paid.
+    if (s && !s.referralRewarded && !wasPaid) {
+      const inviterId = s.invitedBy || (findReferral(s.invitedByCode)?.ownerId);
+      if (inviterId && inviterId !== studentId) {
+        MY_CREDITS[inviterId] = myCredits(inviterId) + CREDITS_PER_REFERRAL;
+        const inv = studentById(inviterId);
+        if (inv) inv.credits = MY_CREDITS[inviterId];
+        s.referralRewarded = true;
+      }
+    }
+    return { success: true, plan: plan.id, creditsAdded: plan.credits, credits: MY_CREDITS[studentId] };
+  }],
+
+  // ---- invite / referral verification + waitlist (BestSecret-style gate)
+  ["POST", /^\/api\/referrals\/verify$/, (body) => {
+    const r = findReferral(body && body.code);
+    return r
+      ? { success: true, valid: true, referral: { code: r.code, reward: r.reward || "", ownerId: r.ownerId || null } }
+      : { success: true, valid: false, message: "That invite code isn't valid." };
+  }],
+  ["POST", /^\/api\/waitlist$/, (body) => {
+    const email = ((body && body.email) || "").trim();
+    if (!email) return { success: false, message: "Please enter your email." };
+    if (!WAITLIST.some((w) => w.email.toLowerCase() === email.toLowerCase()))
+      WAITLIST.push({ _id: `wl-${WAITLIST_SEQ++}`, email, name: (body && body.name) || "", note: (body && body.note) || "", createdAt: new Date().toISOString() });
+    return { success: true, message: "You're on the list — we'll email you an invite soon." };
+  }],
+  ["GET", /^\/api\/waitlist$/, () => ({ success: true, data: WAITLIST })],
+  // Admin turns a waitlist request into a real invite code.
+  ["POST", /^\/api\/waitlist\/[^/]+\/invite$/, (_b, path) => {
+    const id = path.split("?")[0].split("/")[3];
+    const w = WAITLIST.find((x) => x._id === id);
+    if (!w) return { success: false, message: "Waitlist entry not found." };
+    const code = "INV" + genOtp().slice(0, 5);
+    REFERRALS.push({ _id: `ref-${REFERRAL_SEQ++}`, code, description: `Invite for ${w.email}`, uses: 0, active: true, createdAt: new Date().toISOString() });
+    w.invited = true; w.inviteCode = code;
+    return { success: true, code, message: `Invite code ${code} created for ${w.email}.` };
+  }],
+
+  // ---- personal referral / affiliate stats (any logged-in member)
+  ["GET", /^\/api\/referrals\/mine$/, (_b, _p, role, token) => {
+    const id = userIdFromToken(token) || "mock-student-001";
+    const nm = userDisplay(role || "Student", id).name;
+    return { success: true, data: referralStats(id, nm) };
+  }],
+
+  // ---- community (Skool-style feed)
+  ["GET", /^\/api\/community\/spaces$/, () => ({ success: true, data: COMMUNITY_SPACES })],
+  ["GET", /^\/api\/community\/posts(\?.*)?$/, (_b, path) => {
+    const u = new URL(path, "http://localhost");
+    const space = u.searchParams.get("space");
+    let list = POSTS.slice();
+    if (space && space !== "All") list = list.filter((p) => p.space === space);
+    list = list.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    return { success: true, data: list };
+  }],
+  ["POST", /^\/api\/community\/posts$/, (body, _p, role, token) => {
+    const id = userIdFromToken(token) || "mock-student-001";
+    const who = userDisplay(role || "Student", id);
+    const text = String((body && body.text) || "").trim();
+    if (!text) return { success: false, message: "Write something first." };
+    const post = { _id: `post-${POST_SEQ++}`, authorId: id, authorName: who.name, authorRole: who.role,
+      space: (body && body.space) || "General", text: text.slice(0, 3000), likes: [], comments: [], createdAt: new Date().toISOString() };
+    POSTS.unshift(post);
+    return { success: true, data: post };
+  }],
+  ["POST", /^\/api\/community\/posts\/[^/]+\/like$/, (_b, path, _r, token) => {
+    const pid = path.split("?")[0].split("/")[4];
+    const id = userIdFromToken(token) || "mock-student-001";
+    const post = POSTS.find((p) => p._id === pid);
+    if (!post) return { success: false, message: "Post not found." };
+    post.likes = post.likes || [];
+    const i = post.likes.indexOf(id);
+    if (i >= 0) post.likes.splice(i, 1); else post.likes.push(id);
+    return { success: true, data: post };
+  }],
+  ["POST", /^\/api\/community\/posts\/[^/]+\/comment$/, (body, path, role, token) => {
+    const pid = path.split("?")[0].split("/")[4];
+    const id = userIdFromToken(token) || "mock-student-001";
+    const who = userDisplay(role || "Student", id);
+    const post = POSTS.find((p) => p._id === pid);
+    if (!post) return { success: false, message: "Post not found." };
+    const text = String((body && body.text) || "").trim();
+    if (!text) return { success: false, message: "Write a comment first." };
+    post.comments = post.comments || [];
+    post.comments.push({ _id: `cm-${POST_SEQ++}`, authorId: id, authorName: who.name, text: text.slice(0, 1000), createdAt: new Date().toISOString() });
+    return { success: true, data: post };
+  }],
 ];
 
 /* ------------------------------------------------------------------- server */
@@ -1159,6 +2159,22 @@ const server = http.createServer((req, res) => {
     let body = {};
     try { body = raw ? JSON.parse(raw) : {}; } catch { body = {}; }
 
+    // AI credit metering: a logged-in STUDENT spends credits per generative AI
+    // use; teachers/admins (and anonymous demo users) are not charged. Speech /
+    // transcribe are handled earlier (binary body) and stay free.
+    if (req.method === "POST" && path.startsWith("/api/ai/") && role === "Student") {
+      const sid = userIdFromToken(bearer) || "mock-student-001";
+      const cost = aiCostFor(path);
+      const have = myCredits(sid);
+      if (have < cost) {
+        return send(res, 402, { success: false, needCredits: true, cost, credits: have,
+          message: `Not enough credits — this AI tool costs ${cost} and you have ${have}. Upgrade your plan to keep going.` });
+      }
+      MY_CREDITS[sid] = have - cost;
+      const st = studentById(sid); if (st) st.credits = MY_CREDITS[sid];
+      saveData();
+    }
+
     if (req.method === "POST" && path === "/api/ai/chat") {
       const systemPrompt = "You are Exzi, the EXZELLENT AI companion. Help users with language learning, studying in Germany, career advice, and general questions. Be concise, friendly, and practical.";
 
@@ -1175,12 +2191,17 @@ const server = http.createServer((req, res) => {
         const userMessage = String(body.message || body.prompt || "").trim();
         convo = [{ role: "user", content: userMessage }];
       }
+      // qwen3.6 is a reasoning model — prefix "/no_think" on the latest user turn
+      // so the reply doesn't contain a <think> block.
+      for (let i = convo.length - 1; i >= 0; i--) {
+        if (convo[i].role === "user") { convo[i] = { role: "user", content: "/no_think\n" + convo[i].content }; break; }
+      }
 
       const payload = JSON.stringify({
-        // llama-3.1-70b-versatile was decommissioned by Groq; use its successor.
-        model: "llama-3.3-70b-versatile",
+        model: "qwen/qwen3.6-27b",
+        reasoning_effort: "none",
         messages: [{ role: "system", content: systemPrompt }, ...convo],
-        max_tokens: 512,
+        max_tokens: 700,
         temperature: 0.7
       });
 
@@ -1202,8 +2223,9 @@ const server = http.createServer((req, res) => {
         proxyRes.on("end", () => {
           try {
             const parsed = JSON.parse(data);
-            const reply = parsed.choices?.[0]?.message?.content;
+            let reply = parsed.choices?.[0]?.message?.content;
             if (reply) {
+              reply = reply.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
               send(res, 200, { success: true, reply });
             } else {
               // Groq returned no reply — surface the real reason instead of hiding it.
@@ -1285,12 +2307,38 @@ Return JSON: {"headline": string, "narrative": string (2-3 sentences), "strength
       return;
     }
 
+    // ---- AI Content Engine: source text (e.g. from a PDF) -> a full study kit
+    if (req.method === "POST" && path === "/api/ai/study-kit") {
+      const source = String(body.text || "").trim().slice(0, 12000); // cap for the model
+      if (source.length < 40) { send(res, 400, { success: false, message: "Not enough text to work with — try a text-based PDF or add a topic." }); return; }
+      const language = body.language || "English";
+      const level = body.level || "A2";
+      const system = "You are an expert course designer. Turn source material into a study kit. Reply with ONLY a JSON object, no prose.";
+      const user = `From the SOURCE below, build a ${language} study kit at CEFR level ${level}.
+Return JSON shaped exactly as (keep every string concise):
+{"title": string,
+ "description": string,
+ "sections": [{"title": string, "lectures": [3 short strings]}],   // exactly 3 sections
+ "flashcards": [{"front": string, "back": string}],                // 5 items
+ "quiz": [{"question": string, "options": [4 strings], "answer": integer 0-3, "explanation": string}],  // 4 items
+ "summary": string,                                                // 2-3 sentence summary
+ "key_terms": [string]}                                            // 6 key terms
+Base everything on the SOURCE. Write in ${language} at ${level}.
+SOURCE:
+"""${source}"""`;
+      groqChat({ system, user, json: true, maxTokens: 4096 }, (err, out) => {
+        if (err) { send(res, 502, { success: false, message: err.message }); return; }
+        send(res, 200, { success: true, ...out });
+      });
+      return;
+    }
+
     for (const [method, pattern, handler] of routes) {
       if (req.method === method && pattern.test(path)) {
         try {
           const out = handler(body, path, role, bearer);
           // Persist after anything that could have mutated the store.
-          if (req.method !== "GET" && /^\/api\/(courses|teachers|calendar|users\/(approve|complete|students|pre-signup|verify-email))/.test(path)) saveData();
+          if (req.method !== "GET" && /^\/api\/(courses|teachers|calendar|messages|enrollments|webinars|careers|referrals|review|assignments|submissions|subscribe|waitlist|community|users\/(login|google-|approve|complete|students|updateprofile|pre-signup|verify-email))/.test(path)) saveData();
           console.log(`  ${req.method} ${path}  ->  200`);
           return send(res, 200, out);
         } catch (err) {
@@ -1313,6 +2361,7 @@ const restored = loadData();
 let seeded = ensureEnrollmentDates();
 seeded = ensureProviderAvailability() || seeded;
 seeded = seedBookings() || seeded;
+seeded = seedMessages() || seeded;
 if (seeded) saveData();
 
 server.listen(PORT, () => {

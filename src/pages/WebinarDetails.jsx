@@ -9,9 +9,14 @@ const WebinarDetails = () => {
   const { id } = useParams();
 
   const [webinar, setWebinar] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const [showSyllabus, setShowSyllabus] = useState(false);
   const [isUserRegistered, setIsUserRegistered] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [registrationMessage, setRegistrationMessage] = useState("");
+
+  const FALLBACK_IMG =
+    "https://res.cloudinary.com/dsgxyezcm/image/upload/v1767878441/Anonymous_b5hlab.jpg";
 
   const isLoggedIn = () => document.cookie.includes("token=");
   const handleLoginRedirect = () => navigate("/login");
@@ -71,21 +76,29 @@ const WebinarDetails = () => {
   useEffect(() => {
     const fetchWebinar = async () => {
       try {
+        setLoadError(false);
         const res = await axios.get(`/api/webinars/${id}`);
-        setWebinar(res.data);
+        // API shape: { success, data: <webinar> }
+        const data = res.data?.data ?? res.data;
+        if (res.data?.success === false || !data) {
+          setLoadError(true);
+          return;
+        }
+        setWebinar(data);
 
         if (isLoggedIn()) {
           try {
             const statusRes = await axios.get(
               `/api/webinars/${id}/is-registered`,
             );
-            setIsUserRegistered(statusRes.data.isRegistered || false);
+            setIsUserRegistered(statusRes.data?.isRegistered || false);
           } catch (err) {
             console.error("Could not fetch registration status:", err);
           }
         }
       } catch (err) {
         console.error("Failed to load webinar:", err);
+        setLoadError(true);
       }
     };
     fetchWebinar();
@@ -108,12 +121,19 @@ const WebinarDetails = () => {
 
     setIsRegistering(true);
     try {
-      await axios.post(`/api/webinars/${webinar._id}/register`);
+      const res = await axios.post(`/api/webinars/${webinar._id}/register`);
+      // API shape: { success, message, data: <updated webinar> }
+      const updated = res.data?.data;
+      if (updated) setWebinar(updated);
       setIsUserRegistered(true);
+      setRegistrationMessage(
+        res.data?.message || "You're registered! You can now join the webinar.",
+      );
     } catch (err) {
       if (err?.response?.status === 400) {
         // Already registered — just update the UI
         setIsUserRegistered(true);
+        setRegistrationMessage("You're already registered for this webinar.");
       } else {
         console.error("Registration failed:", err);
         alert("Failed to register. Please try again.");
@@ -122,6 +142,14 @@ const WebinarDetails = () => {
       setIsRegistering(false);
     }
     // No auto-redirect — user clicks "Join Webinar →" themselves
+  };
+
+  const handleJoinWebinar = () => {
+    if (!webinar?.meetingLink) {
+      alert("The meeting link isn't available yet. Please check back later.");
+      return;
+    }
+    window.open(webinar.meetingLink, "_blank", "noopener,noreferrer");
   };
 
   const handleDownloadSyllabus = () => {
@@ -227,6 +255,28 @@ const WebinarDetails = () => {
     doc.save(fileName);
   };
 
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-bg bg-[linear-gradient(to_right,#6185b815_1px,transparent_1px),linear-gradient(to_bottom,#6185b815_1px,transparent_1px)] bg-[size:40px_40px] flex flex-col justify-center items-center text-center px-4">
+        <div className="bg-bg2 border border-border rounded-xl p-8 max-w-md flex flex-col items-center gap-4">
+          <div className="text-5xl">⚠️</div>
+          <h2 className="text-2xl font-bold text-primary">
+            Couldn't load this webinar
+          </h2>
+          <p className="text-text-secondary">
+            The webinar may have been removed or is temporarily unavailable.
+          </p>
+          <button
+            onClick={() => navigate("/webinars")}
+            className="mt-2 text-lg text-white bg-gradient-to-r from-blue-800 to-primary hover:opacity-80 px-6 py-3 rounded-xl transition-all duration-500 cursor-pointer"
+          >
+            ← Back to webinars
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!webinar) {
     return (
       <div className="min-h-screen bg-slate-50 bg-[linear-gradient(to_right,#6185b815_1px,transparent_1px),linear-gradient(to_bottom,#6185b815_1px,transparent_1px)] bg-[size:40px_40px]  flex flex-col justify-center items-center text-center text-3xl">
@@ -261,10 +311,11 @@ const WebinarDetails = () => {
           <div className="w-[280px] h-[280px] overflow-hidden rounded-xl aspect-square flex-shrink-0 ">
             <img
               className="w-full h-full object-cover"
-              src={
-                webinar.thumbnail ||
-                "https://res.cloudinary.com/dsgxyezcm/image/upload/v1767878441/Anonymous_b5hlab.jpg"
-              }
+              src={webinar.thumbnail || FALLBACK_IMG}
+              alt={webinar.title}
+              onError={(e) => {
+                if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG;
+              }}
             />
           </div>
 
@@ -297,7 +348,7 @@ const WebinarDetails = () => {
 
             <div className="flex md:flex-row flex-col justify-between items-center gap-4 mt-4">
               <p className="text-lg font-medium">
-                {webinar.registeredStudents?.length === 0
+                {(webinar.registeredStudents?.length ?? 0) === 0
                   ? "Be the first one to join!"
                   : webinar.registeredStudents.length === 1
                     ? "1 Student has joined the webinar!"
@@ -329,13 +380,7 @@ const WebinarDetails = () => {
                   </button>
                 ) : isUserRegistered ? (
                   <button
-                    onClick={() =>
-                      window.open(
-                        webinar.meetingLink,
-                        "_blank",
-                        "noopener,noreferrer",
-                      )
-                    }
+                    onClick={handleJoinWebinar}
                     className="text-lg text-white bg-gradient-to-r from-teal-600 to-secondary hover:opacity-80 px-6 py-3 rounded-xl transition-all duration-500 cursor-pointer flex-1 md:flex-none"
                   >
                     Join Webinar →
@@ -351,6 +396,13 @@ const WebinarDetails = () => {
                 )}
               </div>
             </div>
+
+            {registrationMessage && (
+              <div className="mt-2 flex items-center gap-2 rounded-xl border border-secondary/40 bg-secondary/10 px-4 py-3 text-secondary">
+                <span className="text-lg">✓</span>
+                <span className="text-sm font-medium">{registrationMessage}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -384,7 +436,7 @@ const WebinarDetails = () => {
                             <td className="w-1/4 py-4 font-medium">
                               {i === 0
                                 ? idx + 1
-                                : idx + webinar.syllabusLevel1.length + 1}
+                                : idx + (webinar.syllabusLevel1?.length ?? 0) + 1}
                             </td>
                             <td className="w-1/2 py-4 border-l border-slate-300">
                               {topic}

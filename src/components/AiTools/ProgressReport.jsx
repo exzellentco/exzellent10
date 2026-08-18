@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { generateProgressReport } from "../../APIs/aiTools";
+import AiErrorNotice from "./AiErrorNotice";
 
 // Student: an AI report on their own metrics (speech history + courses).
 // Teacher: pick a student → an AI report from that student's available data.
@@ -34,7 +35,7 @@ const ProgressReport = ({ role, context }) => {
         audience = "student";
       }
       setReport(await generateProgressReport({ name, metrics, audience }));
-    } catch (e) { setError(e.message); }
+    } catch (e) { setError(e); }
     finally { setLoading(false); }
   };
 
@@ -62,7 +63,7 @@ const ProgressReport = ({ role, context }) => {
       <button className="spl-rec" onClick={gen} disabled={loading || (isTeacher && !studentId)}>
         {loading ? <><span className="spl-spin" />Writing report…</> : "✦ Generate progress report"}
       </button>
-      {error && <p className="spl-err">{error}</p>}
+      <AiErrorNotice error={error} />
 
       {report && (
         <div style={{ marginTop: 18 }}>

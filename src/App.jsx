@@ -43,6 +43,15 @@ import ObjectDetection from './pages/ObjectDetection';
 import Contact from "./pages/Contact";
 import ComingSoon from "./pages/Errors/ComingSoon";
 import CookieBanner from "./components/CookieBanner";
+import Pricing from "./pages/Pricing";
+import Waitlist from "./pages/Waitlist";
+import Community from "./pages/Community";
+import BookClass from "./pages/BookClass";
+import Affiliates from "./pages/Affiliates";
+import Ambassadors from "./pages/Ambassadors";
+import PartnerDashboard from "./pages/PartnerDashboard";
+import WaitlistAdmin from "./pages/Admin/WaitlistAdmin";
+import ClassRoom from "./pages/ClassRoom";
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
@@ -134,11 +143,19 @@ const App = () => {
 
   return (
     <div className="app-container" ref={appContainerRef} style={{ overflowY: "auto", overflowX: "hidden" }}>
-      {!["/login", "/signup", "/forgot-password", "/teacher-dashboard", "/calendar"].includes(location.pathname) && <Navigation userRole={userRole} />}
+      {!["/login", "/signup", "/forgot-password", "/waitlist", "/teacher-dashboard", "/calendar"].includes(location.pathname) && <Navigation userRole={userRole} />}
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login checkAuth={checkAuth} />} />
         <Route path="/signup" element={<Signup checkAuth={checkAuth} />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/book" element={<BookClass />} />
+        <Route path="/class/:bookingId" element={<ClassRoom />} />
+        <Route path="/affiliates" element={<Affiliates />} />
+        <Route path="/ambassadors" element={<Ambassadors />} />
+        <Route path="/partner" element={<PartnerDashboard />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/success" element={<PaymentSuccess />} />
         <Route path="/cancel" element={<PaymentFailure />} />
@@ -181,6 +198,7 @@ const App = () => {
           <Route path="/get-student" element={<GetStudent />} />
           <Route path="/add-course" element={<AdminCourses />} />
           <Route path="/add-referral" element={<Referrals />} />
+          <Route path="/invite-requests" element={<WaitlistAdmin />} />
           <Route path="/add-teacher" element={<AddTeachers />} />
           <Route path="/teachers" element={<Teachers isTeachersPageLoading={isTeachersPageLoading} setTeachersPageLoading={setTeachersPageLoading} />} />
           <Route path="/teacher/:userId" element={<TeacherDetail />} />
@@ -193,8 +211,12 @@ const App = () => {
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
-      <CookieBanner />
-      <Footer />
+      {!["/login", "/signup", "/forgot-password", "/waitlist"].includes(location.pathname) && (
+        <>
+          <CookieBanner />
+          <Footer />
+        </>
+      )}
     </div>
   );
 };

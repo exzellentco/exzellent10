@@ -18,13 +18,16 @@ const WebinarParticipants = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch webinar title
+        // Fetch webinar title — API shape: { success, data: <webinar> }
         const webinarRes = await axios.get(`/api/webinars/${id}`);
-        setWebinarTitle(webinarRes.data?.title || "Webinar");
+        const webinarData = webinarRes.data?.data ?? webinarRes.data;
+        setWebinarTitle(webinarData?.title || "Webinar");
 
-        // Fetch participants
+        // Fetch participants — API shape: { success, data: [...], webinarTitle }
         const res = await axios.get(`/api/webinars/${id}/participants`);
-        setParticipants(res.data || []);
+        const rows = res.data?.data;
+        setParticipants(Array.isArray(rows) ? rows : []);
+        if (res.data?.webinarTitle) setWebinarTitle(res.data.webinarTitle);
       } catch (err) {
         const errorMsg = err.response?.data?.message || "Failed to load participants";
         setError(errorMsg);
@@ -64,9 +67,9 @@ const WebinarParticipants = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-bg">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-text-secondary">Loading participants...</p>
         </div>
       </div>
@@ -75,14 +78,14 @@ const WebinarParticipants = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-bg px-4">
         <div className="text-center max-w-md">
           <div className="text-red-600 text-6xl mb-4">!</div>
           <h2 className="text-xl font-bold text-text-secondary mb-2">Something went wrong</h2>
           <p className="text-text-secondary mb-6">{error}</p>
           <button
             onClick={() => navigate(-1)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/80 transition"
           >
             Go Back
           </button>
@@ -92,13 +95,13 @@ const WebinarParticipants = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-bg py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-text-secondary truncate">
             Participants for:{" "}
-            <span className="text-blue-600">{webinarTitle || "Loading..."}</span>
+            <span className="text-primary">{webinarTitle || "Loading..."}</span>
           </h1>
           <button
             onClick={() => navigate(-1)}
@@ -110,7 +113,7 @@ const WebinarParticipants = () => {
 
         {/* No participants */}
         {participants.length === 0 ? (
-          <div className="bg-white rounded-xl  p-8 text-center">
+          <div className="bg-bg2 border border-border rounded-xl  p-8 text-center">
             <div className="text-text-secondary text-lg mb-2">
               No students have registered for this webinar yet.
             </div>
@@ -120,10 +123,10 @@ const WebinarParticipants = () => {
           </div>
         ) : (
           /* Participants Table */
-          <div className="bg-white rounded-xl  overflow-hidden border border-gray-200">
+          <div className="bg-bg2 rounded-xl  overflow-hidden border border-border">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-bg">
                   <tr>
                     <th
                       scope="col"
@@ -145,9 +148,9 @@ const WebinarParticipants = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-100">
+                <tbody className="bg-bg2 divide-y divide-border">
                   {participants.map((student) => (
-                    <tr key={student._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={student._id} className="hover:bg-bg transition-colors">
                       <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-text-secondary">
                         {student.name || "Unnamed"}
                       </td>

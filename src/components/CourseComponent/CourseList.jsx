@@ -25,7 +25,9 @@ const CourseList = ({
   comingSoonPageSize,
   onComingSoonPageChange,
   isPaid,
+  studentCredits,
   enrolledCourseIds = [],
+  enrollmentMap = {},
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const scrollRefs = useRef({});
@@ -168,7 +170,9 @@ const CourseList = ({
                         scrollRight={scrollRight}
                         onSelect={onSelect}
                         isPaid={isPaid}
+                        studentCredits={studentCredits}
                         enrolledCourseIds={enrolledCourseIds}
+                        enrollmentMap={enrollmentMap}
                       />
                     ))}
 
@@ -183,7 +187,9 @@ const CourseList = ({
                         scrollRight={scrollRight}
                         onSelect={onSelect}
                         isPaid={isPaid}
+                        studentCredits={studentCredits}
                         enrolledCourseIds={enrolledCourseIds}
+                        enrollmentMap={enrollmentMap}
                       />
                     ))}
 
@@ -210,7 +216,9 @@ const CourseList = ({
                               scrollRight={scrollRight}
                               onSelect={onSelect}
                               isPaid={isPaid}
+                              studentCredits={studentCredits}
                               enrolledCourseIds={enrolledCourseIds}
+                              enrollmentMap={enrollmentMap}
                             />
                           ))}
 
@@ -254,7 +262,9 @@ const CourseGroup = ({
   scrollRight,
   onSelect,
   isPaid,
+  studentCredits,
   enrolledCourseIds = [],
+  enrollmentMap = {},
 }) => {
   if (!courses || courses.length === 0) return null;
 
@@ -288,11 +298,23 @@ const CourseGroup = ({
       </div>
 
       <div ref={(el) => (scrollRefs.current[language] = el)} className="flex gap-8 m-8 pb-4 ">
-        {courses.map((course) => (
-          <div key={course._id} className="flex-none">
-            <CourseCard course={course} onSelect={onSelect} isPaid={isPaid} isEnrolled={enrolledCourseIds.some((id) => id?.toString() === course._id?.toString(),)} />
-          </div>
-        ))}
+        {courses.map((course) => {
+          const isEnrolled = enrolledCourseIds.some(
+            (id) => id?.toString() === course._id?.toString(),
+          );
+          return (
+            <div key={course._id} className="flex-none">
+              <CourseCard
+                course={course}
+                onSelect={onSelect}
+                isPaid={isPaid}
+                studentCredits={studentCredits}
+                isEnrolled={isEnrolled}
+                enrollmentId={enrollmentMap[course._id?.toString()]}
+              />
+            </div>
+          );
+        })}
       </div>
     </>
   );

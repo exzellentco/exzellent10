@@ -5,8 +5,9 @@ import { analyzeSpeech } from "../../APIs/speechAnalyzer";
 import { PRACTICE_SETS, langCode } from "../../data/practiceSentences";
 
 // Student speech lab — warm, low-pressure practice. Tabs: Practise + My progress.
-const StudentSpeechLab = ({ onClose, student }) => {
+const StudentSpeechLab = ({ onClose, student, assignment, onSubmitScore }) => {
   const [tab, setTab] = useState("practise");
+  const [submitting, setSubmitting] = useState(false);
 
   // teacher-set assignments (saved by the teacher popup) appear alongside the built-ins
   const assignments = useMemo(() => {
@@ -21,7 +22,8 @@ const StudentSpeechLab = ({ onClose, student }) => {
 
   const [setId, setSetId] = useState(sets[0].id);
   const currentSet = sets.find((s) => s.id === setId) || sets[0];
-  const [sentence, setSentence] = useState(currentSet.sentences[0]);
+  // When an assignment is provided, compare against its target text by default.
+  const [sentence, setSentence] = useState(assignment?.targetText || currentSet.sentences[0]);
 
   const { recording, seconds, error: recError, start, stop } = useRecorder();
   const [phase, setPhase] = useState("idle"); // idle | analyzing | done
@@ -125,6 +127,25 @@ const StudentSpeechLab = ({ onClose, student }) => {
                 {phase === "done" && result && (
                   <div style={{ marginTop: 20 }}>
                     <ScoreResult result={result} />
+                    {assignment && onSubmitScore && (
+                      <button
+                        className="spl-btn primary"
+                        style={{ width: "100%", marginTop: 16 }}
+                        disabled={submitting}
+                        onClick={async () => {
+                          if (submitting) return;
+                          setSubmitting(true);
+                          try {
+                            await onSubmitScore(result.pronunciation_score, result.transcript);
+                          } catch (e) {
+                            setErr(e.message || "Couldn't submit. Please try again.");
+                            setSubmitting(false);
+                          }
+                        }}
+                      >
+                        {submitting ? "Submitting…" : "Submit to teacher"}
+                      </button>
+                    )}
                     <button className="spl-btn primary" style={{ width: "100%", marginTop: 16 }} onClick={() => { setResult(null); setPhase("idle"); }}>
                       Try again
                     </button>

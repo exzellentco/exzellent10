@@ -245,6 +245,19 @@
 .cal-avail-foot .spl-select { max-width: 140px; }
 .cal-avail-foot .spl-btn { margin-left: auto; white-space: nowrap; }
 
+/* add / edit lesson form */
+.cal-form { display: grid; gap: 10px; }
+.cal-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.cal-form .spl-input,
+.cal-form input[type="time"] { color-scheme: dark; }
+.cal-form input[type="time"] { flex: 1 1 120px; min-width: 110px; }
+.cal-edit-row {
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 12px;
+  background: rgba(124, 58, 237, 0.08);
+  padding: 12px;
+}
+
 /* small helpers */
 .cal-row-actions { margin-left: auto; }
 .cal-status-tag {

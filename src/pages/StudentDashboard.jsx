@@ -25,6 +25,12 @@ import DashboardShell from "../components/DashboardShell";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
 import StudentTools from "../components/Tools/StudentTools";
+import MessagesPanel from "../components/Messages/MessagesPanel";
+import ReviewPanel from "../components/Review/ReviewPanel";
+import StudentAssignments from "../components/Assignments/StudentAssignments";
+import BookLessonModal from "../components/Calendar/BookLessonModal";
+import ReferralPanel from "../components/Referral/ReferralPanel";
+import { getMyAttendance } from "../APIs/learning";
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);
@@ -34,6 +40,10 @@ const StudentDashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showSpeech, setShowSpeech] = useState(false);
   const [showAiTools, setShowAiTools] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+  const [showAssignments, setShowAssignments] = useState(false);
+  const [showBooking, setShowBooking] = useState(false);
   const [aiToolsInit, setAiToolsInit] = useState(null);
   const [formData, setFormData] = useState({ name: "", phone: "" });
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -45,6 +55,7 @@ const StudentDashboard = () => {
   const [progressData, setProgressData] = useState(null);
   const [progressLoading, setProgressLoading] = useState(false);
   const [registeredWebinars, setRegisteredWebinars] = useState([]);
+  const [attendance, setAttendance] = useState({ attendedCount: 0, bookedCount: 0 });
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -117,13 +128,15 @@ const StudentDashboard = () => {
         console.log("studentId:", studentId, "authUserId:", authUserId);
 
         const enrolled = webinars.filter((w) => {
-          const isEnrolled = w.registeredStudents?.some(
-            (r) =>
-              r.student === studentId ||
-              r.userId === authUserId ||
-              r.student === authUserId,
-          );
-          const isUpcoming = new Date(w.scheduledAt) > new Date(); // checks if the webinar's date is still in the future in order to return or remove it from the dashboard
+          const ids = w.registeredStudents || [];
+          // registeredStudents are plain string ids; also honor the `registered`
+          // flag the API adds for the current student (and tolerate object shapes).
+          const isEnrolled =
+            w.registered ||
+            ids.some((r) =>
+              r === studentId || r === authUserId || r?.student === studentId || r?.userId === authUserId,
+            );
+          const isUpcoming = new Date(w.scheduledAt) > new Date(); // only show future webinars
           return isEnrolled && isUpcoming;
         });
 
@@ -281,6 +294,22 @@ const StudentDashboard = () => {
     }
   }, [searchParams, navigate, fetchData]);
 
+  // Live-class attendance stat (attended / booked)
+  useEffect(() => {
+    let alive = true;
+    getMyAttendance()
+      .then((res) => {
+        if (alive && res) {
+          setAttendance({
+            attendedCount: res.attendedCount || 0,
+            bookedCount: res.bookedCount || 0,
+          });
+        }
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setUpdateSuccess(false);
@@ -423,6 +452,13 @@ const StudentDashboard = () => {
           time: w.scheduledAt ? new Date(w.scheduledAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
         })).filter((e) => e.date)}
       />
+      {/* Learning quick actions */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        <button className="ex-btn ex-btn-primary" onClick={() => setShowReview(true)}>🔁 Daily review</button>
+        <button className="ex-btn ex-btn-ghost" onClick={() => setShowAssignments(true)}>🎤 My assignments</button>
+        <button className="ex-btn ex-btn-ghost" onClick={() => navigate("/book")}>📅 Book a class</button>
+        <button className="ex-btn ex-btn-ghost" onClick={() => navigate("/community")}>💬 Community</button>
+      </div>
       <div className="grid lg:grid-cols-[minmax(0,360px)_1fr] gap-6 items-start">
         {/* Left column: profile, stats, webinars */}
         <div className="grid gap-6">
@@ -467,9 +503,23 @@ const StudentDashboard = () => {
                   <span>Average progress</span>
                   <span style={{ fontWeight: 700, color: "var(--pL)" }}>{avgProgress}%</span>
                 </div>
+                <div className="flex items-center justify-between" style={{ border: "1px solid var(--ex-line)", borderRadius: 12, padding: "12px 14px" }}>
+                  <span>Credits balance</span>
+                  <span className="flex items-center gap-2">
+                    <span style={{ fontWeight: 700, color: "var(--pL)" }}>{(studentData?.credits ?? 0).toLocaleString()}</span>
+                    <button className="ex-btn ex-btn-ghost" style={{ padding: "4px 10px", fontSize: ".75rem" }} onClick={() => navigate("/offer")}>Top up</button>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between" style={{ border: "1px solid var(--ex-line)", borderRadius: 12, padding: "12px 14px" }}>
+                  <span>Classes attended</span>
+                  <span style={{ fontWeight: 700, color: "var(--pL)" }}>{attendance.attendedCount} / {attendance.bookedCount}</span>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Referral / invite friends */}
+          <ReferralPanel />
 
           {/* Webinars */}
           {registeredWebinars.length > 0 && (
@@ -554,9 +604,19 @@ const StudentDashboard = () => {
         loading={progressLoading}
       />
 
+      <button className="spl-fab" style={{ bottom: 134 }} onClick={() => setShowMessages(true)}>💬 Messages</button>
       <button className="spl-fab" style={{ bottom: 78 }} onClick={() => setShowAiTools(true)}>✦ AI Tools</button>
       <button className="spl-fab" onClick={() => setShowSpeech(true)}>🎤 Speaking practice</button>
+      {showMessages && <MessagesPanel onClose={() => setShowMessages(false)} />}
       {showSpeech && <StudentSpeechLab onClose={() => setShowSpeech(false)} student={studentData} />}
+      {showReview && <ReviewPanel onClose={() => setShowReview(false)} />}
+      {showAssignments && <StudentAssignments onClose={() => setShowAssignments(false)} me={{ _id: studentData?._id, name: studentData?.name }} />}
+      {showBooking && (
+        <BookLessonModal
+          onClose={() => setShowBooking(false)}
+          onBooked={(creditsRemaining) => { if (creditsRemaining != null) setStudentData((p) => ({ ...p, credits: creditsRemaining })); }}
+        />
+      )}
       {showAiTools && (
         <AiToolsHub
           role="student"

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { buildCourse } from "../../APIs/aiTools";
+import AiErrorNotice from "./AiErrorNotice";
 
 const LANGS = ["English", "German", "Spanish", "French"];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
@@ -21,7 +22,7 @@ const CourseBuilder = ({ role, context }) => {
     if (!description.trim()) { setError(isTeacher ? "Describe the course to build." : "Describe your goal."); return; }
     setLoading(true); setError(""); setOut(null); setCreated(false);
     try { setOut(await buildCourse({ description, language, level, audience: isTeacher ? "teacher" : "student" })); }
-    catch (e) { setError(e.message); }
+    catch (e) { setError(e); }
     finally { setLoading(false); }
   };
 
@@ -29,7 +30,7 @@ const CourseBuilder = ({ role, context }) => {
     if (!context?.onCreateCourse || !out) return;
     setCreating(true); setError("");
     try {
-      await context.onCreateCourse({ title: out.title, description: out.description || "", language, level, tags: [] });
+      await context.onCreateCourse({ title: out.title, description: out.description || "", language, level, tags: [], sections: out.sections || [] });
       setCreated(true);
     } catch (e) { setError(e.message); }
     finally { setCreating(false); }
@@ -51,7 +52,7 @@ const CourseBuilder = ({ role, context }) => {
       <button className="spl-rec" onClick={gen} disabled={loading}>
         {loading ? <><span className="spl-spin" />Generating…</> : isTeacher ? "✦ Build course outline" : "✦ Build my study plan"}
       </button>
-      {error && <p className="spl-err">{error}</p>}
+      <AiErrorNotice error={error} />
 
       {out && isTeacher && (
         <div style={{ marginTop: 18 }}>

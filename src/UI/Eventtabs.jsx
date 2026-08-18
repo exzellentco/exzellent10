@@ -103,6 +103,9 @@ export function WebinarCard({ webinar, past, onNavigate }) {
               src={webinar.thumbnail || webinar.img || FALLBACK_IMG}
               alt={webinar.title || "Webinar"}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG;
+              }}
             />
           </div>
 

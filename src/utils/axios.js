@@ -1,6 +1,11 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+// In dev, use a RELATIVE baseURL ("") so every /api call goes through the Vite
+// dev proxy (vite.config.js → mock backend on :5000). This removes the reliance
+// on a local .env.local and, critically, prevents a missing/incorrect env var
+// from silently pointing admin writes (delete student/course, etc.) at the real
+// production backend. In a production build we use the configured backend URL.
+const BASE_URL = import.meta.env.DEV ? "" : (import.meta.env.VITE_BACKEND_BASE_URL || "");
 
 // Create axios instance
 const instance = axios.create({

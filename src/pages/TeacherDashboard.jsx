@@ -14,6 +14,9 @@ import {
   updateSection,
   deleteSection,
   updateCourse,
+  publishCourse,
+  unpublishCourse,
+  deleteCourse,
 } from "../APIs/AdminCourses";
 import axios from "../utils/axios";
 import TeacherCourseForm from "../components/CourseComponent/TeacherCourseForm";
@@ -21,7 +24,11 @@ import SectionForm from "../components/CourseComponent/SectionForm";
 import SectionList from "../components/CourseComponent/SectionList";
 import TeacherSpeechLab from "../components/SpeechAnalyzer/TeacherSpeechLab";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
+import AiContentEngine from "../components/AiTools/AiContentEngine";
+import StudyKitView from "../components/AiTools/StudyKitView";
+import TeacherAssignments from "../components/Assignments/TeacherAssignments";
 import CalendarPopup from "../components/Tools/CalendarPopup";
+import MessagesPanel from "../components/Messages/MessagesPanel";
 
 const FORMATS = [
   { icon: "🃏", label: "Flashcards", c: "124,58,237" },
@@ -64,7 +71,13 @@ const TeacherDashboard = () => {
   const [stats, setStats] = useState(null);
   const [showSpeech, setShowSpeech] = useState(false);
   const [showAiTools, setShowAiTools] = useState(false);
+  const [aiToolsTab, setAiToolsTab] = useState("exam");
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [messageWith, setMessageWith] = useState(null); // student id to open a thread with
+  const [showEngine, setShowEngine] = useState(false);
+  const [showAssignments, setShowAssignments] = useState(false);
+  const [busyCourse, setBusyCourse] = useState(null); // course id being published/deleted
 
   const [view, setView] = useState("dashboard");
   const [query, setQuery] = useState("");
@@ -147,6 +160,34 @@ const TeacherDashboard = () => {
   const handleUpdateCourse = async (courseData) => {
     try { await updateCourse(editCourse._id, courseData); setEditCourse(null); await reloadCourses(); }
     catch (err) { alert("Failed to update course: " + err.message); }
+  };
+
+  // AI-generated course: the whole kit (sections + lectures + flashcards/quiz/
+  // summary) is stored on the course in one call, so it stays with the course.
+  const createCourseFromAI = async (d) => {
+    await createCourseByTeacher(d);
+    await reloadCourses();
+  };
+
+  const openAiTools = (tab) => { setAiToolsTab(tab || "exam"); setShowAiTools(true); };
+  const openEditCourse = (course) => setEditCourse(course);
+
+  const handleTogglePublish = async (course) => {
+    setBusyCourse(course._id);
+    try {
+      if (course.isPublished) await unpublishCourse(course._id);
+      else await publishCourse(course._id);
+      await reloadCourses();
+    } catch (err) { alert("Couldn't change publish state: " + err.message); }
+    finally { setBusyCourse(null); }
+  };
+
+  const handleDeleteCourse = async (course) => {
+    if (!window.confirm(`Delete “${course.title}”? This can't be undone.`)) return;
+    setBusyCourse(course._id);
+    try { await deleteCourse(course._id); await reloadCourses(); }
+    catch (err) { alert("Couldn't delete course: " + err.message); }
+    finally { setBusyCourse(null); }
   };
 
   const saveProfile = async () => {
@@ -264,6 +305,16 @@ const TeacherDashboard = () => {
             try { await deleteSection(selectedCourse._id, section._id); await refreshSelectedCourse(selectedCourse._id); }
             catch (err) { alert("Failed to delete section: " + err.message); }
           }} />
+
+          {selectedCourse.studyKit && (
+            <div style={{ marginTop: 22 }}>
+              <h3 style={{ fontFamily: "var(--display)", fontSize: 16, marginBottom: 10 }}>✦ AI study kit</h3>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginBottom: 10 }}>
+                Generated from your PDF and saved with the course — your students study these.
+              </p>
+              <StudyKitView kit={selectedCourse.studyKit} />
+            </div>
+          )}
         </div>
       </Frame>
     );
@@ -303,7 +354,10 @@ const TeacherDashboard = () => {
             {navItem("students", "👥 Students", activeStudents != null && <span className="badge">{activeStudents}</span>)}
             {navItem("lessons", "📚 Lessons", lessonCount ? <span className="badge">{lessonCount}</span> : null)}
             <a onClick={() => setShowCalendar(true)}>📅 Calendar</a>
+            <a onClick={() => { setMessageWith(null); setShowMessages(true); }}>💬 Messages</a>
+            <a onClick={() => setShowAssignments(true)}>🎤 Assignments</a>
             <a onClick={goAiEngine}>✦ AI Engine</a>
+            <a onClick={() => openAiTools("exam")}>🧰 AI Tools</a>
             <a onClick={() => setShowSpeech(true)}>🎙️ Speech Analyzer</a>
             {navItem("earnings", "💶 Earnings")}
             {navItem("settings", "⚙️ Settings")}
@@ -330,7 +384,7 @@ const TeacherDashboard = () => {
                   placeholder={view === "students" ? "🔍 Search students…" : "🔍 Search courses, lessons…"}
                 />
               )}
-              {showUpload && <button className="btn" onClick={() => setShowCourseForm(true)}>⬆ Upload</button>}
+              {showUpload && <button className="btn" onClick={() => setShowEngine(true)}>⬆ Upload PDF</button>}
             </div>
           </div>
 
@@ -338,7 +392,7 @@ const TeacherDashboard = () => {
           {view === "dashboard" && (
             <>
               <div className="dstats">
-                <div className="dstat">
+                <div className="dstat" style={{ cursor: "pointer" }} onClick={() => setView("earnings")} title="View earnings">
                   <span>Earnings · this month</span>
                   <b>{earnMonth != null ? euroFull(earnMonth) : "—"}</b>
                   {earnMonth != null && earnDelta !== 0 && (
@@ -348,28 +402,30 @@ const TeacherDashboard = () => {
                   )}
                 </div>
                 <div className="dstat"><span>Published courses</span><b>{publishedCount} <small>/{totalCourses}</small></b></div>
-                <div className="dstat">
+                <div className="dstat" style={{ cursor: "pointer" }} onClick={() => setView("students")} title="View students">
                   <span>Active students</span>
                   <b>{activeStudents != null ? activeStudents : "—"}</b>
                   {activeStudents != null && newStudents > 0 && <i className="up">▲ {newStudents} new</i>}
                 </div>
-                <div className="dstat"><span>AI generations</span><b>{aiGenerations.toLocaleString("en-US")}</b></div>
+                <div className="dstat" style={{ cursor: "pointer" }} onClick={() => openAiTools("exam")} title="Open AI Tools">
+                  <span>AI generations</span><b>{aiGenerations.toLocaleString("en-US")}</b>
+                </div>
               </div>
 
               <div className="dpanel" ref={aiPanelRef}>
                 <div className="dph">
                   <span className="tag2">AI Content Engine</span>
                   <h2>Upload once. We make 9 formats.</h2>
-                  <p>Drop a PDF, slide deck or video — instantly get a full study kit for your students.</p>
+                  <p>Drop a PDF — instantly get a full study kit: course outline, flashcards, a quiz and a summary.</p>
                 </div>
                 <div className="dengine">
-                  <div className="ddrop" onClick={() => setShowCourseForm(true)} style={{ cursor: "pointer" }}>
-                    <span className="big">⬆</span><b>Drop your file</b><span>PDF · DOCX · PPTX · MP4 · YouTube URL</span>
-                    <button className="btn ghost" style={{ marginTop: 8 }} onClick={(e) => { e.stopPropagation(); setShowCourseForm(true); }}>Browse files</button>
+                  <div className="ddrop" onClick={() => setShowEngine(true)} style={{ cursor: "pointer" }}>
+                    <span className="big">⬆</span><b>Drop your PDF</b><span>PDF · text-based · click to browse</span>
+                    <button className="btn ghost" style={{ marginTop: 8 }} onClick={(e) => { e.stopPropagation(); setShowEngine(true); }}>Browse files</button>
                   </div>
                   <div className="dformats">
                     {FORMATS.map((f) => (
-                      <div className="fmt" key={f.label} onClick={() => setShowCourseForm(true)}>
+                      <div className="fmt" key={f.label} onClick={() => setShowEngine(true)} title="Open the AI Content Engine">
                         <span className="fi" style={{ background: `rgba(${f.c},.16)` }}>{f.icon}</span>{f.label}
                       </div>
                     ))}
@@ -392,7 +448,12 @@ const TeacherDashboard = () => {
                       <div className="les" key={c._id}>
                         <span className="t">{c.isPublished ? <CheckCircle size={16} /> : <Clock size={16} />}</span>
                         <span className="info"><b>{c.title}</b><span>{c.language || "Course"} · {c.level || "—"} · {c.isPublished ? "Published" : "Pending"}</span></span>
-                        <button className="prep" onClick={() => setSelectedCourse(c)}>Manage</button>
+                        <span className="cactions">
+                          <button className="prep" onClick={() => setSelectedCourse(c)} title="Manage sections">Manage</button>
+                          <button className="cicon" onClick={() => openEditCourse(c)} title="Edit course details">✎</button>
+                          <button className="cicon" onClick={() => handleTogglePublish(c)} disabled={busyCourse === c._id} title={c.isPublished ? "Unpublish" : "Publish"}>{c.isPublished ? "⏸" : "▲"}</button>
+                          <button className="cicon danger" onClick={() => handleDeleteCourse(c)} disabled={busyCourse === c._id} title="Delete course">🗑</button>
+                        </span>
                       </div>
                     ))
                   )}
@@ -436,9 +497,12 @@ const TeacherDashboard = () => {
                     <span className="av" style={{ width: 34, height: 34 }}>{(s.name || "?").slice(0, 1).toUpperCase()}</span>
                     <span className="info">
                       <b>{s.name}</b>
-                      <span>{[s.country, `${s.courseCount} course${s.courseCount === 1 ? "" : "s"}`, agoLabel(s.recentMonthsAgo)].filter(Boolean).join(" · ")}</span>
+                      <span>{[s.country, (s.courses || []).join(", ") || `${s.courseCount} courses`, agoLabel(s.recentMonthsAgo)].filter(Boolean).join(" · ")}</span>
                     </span>
-                    <span className="amt">{euroFull(s.totalPaid)}</span>
+                    <span className="cactions">
+                      <span className="amt">{euroFull(s.totalPaid)}</span>
+                      <button className="cicon" onClick={() => { setMessageWith(s._id); setShowMessages(true); }} title={`Message ${s.name}`}>✉</button>
+                    </span>
                   </div>
                 ))
               )}
@@ -577,17 +641,19 @@ const TeacherDashboard = () => {
       {showCourseForm && <TeacherCourseForm onClose={() => setShowCourseForm(false)} onSubmit={handleCreateCourse} isEdit={false} />}
       {editCourse && <TeacherCourseForm initialData={editCourse} onClose={() => setEditCourse(null)} onSubmit={handleUpdateCourse} isEdit={true} />}
 
-      <button className="spl-fab" style={{ bottom: 78 }} onClick={() => setShowAiTools(true)}>✦ AI Tools</button>
-      <button className="spl-fab" onClick={() => setShowSpeech(true)}>🎙️ Speech Analyzer</button>
       {showSpeech && <TeacherSpeechLab onClose={() => setShowSpeech(false)} />}
       {showCalendar && <CalendarPopup onClose={() => setShowCalendar(false)} />}
+      {showMessages && <MessagesPanel openWithId={messageWith} onClose={() => { setShowMessages(false); setMessageWith(null); }} />}
+      {showAssignments && <TeacherAssignments onClose={() => setShowAssignments(false)} students={students} me={{ _id: teacherData?._id, name: teacherData?.name }} />}
+      {showEngine && <AiContentEngine onClose={() => setShowEngine(false)} context={{ onCreateCourse: createCourseFromAI }} />}
       {showAiTools && (
         <AiToolsHub
           role="teacher"
+          initialTab={aiToolsTab}
           onClose={() => setShowAiTools(false)}
           context={{
             students,
-            onCreateCourse: async (d) => { await createCourseByTeacher(d); await reloadCourses(); },
+            onCreateCourse: createCourseFromAI,
           }}
         />
       )}

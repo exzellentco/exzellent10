@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { generateExam } from "../../APIs/aiTools";
+import AiErrorNotice from "./AiErrorNotice";
 
 const LANGS = ["English", "German", "Spanish", "French"];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
@@ -20,7 +21,7 @@ const ExamGenerator = ({ role, initial }) => {
     if (!topic.trim()) { setError("Enter a topic to practise."); return; }
     setLoading(true); setError(""); setExam(null); setPicks({}); setFlipped({});
     try { setExam(await generateExam({ topic, language, level, count })); }
-    catch (e) { setError(e.message); }
+    catch (e) { setError(e); }
     finally { setLoading(false); }
   };
 
@@ -36,7 +37,7 @@ const ExamGenerator = ({ role, initial }) => {
       <button className="spl-rec" onClick={gen} disabled={loading}>
         {loading ? <><span className="spl-spin" />Generating…</> : "✦ Generate exam"}
       </button>
-      {error && <p className="spl-err">{error}</p>}
+      <AiErrorNotice error={error} />
 
       {exam && (
         <div style={{ marginTop: 18 }}>

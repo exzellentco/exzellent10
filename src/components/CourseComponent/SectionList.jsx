@@ -21,7 +21,9 @@ const SectionList = ({ sections, onEdit, onDelete }) => (
                 Section Type: <span className="font-semibold text-blue-800">
                   {section.sectionType === "language-training"
                     ? "Language Training"
-                    : "Exam Preparation"}
+                    : section.sectionType === "exam-preparation"
+                    ? "Exam Preparation"
+                    : "General"}
                 </span>
               </p>
             </div>

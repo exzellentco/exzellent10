@@ -30,3 +30,6 @@ autosave.log
 
 # Mock backend runtime data (persisted demo state)
 mock-backend/data.json
+
+# Claude Code tooling
+.claude/

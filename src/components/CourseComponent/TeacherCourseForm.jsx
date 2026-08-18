@@ -6,7 +6,9 @@ const initialCourseForm = {
   description: "",
   thumbnail: "",
   category: "",
-  level: "Beginner",
+  price: "",
+  duration: "",
+  level: "A1",
   language: "German",
   groupType: "regular",
   tags: [],
@@ -104,6 +106,8 @@ const TeacherCourseForm = ({ onClose, onSubmit, initialData, isEdit }) => {
     const data = {
       ...form,
       thumbnail: thumbnailUrl,
+      price: Number(form.price),
+      duration: form.duration,
       tags: form.tags,
     };
 
@@ -197,6 +201,34 @@ const TeacherCourseForm = ({ onClose, onSubmit, initialData, isEdit }) => {
               />
             </div>
 
+            {/* Price */}
+            <div>
+              <label className="block text-sm font-medium text-primary mb-1">Price (€)</label>
+              <input
+                type="number"
+                min="0"
+                className="outline-none border border-border rounded-md px-3 py-2 w-full focus:ring-2 focus:ring-primary focus:border-transparent"
+                name="price"
+                value={form.price}
+                onChange={handleChange}
+                required
+                placeholder="Price (€)"
+              />
+            </div>
+
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-medium text-primary mb-1">Duration</label>
+              <input
+                className="outline-none border border-border rounded-md px-3 py-2 w-full focus:ring-2 focus:ring-primary focus:border-transparent"
+                name="duration"
+                value={form.duration}
+                onChange={handleChange}
+                required
+                placeholder="8 Weeks"
+              />
+            </div>
+
             {/* Level Dropdown */}
             <div>
               <label className="block text-sm font-medium text-primary mb-1">Level</label>
@@ -207,9 +239,11 @@ const TeacherCourseForm = ({ onClose, onSubmit, initialData, isEdit }) => {
                 required
                 className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg text-text-secondary"
               >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
               </select>
             </div>
 
@@ -223,8 +257,10 @@ const TeacherCourseForm = ({ onClose, onSubmit, initialData, isEdit }) => {
                 required
                 className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg text-text-secondary"
               >
+                <option value="English">English</option>
                 <option value="German">German</option>
                 <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
               </select>
             </div>
 

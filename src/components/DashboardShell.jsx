@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import MessagesPanel from "./Messages/MessagesPanel";
 
 /*
  * Wraps a logged-in page in the "ecosystem" dashboard look.
@@ -12,6 +13,7 @@ import React, { useEffect, useRef } from "react";
  */
 const DashboardShell = ({ role = "admin", eyebrow, title, lead, actions, children }) => {
   const rootRef = useRef(null);
+  const [showMessages, setShowMessages] = useState(false);
 
   // Reveal elements marked with .ex-reveal as they scroll into view.
   useEffect(() => {
@@ -56,7 +58,11 @@ const DashboardShell = ({ role = "admin", eyebrow, title, lead, actions, childre
         </div>
       </div>
       {role === "admin" && (
-        <a className="spl-fab" href="/calendar" style={{ textDecoration: "none" }}>📅 Calendar</a>
+        <>
+          <button className="spl-fab" style={{ bottom: 78 }} onClick={() => setShowMessages(true)}>💬 Messages</button>
+          <a className="spl-fab" href="/calendar" style={{ textDecoration: "none" }}>📅 Calendar</a>
+          {showMessages && <MessagesPanel onClose={() => setShowMessages(false)} />}
+        </>
       )}
     </div>
   );

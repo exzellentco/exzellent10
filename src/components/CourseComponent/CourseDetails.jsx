@@ -15,6 +15,8 @@ import {
   Lock,
 } from "lucide-react";
 import axios from "../../utils/axios";
+import StudyKitView from "../AiTools/StudyKitView";
+import { getCertificate } from "../../APIs/learning";
 
 const getTotalDuration = (sections) => {
   let totalSeconds = 0;
@@ -45,19 +47,26 @@ const getYouTubeEmbedUrl = (url) => {
   return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
 };
 
-const CourseDetails = ({ course }) => {
+const CourseDetails = ({ course, onBack }) => {
   const location = useLocation();
   const { enrollmentId } = location.state || {};
   const [expandedSections, setExpandedSections] = useState(new Set([0]));
+  const [coverError, setCoverError] = useState(false);
   const [activeVideo, setActiveVideo] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [checkedLectures, setCheckedLectures] = useState({});
   const [loadingProgress, setLoadingProgress] = useState(true);
+  const [certificate, setCertificate] = useState(null);
+  const [certOpen, setCertOpen] = useState(false);
+  const [certLoading, setCertLoading] = useState(false);
+  const [certError, setCertError] = useState("");
   const navigate = useNavigate();
   const now = new Date();
 
   const visibleSections = course.sections || [];
   const totalVideos = visibleSections.reduce((t, s) => t + (s.lectures?.length || 0), 0);
+  const completedCount = Object.values(checkedLectures).filter(Boolean).length;
+  const allComplete = totalVideos > 0 && completedCount === totalVideos;
   const totalSections = visibleSections.length;
   const totalDuration = getTotalDuration(visibleSections);
 
@@ -151,6 +160,32 @@ const CourseDetails = ({ course }) => {
     return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
   };
 
+  const handleGetCertificate = async () => {
+    if (!enrollmentId || certLoading) return;
+    setCertLoading(true);
+    setCertError("");
+    try {
+      const res = await getCertificate(enrollmentId);
+      if (res?.eligible && res?.certificate) {
+        setCertificate(res.certificate);
+        setCertOpen(true);
+      } else {
+        setCertError("You are not eligible for a certificate yet.");
+      }
+    } catch (err) {
+      setCertError(err.message || "Could not load your certificate.");
+    } finally {
+      setCertLoading(false);
+    }
+  };
+
+  const formatCertDate = (value) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+  };
+
   if (loadingProgress) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -167,9 +202,9 @@ const CourseDetails = ({ course }) => {
       {/* Header */}
       <div className="flex md:flex-row flex-col justify-between items-between pt-28 pb-6 px-12">
         <div className="flex flex-col gap-3 justify-center items-center">
-          <button onClick={() => navigate("/")}
+          <button onClick={() => (onBack ? onBack() : navigate("/"))}
             className="gap-1 transition-all duration-700 hover:scale-98 flex items-center bg-gradient-to-r from-blue-800 to-primary text-white p-3 rounded-xl cursor-pointer">
-            <ArrowLeft /> Back to Dashboard
+            <ArrowLeft /> {onBack ? "Back to Courses" : "Back to Dashboard"}
           </button>
 
           <div className="flex flex-wrap items-center justify-center text-white gap-3">
@@ -201,6 +236,20 @@ const CourseDetails = ({ course }) => {
           {course.subtitle && (
             <p className=" lg:text-lg text-white font-medium">{course.subtitle}</p>
           )}
+
+          {/* Cover image */}
+          <div className="w-full max-w-xl h-48 sm:h-56 rounded-xl overflow-hidden border border-border mt-4">
+            {course.thumbnail && !coverError ? (
+              <img
+                src={course.thumbnail}
+                alt={course.title}
+                onError={() => setCoverError(true)}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-tr from-primary/40 via-bg2 to-secondary/30" />
+            )}
+          </div>
         </div>
       </div>
 
@@ -402,7 +451,107 @@ const CourseDetails = ({ course }) => {
           </div>
 
         </div>
+
+        {/* Study kit — flashcards, quiz & summary saved with the course */}
+        {course.studyKit && (
+          <div className="max-w-4xl mx-auto px-6 pb-12">
+            <h2 className="text-2xl font-semibold text-primary mb-2 flex items-center gap-2">✦ Study kit</h2>
+            <p className="text-white/70 text-sm mb-4">Practice these flashcards and quiz, and review the summary to master this course.</p>
+            <StudyKitView kit={course.studyKit} enrollmentId={enrollmentId} />
+          </div>
+        )}
+
+        {/* Certificate — unlocked once every lecture is completed */}
+        {enrollmentId && allComplete && (
+          <div className="max-w-4xl mx-auto px-6 pb-16 text-center">
+            <div className="bg-bg2 border-2 border-dashed border-border rounded-xl p-8">
+              <p className="text-white text-lg mb-4">
+                You have completed every lecture in this course.
+              </p>
+              <button
+                onClick={handleGetCertificate}
+                disabled={certLoading}
+                className="inline-flex items-center gap-2 bg-primary text-white text-lg font-semibold px-6 py-3 rounded-xl cursor-pointer transition-all duration-700 hover:scale-105 hover:bg-primary/80 disabled:opacity-60"
+              >
+                🎓 {certLoading ? "Loading…" : "Get your certificate"}
+              </button>
+              {certError && <p className="text-red-400 text-sm mt-3">{certError}</p>}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Certificate modal */}
+      {certOpen && certificate && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 print:bg-white print:p-0"
+          onClick={() => setCertOpen(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-2xl bg-gradient-to-br from-bg2 to-bg border-4 border-primary rounded-2xl p-10 text-center shadow-2xl print:border-primary print:shadow-none"
+          >
+            <button
+              onClick={() => setCertOpen(false)}
+              className="absolute top-4 right-4 text-white/70 hover:text-white text-2xl leading-none cursor-pointer print:hidden"
+              title="Close"
+            >
+              ✕
+            </button>
+
+            <div className="text-5xl mb-4">🎓</div>
+            <p className="text-primary text-sm tracking-[0.3em] uppercase font-semibold mb-2">
+              Certificate of Completion
+            </p>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-6" />
+
+            <p className="text-white/70 text-sm mb-1">This certifies that</p>
+            <h2 className="text-4xl font-bold text-white mb-4">{certificate.studentName}</h2>
+            <p className="text-white/70 text-sm mb-1">has successfully completed</p>
+            <h3 className="text-2xl font-semibold text-primary mb-2">{certificate.courseTitle}</h3>
+
+            <p className="text-white/80 text-sm mb-6">
+              {[certificate.level, certificate.language].filter(Boolean).join(" • ")}
+            </p>
+
+            {certificate.quizBestPct != null && (
+              <p className="text-white text-sm mb-4">
+                Quiz score: <span className="font-semibold text-secondary">{certificate.quizBestPct}%</span>
+              </p>
+            )}
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-6 text-white">
+              <div className="text-center">
+                <p className="text-lg font-semibold">{certificate.instructor}</p>
+                <p className="text-xs text-white/60">Instructor</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-semibold">{formatCertDate(certificate.issuedAt)}</p>
+                <p className="text-xs text-white/60">Date issued</p>
+              </div>
+            </div>
+
+            <p className="mt-6 text-[10px] text-white/40 font-mono break-all">
+              Certificate ID: {certificate.id}
+            </p>
+
+            <div className="mt-8 flex items-center justify-center gap-4 print:hidden">
+              <button
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl cursor-pointer transition-all duration-700 hover:scale-105 hover:bg-primary/80"
+              >
+                Print / Save as PDF
+              </button>
+              <button
+                onClick={() => setCertOpen(false)}
+                className="inline-flex items-center gap-2 bg-bg2 border border-border text-white px-5 py-2.5 rounded-xl cursor-pointer transition-all duration-700 hover:scale-105"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

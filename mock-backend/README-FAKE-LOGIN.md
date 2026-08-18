@@ -1,8 +1,8 @@
 # Developing without a real login (fake backend)
 
 You don't have credentials for the real system, and you don't need them to build
-and preview the app. This gives you a **fake backend** that accepts any login and
-serves invented sample data, so every dashboard opens. Nothing here touches the real
+and preview the app. This gives you a **fake backend** with real email+password logins
+and invented sample data, so every dashboard opens. Nothing here touches the real
 database or the live site.
 
 ## One-time picture
@@ -26,14 +26,21 @@ Then you tell the website to talk to the fake one instead of the real one.
    - close the window running `npm run dev`
    - start it again (`npm run dev`)
 
-4. Go to **http://localhost:3000/login** and log in. **The password can be anything.**
-   The email you type decides which dashboard you get:
+4. Go to **http://localhost:3000/login** and log in with a **real email + password**.
+   The demo accounts (the password is checked — a wrong one is rejected):
 
-   | Email | You become |
-   |---|---|
-   | `admin@test.com` | Admin |
-   | `teacher@test.com` | Teacher |
-   | `student@test.com` (or any other) | Student |
+   | Email | Password | You become |
+   |---|---|---|
+   | `admin@test.com` | `Admin123` | Admin |
+   | `teacher@test.com` | `Teacher123` | Teacher |
+   | `koszoz99@gmail.com` | `Kos12345` | Student (primary) |
+   | `anna@test.com` (and the other seed students) | `Student123` | Student |
+
+   **Or create your own:** go to `/signup`, use invite code **`WELCOME10`**, pick any
+   email + password (8+ chars, with an uppercase, lowercase and number), and you can log
+   in with those credentials immediately. Registration is invite-only — without a valid
+   code you're sent to the waitlist. An admin can turn waitlist requests into invite codes
+   at `/invite-requests`.
 
 ## Going back to the real site
 

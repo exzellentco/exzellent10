@@ -33,8 +33,13 @@ export const getSlots = async (teacherId, from, to) =>
 export const getBookings = async (role, userId) =>
   (await req("GET", `/api/calendar/bookings?role=${role || ""}&userId=${userId || ""}`)).data;
 
+// Create a lesson: { teacherId, date, start, end|durationMin, title, studentName?, studentId? }
 export const createBooking = async (payload) =>
   req("POST", `/api/calendar/bookings`, payload);
+
+// Edit a lesson: { date?, start?, end?, title?, studentName?, studentId? }
+export const updateBooking = async (id, data) =>
+  req("PUT", `/api/calendar/bookings/${id}`, data);
 
 export const cancelBooking = async (id) =>
   req("DELETE", `/api/calendar/bookings/${id}`);

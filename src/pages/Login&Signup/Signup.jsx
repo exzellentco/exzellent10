@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, User, Calendar, Gift, Shield, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Calendar, Gift, Shield, ChevronLeft, ChevronRight, Eye, EyeOff, Ticket, ArrowRight } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import * as authService from "../../APIs/Signup/SignupApis";
@@ -24,7 +24,7 @@ const phoneDark = {
 };
 
 // ─── EmailStep ───────────────────────────────────────────────────────────────
-const EmailStep = ({ formData, onChange, onSubmit, loading, errors }) => {
+const EmailStep = ({ formData, onChange, onSubmit, loading, errors, needInvite }) => {
   const setRole = (role) => { onChange({ target: { name: "role", value: role } }); };
   return (
     <form onSubmit={onSubmit}>
@@ -33,6 +33,26 @@ const EmailStep = ({ formData, onChange, onSubmit, loading, errors }) => {
         <input type="email" name="email" placeholder="Email" value={formData.email} onChange={onChange} className="auth-input" />
       </div>
       {errors?.email && <p style={{ color: "#fca5a5", fontSize: ".8rem", marginTop: -8, marginBottom: 10 }}>{errors.email}</p>}
+
+      <label className="auth-label">Invite code</label>
+      <div className="auth-field">
+        <span className="ico"><Ticket size={18} /></span>
+        <input type="text" name="inviteCode" placeholder="Enter your invite code" value={formData.inviteCode} onChange={onChange} className="auth-input" />
+      </div>
+      <p style={{ color: "var(--a-muted)", fontSize: ".78rem", marginTop: -8, marginBottom: 12, lineHeight: 1.5 }}>
+        Exzellent is invite-only. Enter the invite code you were given to continue.
+      </p>
+
+      {needInvite && (
+        <div style={{ background: "rgba(138,75,245,.12)", border: "1px solid rgba(138,75,245,.4)", borderRadius: 12, padding: "12px 14px", marginBottom: 14 }}>
+          <p style={{ color: "var(--a-violet-l)", fontSize: ".84rem", margin: "0 0 10px", lineHeight: 1.5 }}>
+            Don't have an invite code? Join the waitlist and we'll email you one.
+          </p>
+          <Link to="/waitlist" className="auth-btn" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", textDecoration: "none" }}>
+            Request an invite <ArrowRight size={17} style={{ verticalAlign: -3 }} />
+          </Link>
+        </div>
+      )}
 
       <p className="auth-label" style={{ textAlign: "center", marginTop: 8 }}>I am a:</p>
       <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
@@ -224,16 +244,31 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [needInvite, setNeedInvite] = useState(false);
   const [showGoogleVerifiedMsg] = useState(false);
 
   const [formData, setFormData] = useState({ email: "", role: "Student", otp: "", name: "", password: "", confirmPassword: "", gender: "", countryCode: "+91", phone: "",
-    dateOfBirth: "", referral: "", terms: false });
+    dateOfBirth: "", referral: "", inviteCode: "", plan: "", terms: false });
 
   useEffect(() => {
     const token = document.cookie.split("; ").find((row) => row.startsWith("token="))?.split("=")[1];
     if (token) navigate("/");
     if (step === 0) initializeGoogleOAuth();
   }, [step, navigate]);
+
+  // Prefill invite code (and plan) from the URL: ?ref=CODE / ?invite=CODE / ?plan=ID
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("ref") || params.get("invite");
+    const plan = params.get("plan");
+    if (code || plan) {
+      setFormData((prev) => ({
+        ...prev,
+        ...(code ? { inviteCode: code } : {}),
+        ...(plan ? { plan } : {}),
+      }));
+    }
+  }, []);
 
   const initializeGoogleOAuth = () => {
     if (window.google) {
@@ -289,6 +324,7 @@ const Signup = () => {
     if (name === "password" && errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: "" }));
     if (name === "confirmPassword" && errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: "" }));
     if (name === "referral") setReferralStatus(null);
+    if (name === "inviteCode") setNeedInvite(false);
   };
 
   const handleEmailSubmit = async (e) => {
@@ -298,12 +334,33 @@ const Signup = () => {
       return;
     }
     setLoading(true);
+    setNeedInvite(false);
     try {
-      const res = await authService.sendOTP(formData.email, formData.role);
-      if (res?.devOtp) setDevOtp(String(res.devOtp));
+      // pre-signup now carries the invite code so the backend can gate/attribute it
+      const { data } = await axios.post("/api/users/pre-signup", {
+        email: formData.email,
+        userType: formData.role,
+        inviteCode: formData.inviteCode,
+      });
+      if (data?.success === false) {
+        if (data.needInvite) {
+          setNeedInvite(true);
+          setErrors({ email: data.message || "Exzellent is invite-only. Please enter a valid invite code." });
+        } else {
+          setErrors({ email: data.message || "Failed to send OTP. Please try again." });
+        }
+        return;
+      }
+      if (data?.devOtp) setDevOtp(String(data.devOtp));
       setStep(1);
     } catch (err) {
-      setErrors({ email: err.message });
+      const resp = err.response?.data;
+      if (resp?.needInvite) {
+        setNeedInvite(true);
+        setErrors({ email: resp.message || "Exzellent is invite-only. Please enter a valid invite code." });
+      } else {
+        setErrors({ email: resp?.message || "Failed to send OTP. Please try again." });
+      }
     } finally {
       setLoading(false);
     }
@@ -358,6 +415,7 @@ const Signup = () => {
       await authService.completeSignup(
         { name: formData.name, role: formData.role, password: formData.password, gender: formData.gender,
           phone: formData.countryCode + formData.phone, dateOfBirth: formData.dateOfBirth, referral: formData.referral,
+          inviteCode: formData.inviteCode,
           languagesSpoken: parsedAnswers?.[1] || [], targetLanguage: parsedAnswers?.[2] || "",
           proficiencyLevel: parsedAnswers?.[3] || "", learningGoal: parsedAnswers?.[4] || "" },
         tempToken
@@ -388,7 +446,7 @@ const Signup = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <EmailStep formData={formData} onChange={handleChange} onSubmit={handleEmailSubmit} loading={loading} errors={errors} />;
+        return <EmailStep formData={formData} onChange={handleChange} onSubmit={handleEmailSubmit} loading={loading} errors={errors} needInvite={needInvite} />;
       case 1:
         return <OTPStep formData={formData} onChange={handleChange} onSubmit={handleOTPSubmit} loading={loading} error={errors.otp} devOtp={devOtp} />;
       case 2:

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getBookings, currentUser } from "../../APIs/calendar";
 
 const DOW = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -8,6 +9,7 @@ const iso = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).pad
 // A real month calendar. `events` = [{ date:'YYYY-MM-DD', title, time }]; it also
 // pulls the signed-in user's booked sessions from the calendar API.
 const CalendarPopup = ({ onClose, events = [] }) => {
+  const navigate = useNavigate();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -17,11 +19,16 @@ const CalendarPopup = ({ onClose, events = [] }) => {
   useEffect(() => {
     const u = currentUser();
     getBookings(u.userType, u._id)
-      .then((list) => setBooked((list || []).map((b) => ({
-        date: b.date,
-        title: `${b.topic || "Session"} · ${u.userType === "Teacher" ? b.studentName : b.teacherName}`,
-        time: b.start,
-      }))))
+      .then((list) => setBooked((list || []).map((b) => {
+        const who = u.userType === "Teacher" ? b.studentName : b.teacherName;
+        return {
+          date: b.date,
+          title: `${b.title || b.topic || "Lesson"}${who ? ` · ${who}` : ""}`,
+          time: b.end ? `${b.start}–${b.end}` : b.start,
+          meetingUrl: b.meetingUrl,
+          _id: b._id,
+        };
+      })))
       .catch(() => setBooked([]));
   }, []);
 
@@ -66,10 +73,18 @@ const CalendarPopup = ({ onClose, events = [] }) => {
                 const has = !c.muted && byDate[c.date];
                 let cls = "spl-cal-day";
                 if (c.muted) cls += " muted";
-                else if (c.date === todayISO) cls += " today";
+                else {
+                  if (c.date === todayISO) cls += " today";
+                  else if (c.date === selected) cls += " sel";
+                }
                 if (has) cls += " has";
                 return (
-                  <div key={i} className={cls} onClick={() => !c.muted && has && setSelected(c.date)}>
+                  <div
+                    key={i}
+                    className={cls}
+                    style={c.muted ? undefined : { cursor: "pointer" }}
+                    onClick={() => !c.muted && setSelected(c.date)}
+                  >
                     {c.day}
                     {has && <span className="ev" />}
                   </div>
@@ -86,7 +101,17 @@ const CalendarPopup = ({ onClose, events = [] }) => {
               dayEvents.map((e, i) => (
                 <div className="spl-list-row" key={i}>
                   <span className="ic">📌</span>
-                  <span><b>{e.title}</b><span>{e.time || "All day"}</span></span>
+                  <span style={{ flex: 1, minWidth: 0 }}><b>{e.title}</b><span>{e.time || "All day"}</span></span>
+                  {e.meetingUrl && e._id && (
+                    <a
+                      href={`/class/${e._id}`}
+                      onClick={(ev) => { ev.preventDefault(); navigate(`/class/${e._id}`); onClose && onClose(); }}
+                      title="Join the live class"
+                      style={{ marginLeft: "auto", fontSize: 12, fontWeight: 600, color: "#a5b4fc", textDecoration: "none", border: "1px solid rgba(124,58,237,0.35)", borderRadius: 8, padding: "5px 9px", whiteSpace: "nowrap" }}
+                    >
+                      🎥 Join class
+                    </a>
+                  )}
                 </div>
               ))
             )}

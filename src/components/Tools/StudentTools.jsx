@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, BrainCircuit, PersonStanding, Group, TestTubeDiagonal, Blocks } from "lucide-react";
 import CalendarPopup from "./CalendarPopup";
 import ToolModal from "./ToolModal";
@@ -23,7 +23,7 @@ const RESOURCES = [
 const TILES = [
   { key: "calendar", Icon: Calendar, label: "Calendar", desc: "Lessons & deadlines", c: "124,58,237" },
   { key: "ai", Icon: BrainCircuit, label: "AI", desc: "Exam, plan & report", c: "6,182,212" },
-  { key: "teachers", Icon: PersonStanding, label: "Teachers", desc: "Browse tutors", c: "236,72,153" },
+  { key: "teachers", Icon: PersonStanding, label: "Teachers", desc: "Meet our teachers", c: "236,72,153" },
   { key: "testcreator", Icon: Group, label: "Test Creator", desc: "Make a practice test", c: "16,185,129" },
   { key: "toptests", Icon: TestTubeDiagonal, label: "Top tests", desc: "Popular quizzes", c: "249,115,22" },
   { key: "resources", Icon: Blocks, label: "Additional Resources", desc: "Guides & labs", c: "56,189,248" },
@@ -31,12 +31,24 @@ const TILES = [
 
 // `onOpenAiTools({ tab, topic })` opens the shared AI Tools hub in the parent.
 const StudentTools = ({ onOpenAiTools, events = [] }) => {
-  const [open, setOpen] = useState(null); // 'calendar' | 'toptests' | 'resources'
+  const [open, setOpen] = useState(null); // 'calendar' | 'teachers' | 'toptests' | 'resources'
+  const [teachers, setTeachers] = useState([]);
+  const [teachersLoading, setTeachersLoading] = useState(false);
+
+  // Load the real teachers list (admin database) when the Teachers panel opens.
+  useEffect(() => {
+    if (open !== "teachers" || teachers.length) return;
+    setTeachersLoading(true);
+    fetch("/api/teachers")
+      .then((r) => r.json())
+      .then((d) => setTeachers(Array.isArray(d.data) ? d.data : []))
+      .catch(() => setTeachers([]))
+      .finally(() => setTeachersLoading(false));
+  }, [open, teachers.length]);
 
   const click = (key) => {
     if (key === "ai") return onOpenAiTools?.({ tab: "exam" });
     if (key === "testcreator") return onOpenAiTools?.({ tab: "exam" });
-    if (key === "teachers") { window.location.href = "/learning-ecosystem.html#tutors"; return; }
     setOpen(key);
   };
 
@@ -73,6 +85,30 @@ const StudentTools = ({ onOpenAiTools, events = [] }) => {
               </button>
             </div>
           ))}
+        </ToolModal>
+      )}
+
+      {open === "teachers" && (
+        <ToolModal icon="👩‍🏫" title="Our teachers" subtitle="The teachers on Exzellent" onClose={() => setOpen(null)}>
+          {teachersLoading ? (
+            <p className="spl-empty">Loading teachers…</p>
+          ) : teachers.length === 0 ? (
+            <p className="spl-empty">No teachers listed yet.</p>
+          ) : (
+            teachers.map((t) => (
+              <div className="spl-list-row" key={t.userId || t._id}>
+                <span className="ic">
+                  {t.profileImage
+                    ? <img src={t.profileImage} alt="" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover" }} />
+                    : "👩‍🏫"}
+                </span>
+                <span style={{ flex: 1 }}>
+                  <b>{t.name}</b>
+                  <span>{[(t.taughtLanguages || t.subjects || []).join(", "), t.countryOfResidence, t.yearsExperience ? `${t.yearsExperience}+ yrs` : ""].filter(Boolean).join(" · ")}</span>
+                </span>
+              </div>
+            ))
+          )}
         </ToolModal>
       )}
 

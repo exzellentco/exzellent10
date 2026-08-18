@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, CheckCircle, StarIcon } from "lucide-react";
+import { Clock, CheckCircle, StarIcon, ChevronDown } from "lucide-react";
 import Swal from "sweetalert2";
 import axios from "../../utils/axios";
 
@@ -23,10 +23,16 @@ const CourseCard = ({
   onPublish,
   onUnpublish,
   isPaid = false,
+  studentCredits = null,
 }) => {
   const navigate = useNavigate();
   const creditCost = getCreditCost(course.groupType);
   const [open, setOpen] = useState(false)
+  const [imgError, setImgError] = useState(false)
+
+  // Affordability against the real per-course cost. When we know the learner's
+  // credit balance, compare directly; otherwise fall back to the passed isPaid.
+  const canAfford = studentCredits != null ? studentCredits >= creditCost : isPaid;
 
   const checkAuth = () => document.cookie.includes("token=");
 
@@ -42,7 +48,7 @@ const CourseCard = ({
       return;
     }
 
-    if (!isPaid) {
+    if (!canAfford) {
       Swal.fire({
         icon: "warning",
         title: "Insufficient Credits",
@@ -108,19 +114,35 @@ const CourseCard = ({
   const instructorName = getInstructorName();
 
   return (
-    <div onClick={() => setOpen(prev => !prev)} className="group relative bg-gradient-to-tr from-bg to-bg2 rounded-xl flex flex-col w-70 lg:w-100
-    overflow-hidden hover:scale-98  transition-all duration-500 cursor-pointer">
+    <div className="group relative bg-gradient-to-tr from-bg to-bg2 rounded-xl flex flex-col w-70 lg:w-100
+    overflow-hidden hover:scale-98  transition-all duration-500">
+
+{/* Thumbnail header */}
+      <div className="relative h-40 w-full overflow-hidden">
+        {course.thumbnail && !imgError ? (
+          <img
+            src={course.thumbnail}
+            alt={course.title}
+            onError={() => setImgError(true)}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-tr from-primary/40 via-bg2 to-secondary/30 flex items-center justify-center">
+            <span className="text-white/80 font-bold text-lg px-4 text-center">{course.title}</span>
+          </div>
+        )}
 
 {/* Admin badges */}
-      {isAdmin && (
-        <div className="absolute top-2 left-3 z-10">
-          {!course.isPublished ? (
-            <div className="bg-secondary text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1"><Clock size={14} /> Pending</div>
-          ) : (
-            <div className="bg-primary text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1"><CheckCircle size={14} /> Live</div>
-          )}
-        </div>
-      )}
+        {isAdmin && (
+          <div className="absolute top-2 left-3 z-10">
+            {!course.isPublished ? (
+              <div className="bg-secondary text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1"><Clock size={14} /> Pending</div>
+            ) : (
+              <div className="bg-primary text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1"><CheckCircle size={14} /> Live</div>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="p-5">
         <div className="flex items-center justify-between mb-3">
@@ -133,13 +155,37 @@ const CourseCard = ({
 
 {/* Group Type Badge */}
       {course.groupType && (
-        <span className={`text-xs p-1 font-semibold text-center ${ course.groupType === "one-to-one" ? "bg-purple-600 text-white" : course.groupType === "class" ? 
+        <span className={`text-xs p-1 font-semibold text-center ${ course.groupType === "one-to-one" ? "bg-purple-600 text-white" : course.groupType === "class" ?
           "bg-blue-600 text-white" : "bg-slate-200 text-text-secondary"}`}>
           {course.groupType === "one-to-one" ? "One to One • 1 Student" : course.groupType === "class" ? "Class • 15-20 Students" : "Regular • 25-30 Students"}
         </span>
       )}
 
-{/* Content */}
+{/* Always-visible primary CTA (students) */}
+      {!isAdmin && (
+        <div className="px-5 pt-4">
+          {isEnrolled ? (
+            <button onClick={handleGoToCourse}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-800 to-primary text-white font-semibold cursor-pointer transition-all duration-500 hover:scale-105">
+              Continue
+            </button>
+          ) : (
+            <button onClick={handleEnroll}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-800 to-primary text-white font-semibold cursor-pointer transition-all duration-500 hover:scale-105">
+              {canAfford ? `Enroll Now • ${creditCost} Credits` : "Get Access"}
+            </button>
+          )}
+        </div>
+      )}
+
+{/* Details toggle affordance */}
+      <button onClick={() => setOpen(prev => !prev)}
+        className="flex items-center justify-center gap-1 px-5 py-3 text-sm font-medium text-text-secondary hover:text-white cursor-pointer transition-all duration-300">
+        {open ? "Hide details" : "Details"}
+        <ChevronDown className={`transition-transform duration-500 ${open ? "rotate-180" : ""}`} size={16} />
+      </button>
+
+{/* Collapsible content */}
       <div className={`${open===true ? "max-h-[1000px]":"max-h-0"} transition-all duration-1000 ease-in-out overflow-hidden`}>
         <div className={`${open===true ? "translate-y-0 opacity-100":"translate-y-[-20px] opacity-0"} p-5 flex flex-col transform transition-all duration-1000 ease-out`}>
 
@@ -162,9 +208,9 @@ const CourseCard = ({
             </div>
           )}
 
-{/* Actions */}
-          <div className="p-4 mt-auto">
-            {isAdmin ? (
+{/* Admin actions */}
+          {isAdmin && (
+            <div className="p-4 mt-auto">
               <div className="space-y-3">
                 {!course.isPublished ? (
                   <button onClick={() => onPublish?.(course._id)}
@@ -193,22 +239,8 @@ const CourseCard = ({
                   Delete Course
                 </button>
               </div>
-            ) : (
-              <>
-                {isEnrolled ? (
-                  <button onClick={handleGoToCourse}
-                    className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-800 to-primary text-white font-semibold cursor-pointer transition-all duration-500 hover:scale-105">
-                    Continue
-                  </button>
-                ) : (
-                  <button onClick={handleEnroll}
-                    className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-800 to-primary text-white font-semibold cursor-pointer transition-all duration-500 hover:scale-105">
-                    {isPaid ? "Enroll Now" : "Get Access"}
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

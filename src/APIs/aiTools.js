@@ -7,6 +7,16 @@ async function postJSON(path, body) {
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
+  // Out-of-credits: backend returns HTTP 402 { success:false, needCredits:true,
+  // cost, credits, message }. Surface a specific error callers can detect so the
+  // UI can show an "upgrade your plan" call-to-action instead of a generic fail.
+  if (res.status === 402 || data.needCredits) {
+    const e = new Error(data.message || "You're out of credits — upgrade your plan to keep using AI tools.");
+    e.needCredits = true;
+    e.cost = data.cost;
+    e.credits = data.credits;
+    throw e;
+  }
   if (!res.ok || data.success === false) {
     throw new Error(data.message || "Generation failed. Please try again.");
   }
@@ -22,3 +32,6 @@ export const buildCourse = (opts) => postJSON("/api/ai/build-course", opts);
 
 // { name, audience, metrics } -> { headline, narrative, strengths[], focus[], cefr_estimate }
 export const generateProgressReport = (opts) => postJSON("/api/ai/progress-report", opts);
+
+// { text, language, level } -> { title, description, sections[], flashcards[], quiz[], summary, key_terms[] }
+export const generateStudyKit = (opts) => postJSON("/api/ai/study-kit", opts);

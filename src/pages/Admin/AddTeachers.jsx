@@ -20,7 +20,7 @@ const ACADEMIC_DEGREES_OPTIONS = ["Bachelor's in Education (B.Ed.)", "Master's i
   "Bachelor's in Translation & Interpretation", "Master's in Translation & Interpretation", "PGCE", "Other"];
 
 const TEACHING_CERTIFICATIONS_OPTIONS = ["DaF (Deutsch als Fremdsprache)", "DaZ (Deutsch als Zweitsprache)", "BAMF Zulassung", "Goethe-Institut Teacher Training", 
-  "TELC Trainer Certification", "Ã–SD Teacher Qualification", "ELE (EspaÃ±ol como Lengua Extranjera)", "Instituto Cervantes Certification", "DELE Examiner Accreditation", 
+  "TELC Trainer Certification", "ÖSD Teacher Qualification", "ELE (Español como Lengua Extranjera)", "Instituto Cervantes Certification", "DELE Examiner Accreditation",
   "SIELE Examiner / Trainer Certification", "Other"];
 
 const CEFR_LEVEL_OPTIONS = ["A1", "A2", "B1", "B2", "C1", "C2"];

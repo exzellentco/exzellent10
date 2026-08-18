@@ -3,33 +3,20 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   currentUser,
-  getAvailability,
-  setAvailability,
-  getSlots,
   getBookings,
   createBooking,
+  updateBooking,
   cancelBooking,
   getProviders,
   googleCalUrl,
 } from "../APIs/calendar";
-
-const LAB_LABELS = { language: "Language Lab · tutors", skill: "Skill Lab · mentors", growth: "Growth Lab · coaches" };
+import { getClassAttendance } from "../APIs/learning";
 
 /* ----------------------------- date helpers ----------------------------- */
 const DOW = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
-];
-// Weekday labels for the availability editor, Mon..Sun, mapped to keys "0".."6" (0=Sun).
-const WEEK_EDIT = [
-  { key: "1", label: "Monday" },
-  { key: "2", label: "Tuesday" },
-  { key: "3", label: "Wednesday" },
-  { key: "4", label: "Thursday" },
-  { key: "5", label: "Friday" },
-  { key: "6", label: "Saturday" },
-  { key: "0", label: "Sunday" },
 ];
 
 // "YYYY-MM-DD" for a given y/m(0-based)/d.
@@ -38,12 +25,6 @@ const iso = (y, m, d) =>
 const todayISO = () => {
   const n = new Date();
   return iso(n.getFullYear(), n.getMonth(), n.getDate());
-};
-// today + n days as "YYYY-MM-DD".
-const addDaysISO = (n) => {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  return iso(d.getFullYear(), d.getMonth(), d.getDate());
 };
 // Pretty date from "YYYY-MM-DD" (parsed as local, not UTC).
 const prettyDate = (ymd, opts) => {
@@ -72,12 +53,20 @@ const roleDashboard = (role) => {
   return "/student-dashboard";
 };
 
+const ALL = "__ALL__";
+const emptyForm = { start: "", end: "", title: "", studentName: "" };
+
 /* ------------------------------- component ------------------------------ */
 const CalendarPage = () => {
   const navigate = useNavigate();
   const user = useMemo(() => currentUser(), []);
   const role = user?.userType;
   const userId = user?._id;
+
+  const isStudent = role === "Student";
+  const isTeacher = role === "Teacher";
+  const isAdmin = role === "Admin";
+  const canManage = isTeacher || isAdmin;
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -87,31 +76,45 @@ const CalendarPage = () => {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
-  const [selectedDay, setSelectedDay] = useState("");
+  const [selectedDay, setSelectedDay] = useState(todayISO());
 
-  // student state (providers = tutors/mentors/coaches, optionally lab-filtered)
-  const lab = (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("lab") : "") || "";
-  const [teachers, setTeachers] = useState([]);
-  const [teacherId, setTeacherId] = useState("");
-  const [slots, setSlots] = useState([]);
-  const [slotsLoading, setSlotsLoading] = useState(false);
-  const [chosenSlot, setChosenSlot] = useState(null); // {date,start,end}
-  const [topic, setTopic] = useState("");
-  const [bookingMsg, setBookingMsg] = useState(null); // {type,text}
+  // admin teacher picker
+  const [providers, setProviders] = useState([]);
+  const [teacherFilter, setTeacherFilter] = useState("");
 
-  // teacher availability editor state
-  const [days, setDays] = useState({ 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] });
-  const [slotMinutes, setSlotMinutes] = useState(30);
-  const [addStart, setAddStart] = useState({});
-  const [addEnd, setAddEnd] = useState({});
-  const [availMsg, setAvailMsg] = useState(null);
+  // add-lesson form (teacher / admin)
+  const [form, setForm] = useState(emptyForm);
+  const [addMsg, setAddMsg] = useState(null); // {type,text}
 
-  const isStudent = role === "Student";
-  const isTeacher = role === "Teacher";
-  const isAdmin = role === "Admin";
+  // inline edit state
+  const [editId, setEditId] = useState("");
+  const [editForm, setEditForm] = useState(emptyForm);
+
+  // teacher/admin attendance view: which lesson is expanded + lazily-loaded data
+  const [attOpen, setAttOpen] = useState("");
+  const [attData, setAttData] = useState({}); // { [bookingId]: { loading, list, title, error } }
+
+  const toggleAttendance = useCallback(async (id) => {
+    setAttOpen((cur) => (cur === id ? "" : id));
+    setAttData((prev) => {
+      if (prev[id]) return prev; // already loaded/loading
+      // kick off the lazy fetch
+      getClassAttendance(id)
+        .then((res) =>
+          setAttData((p) => ({
+            ...p,
+            [id]: { loading: false, list: Array.isArray(res?.data) ? res.data : [], title: res?.title },
+          }))
+        )
+        .catch(() =>
+          setAttData((p) => ({ ...p, [id]: { loading: false, list: [], error: true } }))
+        );
+      return { ...prev, [id]: { loading: true, list: [] } };
+    });
+  }, []);
 
   /* -------- data loaders -------- */
-  const loadBookings = useCallback(async () => {
+  const loadBookings = useCallback(() => {
     if (isAdmin) return getBookings("", "");
     return getBookings(role, userId);
   }, [isAdmin, role, userId]);
@@ -121,23 +124,9 @@ const CalendarPage = () => {
       const b = await loadBookings();
       setBookings(Array.isArray(b) ? b : []);
     } catch {
-      setError("Could not load your bookings. Please try again.");
+      setError("Could not load the lessons schedule. Please try again.");
     }
   }, [loadBookings]);
-
-  const loadTeacherSlots = useCallback(async (tid) => {
-    if (!tid) { setSlots([]); return; }
-    setSlotsLoading(true);
-    try {
-      const s = await getSlots(tid, todayISO(), addDaysISO(14));
-      setSlots(Array.isArray(s) ? s : []);
-    } catch {
-      setSlots([]);
-      setBookingMsg({ type: "err", text: "Could not load open slots for this teacher." });
-    } finally {
-      setSlotsLoading(false);
-    }
-  }, []);
 
   // initial mount
   useEffect(() => {
@@ -147,37 +136,22 @@ const CalendarPage = () => {
       setLoading(true);
       try {
         const tasks = [loadBookings()];
-        if (isStudent) tasks.push(getProviders(lab));
-        if (isTeacher) tasks.push(getAvailability(userId));
+        if (isAdmin) tasks.push(getProviders());
         const results = await Promise.allSettled(tasks);
-
         if (!alive) return;
 
         const bRes = results[0];
         if (bRes.status === "fulfilled" && Array.isArray(bRes.value)) {
           setBookings(bRes.value);
         } else {
-          setError("Could not load your bookings. Please try again.");
+          setError("Could not load the lessons schedule. Please try again.");
         }
 
-        if (isStudent) {
-          const tRes = results[1];
-          const list = tRes.status === "fulfilled" && Array.isArray(tRes.value) ? tRes.value : [];
-          setTeachers(list);
-        }
-        if (isTeacher) {
-          const aRes = results[1];
-          if (aRes.status === "fulfilled" && aRes.value) {
-            const av = aRes.value;
-            const seeded = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-            if (av.days) {
-              Object.keys(seeded).forEach((k) => {
-                if (Array.isArray(av.days[k])) seeded[k] = av.days[k].map((w) => [...w]);
-              });
-            }
-            setDays(seeded);
-            if (av.slotMinutes) setSlotMinutes(Number(av.slotMinutes));
-          }
+        if (isAdmin) {
+          const pRes = results[1];
+          const list = pRes.status === "fulfilled" && Array.isArray(pRes.value) ? pRes.value : [];
+          setProviders(list);
+          if (list.length) setTeacherFilter(String(list[0]._id));
         }
       } catch {
         if (alive) setError("Something went wrong loading the calendar.");
@@ -189,12 +163,22 @@ const CalendarPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* -------- month grid + my-booking marks -------- */
+  /* -------- filtering + month marks -------- */
+  // Which lessons drive the calendar + day list (admin can narrow to one teacher).
+  const displayBookings = useMemo(() => {
+    if (isAdmin && teacherFilter && teacherFilter !== ALL) {
+      return bookings.filter(
+        (b) => String(b.teacherId || b.providerId) === String(teacherFilter)
+      );
+    }
+    return bookings;
+  }, [bookings, isAdmin, teacherFilter]);
+
   const bookingsByDate = useMemo(() => {
     const map = {};
-    bookings.forEach((b) => { (map[b.date] = map[b.date] || []).push(b); });
+    displayBookings.forEach((b) => { (map[b.date] = map[b.date] || []).push(b); });
     return map;
-  }, [bookings]);
+  }, [displayBookings]);
 
   const monthCells = useMemo(() => buildMonth(year, month), [year, month]);
   const shiftMonth = (delta) => {
@@ -203,97 +187,112 @@ const CalendarPage = () => {
     if (m > 11) { m = 0; y++; }
     setMonth(m); setYear(y);
   };
-  const selectedDayBookings = selectedDay
-    ? (bookingsByDate[selectedDay] || []).slice().sort((a, b) => a.start.localeCompare(b.start))
-    : [];
 
-  /* -------- student: book -------- */
-  const onTeacherChange = (e) => {
-    const tid = e.target.value;
-    setTeacherId(tid);
-    setChosenSlot(null);
-    setBookingMsg(null);
-    loadTeacherSlots(tid);
-  };
+  const selectedDayBookings = useMemo(() => (
+    selectedDay
+      ? (bookingsByDate[selectedDay] || []).slice().sort((a, b) => a.start.localeCompare(b.start))
+      : []
+  ), [bookingsByDate, selectedDay]);
 
-  const slotsByDate = useMemo(() => {
-    const map = {};
-    slots.forEach((s) => { (map[s.date] = map[s.date] || []).push(s); });
-    Object.keys(map).forEach((d) => map[d].sort((a, b) => a.start.localeCompare(b.start)));
-    return map;
-  }, [slots]);
-
-  const confirmBooking = async () => {
-    if (!chosenSlot) return;
-    const provider = teachers.find((t) => String(t._id) === String(teacherId));
-    setBookingMsg(null);
-    try {
-      const res = await createBooking({
-        providerId: teacherId,
-        providerName: provider ? provider.name : "",
-        studentId: user._id,
-        studentName: user.name,
-        date: chosenSlot.date,
-        start: chosenSlot.start,
-        topic: topic.trim(),
-      });
-      if (res && res.success === false) {
-        setBookingMsg({ type: "err", text: res.message || "That slot is no longer available." });
-        await loadTeacherSlots(teacherId);
-        return;
-      }
-      setBookingMsg({ type: "ok", text: "Session booked!" });
-      setChosenSlot(null);
-      setTopic("");
-      await Promise.all([refreshBookings(), loadTeacherSlots(teacherId)]);
-    } catch {
-      setBookingMsg({ type: "err", text: "Booking failed. Please try again." });
+  /* -------- add target (who a new lesson is created for) -------- */
+  const addTarget = useMemo(() => {
+    if (isTeacher) return { id: userId, name: user?.name || "" };
+    if (isAdmin && teacherFilter && teacherFilter !== ALL) {
+      const p = providers.find((x) => String(x._id) === String(teacherFilter));
+      return p ? { id: p._id, name: p.name } : null;
     }
-  };
+    return null;
+  }, [isTeacher, isAdmin, teacherFilter, providers, userId, user]);
 
-  const onCancel = async (id) => {
-    try {
-      await cancelBooking(id);
-      await refreshBookings();
-      if (isStudent && teacherId) loadTeacherSlots(teacherId);
-    } catch {
-      setError("Could not cancel that booking.");
-    }
-  };
+  const canAdd = !!addTarget;
 
-  /* -------- teacher: availability editor -------- */
-  const addWindow = (key) => {
-    const s = addStart[key];
-    const en = addEnd[key];
-    if (!s || !en || s >= en) {
-      setAvailMsg({ type: "err", text: "Pick a start time earlier than the end time." });
+  /* -------- mutations -------- */
+  const onAdd = async () => {
+    if (!addTarget) return;
+    const { start, end, title, studentName } = form;
+    if (!start || !end || start >= end) {
+      setAddMsg({ type: "err", text: "Pick a start time earlier than the end time." });
       return;
     }
-    setAvailMsg(null);
-    setDays((prev) => {
-      const next = { ...prev };
-      const list = [...(next[key] || []), [s, en]].sort((a, b) => a[0].localeCompare(b[0]));
-      next[key] = list;
-      return next;
-    });
-    setAddStart((p) => ({ ...p, [key]: "" }));
-    setAddEnd((p) => ({ ...p, [key]: "" }));
-  };
-  const removeWindow = (key, idx) => {
-    setDays((prev) => {
-      const next = { ...prev };
-      next[key] = (next[key] || []).filter((_, i) => i !== idx);
-      return next;
-    });
-  };
-  const saveAvailability = async () => {
-    setAvailMsg(null);
-    try {
-      await setAvailability(userId, days, slotMinutes);
-      setAvailMsg({ type: "ok", text: "Availability saved." });
-    } catch {
-      setAvailMsg({ type: "err", text: "Could not save availability." });
+    if (!title.trim()) {
+      setAddMsg({ type: "err", text: "Give the lesson a title." });
+      return;
     }
+    setAddMsg(null);
+    try {
+      const res = await createBooking({
+        teacherId: addTarget.id,
+        teacherName: addTarget.name,
+        date: selectedDay,
+        start,
+        end,
+        title: title.trim(),
+        studentName: studentName.trim(),
+      });
+      if (res && res.success === false) {
+        setAddMsg({ type: "err", text: res.message || "Could not add that lesson." });
+        return;
+      }
+      setForm(emptyForm);
+      setAddMsg({ type: "ok", text: "Lesson added." });
+      await refreshBookings();
+    } catch {
+      setAddMsg({ type: "err", text: "Could not add that lesson. Please try again." });
+    }
+  };
+
+  const startEdit = (l) => {
+    setEditId(l._id);
+    setEditForm({
+      start: l.start || "",
+      end: l.end || "",
+      title: l.title || "",
+      studentName: l.studentName || "",
+    });
+  };
+  const cancelEdit = () => { setEditId(""); setEditForm(emptyForm); };
+
+  const saveEdit = async () => {
+    const { start, end, title, studentName } = editForm;
+    if (!start || !end || start >= end) {
+      setError("Pick a start time earlier than the end time.");
+      return;
+    }
+    if (!title.trim()) {
+      setError("Give the lesson a title.");
+      return;
+    }
+    setError("");
+    try {
+      await updateBooking(editId, {
+        start,
+        end,
+        title: title.trim(),
+        studentName: studentName.trim(),
+      });
+      cancelEdit();
+      await refreshBookings();
+    } catch {
+      setError("Could not save changes to that lesson.");
+    }
+  };
+
+  const onDelete = async (id) => {
+    try {
+      await cancelBooking(id);
+      if (editId === id) cancelEdit();
+      await refreshBookings();
+    } catch {
+      setError("Could not delete that lesson.");
+    }
+  };
+
+  /* -------- lesson subtitle line -------- */
+  const subtitle = (l) => {
+    const loc = l.location ? ` · 📍 ${l.location}` : "";
+    if (isStudent) return `${l.teacherName || "Teacher"}${loc}`;
+    if (isAdmin) return `${l.teacherName || "Teacher"} · ${l.studentName || "No student"}${loc}`;
+    return `${l.studentName || "No student assigned"}${loc}`;
   };
 
   /* ------------------------------- guards ------------------------------- */
@@ -304,7 +303,7 @@ const CalendarPage = () => {
           <div>
             <h2 style={{ marginBottom: 10 }}>You are not signed in</h2>
             <p className="spl-empty" style={{ padding: 0, marginBottom: 16 }}>
-              Please log in to view your calendar and bookings.
+              Please log in to view the lessons schedule.
             </p>
             <a href="/login">Go to login →</a>
           </div>
@@ -313,25 +312,18 @@ const CalendarPage = () => {
     );
   }
 
-  const upcomingBookings = bookings
-    .slice()
-    .sort((a, b) =>
-      (a.date + a.start).localeCompare(b.date + b.start))
-    .filter((b) => b.date + b.start >= todayISO() + "00:00" || b.date >= todayISO());
-
   /* -------------------------------- render ------------------------------- */
   return (
     <div className="cal-page spl-root">
       <header className="cal-header">
         <div className="cal-title">
-          <span className="cal-dot">📅</span> Calendar
+          <span className="cal-dot">📅</span> Lessons Schedule
         </div>
         <div className="cal-whoami">
           <b>{user.name || "Member"}</b>
           <span>{role}</span>
         </div>
       </header>
-      {/* keep back button in the flow of the header on wide, but place after name */}
       <div style={{ position: "relative", zIndex: 1 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "14px 28px 0" }}>
           <button className="cal-back" onClick={() => navigate(roleDashboard(role))}>
@@ -341,10 +333,10 @@ const CalendarPage = () => {
       </div>
 
       {loading ? (
-        <div className="cal-center"><p className="spl-empty">Loading your calendar…</p></div>
+        <div className="cal-center"><p className="spl-empty">Loading the lessons schedule…</p></div>
       ) : (
         <div className="cal-body">
-          {/* ---------------- LEFT: month calendar ---------------- */}
+          {/* ---------------- LEFT: month calendar + selected day ---------------- */}
           <section className="cal-card cal-month">
             {error && <div className="cal-msg err">{error}</div>}
             <div className="spl-cal-head">
@@ -355,17 +347,19 @@ const CalendarPage = () => {
             <div className="spl-cal-grid">
               {DOW.map((d) => <div className="spl-cal-dow" key={d}>{d}</div>)}
               {monthCells.map((c, i) => {
-                const has = !c.muted && bookingsByDate[c.date];
+                const has = !c.muted && !!bookingsByDate[c.date];
                 let cls = "spl-cal-day";
                 if (c.muted) cls += " muted";
-                else if (c.date === todayISO()) cls += " today";
-                if (has) cls += " has";
-                if (!c.muted && c.date === selectedDay) cls += " has";
+                else {
+                  if (c.date === todayISO()) cls += " today";
+                  if (c.date === selectedDay) cls += " sel";
+                  if (has) cls += " has";
+                }
                 return (
                   <div
                     key={i}
                     className={cls}
-                    onClick={() => !c.muted && has && setSelectedDay(c.date)}
+                    onClick={() => !c.muted && setSelectedDay(c.date)}
                   >
                     {c.day}
                     {has && <span className="ev" />}
@@ -376,20 +370,78 @@ const CalendarPage = () => {
 
             {selectedDay && (
               <>
-                <div className="spl-label" style={{ marginTop: 20 }}>
+                <div className="spl-label" style={{ marginTop: 20, display: "flex", alignItems: "center" }}>
                   {prettyDate(selectedDay, { weekday: "long", month: "long", day: "numeric" })}
+                  <span className="cal-count" style={{ marginLeft: "auto" }}>{selectedDayBookings.length}</span>
                 </div>
                 {selectedDayBookings.length === 0 ? (
-                  <p className="spl-empty">No sessions on this day.</p>
+                  <p className="spl-empty">No lessons on this day.</p>
                 ) : (
-                  selectedDayBookings.map((b) => (
-                    <div className="spl-list-row" key={b._id}>
-                      <span className="ic">🎓</span>
-                      <span>
-                        <b>{b.start}–{b.end} · {isStudent ? b.teacherName : b.studentName}</b>
-                        <span>{b.topic || "No topic"}</span>
-                      </span>
-                    </div>
+                  selectedDayBookings.map((l) => (
+                    editId === l._id ? (
+                      <div className="spl-list-row cal-edit-row" key={l._id}>
+                        <div className="cal-form" style={{ width: "100%" }}>
+                          <div className="cal-form-row">
+                            <input type="time" className="spl-input" value={editForm.start}
+                              onChange={(e) => setEditForm((p) => ({ ...p, start: e.target.value }))} />
+                            <input type="time" className="spl-input" value={editForm.end}
+                              onChange={(e) => setEditForm((p) => ({ ...p, end: e.target.value }))} />
+                          </div>
+                          <input className="spl-input" placeholder="Lesson title" value={editForm.title}
+                            onChange={(e) => setEditForm((p) => ({ ...p, title: e.target.value }))} />
+                          <input className="spl-input" placeholder="Student name" value={editForm.studentName}
+                            onChange={(e) => setEditForm((p) => ({ ...p, studentName: e.target.value }))} />
+                          <div className="cal-form-row">
+                            <button className="spl-btn primary" onClick={saveEdit}>Save</button>
+                            <button className="spl-btn" onClick={cancelEdit}>Cancel</button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <React.Fragment key={l._id}>
+                      <div className="spl-list-row">
+                        <span className="ic">🎓</span>
+                        <span style={{ flex: 1, minWidth: 0 }}>
+                          <b>{l.start}–{l.end} · {l.title}</b>
+                          <span>{subtitle(l)}</span>
+                        </span>
+                        <span className="cal-row-actions" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                          {l.meetingUrl && <a className="cal-gcal" href={`/class/${l._id}`} onClick={(e) => { e.preventDefault(); navigate(`/class/${l._id}`); }} title="Join the live class">🎥 Join class</a>}
+                          {canManage && (
+                            <span className="cal-chip" title="View who attended">
+                              👥 {(l.attendance?.length ?? attData[l._id]?.list?.length ?? 0)} attended
+                              <button onClick={() => toggleAttendance(l._id)} aria-expanded={attOpen === l._id}>
+                                {attOpen === l._id ? "▴" : "▾"}
+                              </button>
+                            </span>
+                          )}
+                          <a className="cal-gcal" href={googleCalUrl(l)} target="_blank" rel="noreferrer" title="Add to Google Calendar">📆 Google</a>
+                          {canManage && <button className="spl-btn" onClick={() => startEdit(l)}>Edit</button>}
+                          {canManage && <button className="cal-danger" onClick={() => onDelete(l._id)}>Delete</button>}
+                        </span>
+                      </div>
+                      {canManage && attOpen === l._id && (
+                        <div className="spl-list-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 6 }}>
+                          {attData[l._id]?.loading ? (
+                            <p className="spl-empty" style={{ padding: 0 }}>Loading attendance…</p>
+                          ) : attData[l._id]?.error ? (
+                            <p className="spl-empty" style={{ padding: 0 }}>Could not load attendance.</p>
+                          ) : (attData[l._id]?.list?.length ? (
+                            attData[l._id].list.map((a, ai) => (
+                              <span key={a.studentId || ai} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5 }}>
+                                <b style={{ fontWeight: 600 }}>{a.name || "Student"}</b>
+                                <span style={{ color: "#9aa3c2" }}>
+                                  {a.joinedAt ? new Date(a.joinedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
+                                </span>
+                              </span>
+                            ))
+                          ) : (
+                            <span className="cal-chip-none">No one has joined yet.</span>
+                          ))}
+                        </div>
+                      )}
+                      </React.Fragment>
+                    )
                   ))
                 )}
               </>
@@ -399,218 +451,70 @@ const CalendarPage = () => {
           {/* ---------------- RIGHT: role panel ---------------- */}
           <aside>
             {isStudent && (
-              <>
-                <div className="cal-card">
-                  <div className="cal-card-title">📖 Book a session</div>
-                  <div className="spl-label">{lab && LAB_LABELS[lab] ? LAB_LABELS[lab] : "Tutor · mentor · coach"}</div>
-                  <select className="spl-select" value={teacherId} onChange={onTeacherChange}>
-                    <option value="">Select someone to book…</option>
-                    {teachers.map((t) => (
-                      <option key={t._id} value={t._id}>
-                        {t.name}{t.role ? ` · ${t.role}` : ""}{t.location ? ` · ${t.location}` : ""}
-                      </option>
-                    ))}
-                  </select>
-                  {(() => {
-                    const p = teachers.find((t) => String(t._id) === String(teacherId));
-                    return p ? (
-                      <p className="spl-sub" style={{ marginTop: 8 }}>
-                        {p.subject ? `${p.subject} · ` : ""}📍 {p.location || "Online"}
-                      </p>
-                    ) : null;
-                  })()}
-
-                  {bookingMsg && (
-                    <div className={`cal-msg ${bookingMsg.type}`} style={{ marginTop: 12 }}>
-                      {bookingMsg.text}
-                    </div>
-                  )}
-
-                  {teacherId && (
-                    <div style={{ marginTop: 16 }}>
-                      {slotsLoading ? (
-                        <p className="spl-empty">Loading open slots…</p>
-                      ) : slots.length === 0 ? (
-                        <p className="spl-empty">No open slots in the next 14 days.</p>
-                      ) : (
-                        Object.keys(slotsByDate).sort().map((d) => (
-                          <div className="cal-slotgroup" key={d}>
-                            <div className="cal-slotgroup-date">
-                              {prettyDate(d, { weekday: "short", month: "short", day: "numeric" })}
-                            </div>
-                            <div className="cal-slots">
-                              {slotsByDate[d].map((s) => {
-                                const on = chosenSlot && chosenSlot.date === s.date && chosenSlot.start === s.start;
-                                return (
-                                  <button
-                                    key={s.start}
-                                    className={`cal-slot${on ? " on" : ""}`}
-                                    onClick={() => { setChosenSlot(s); setBookingMsg(null); }}
-                                  >
-                                    {s.start}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        ))
-                      )}
-
-                      {chosenSlot && (
-                        <div className="cal-confirm">
-                          <div className="cal-confirm-when">
-                            {prettyDate(chosenSlot.date, { weekday: "long", month: "short", day: "numeric" })} · {chosenSlot.start}–{chosenSlot.end}
-                          </div>
-                          <input
-                            className="spl-input"
-                            placeholder="Topic (optional)"
-                            value={topic}
-                            onChange={(e) => setTopic(e.target.value)}
-                          />
-                          <button className="spl-btn primary" onClick={confirmBooking}>
-                            Confirm booking
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="cal-card">
-                  <div className="cal-card-title">
-                    🗓 My upcoming sessions
-                    <span className="cal-count">{upcomingBookings.length}</span>
-                  </div>
-                  {upcomingBookings.length === 0 ? (
-                    <p className="spl-empty">No upcoming sessions yet.</p>
-                  ) : (
-                    upcomingBookings.map((b) => (
-                      <div className="spl-list-row" key={b._id}>
-                        <span className="ic">🎓</span>
-                        <span style={{ flex: 1, minWidth: 0 }}>
-                          <b>{prettyDate(b.date, { month: "short", day: "numeric" })} · {b.start}–{b.end}</b>
-                          <span>{b.providerName || b.teacherName}{b.location ? ` · 📍 ${b.location}` : ""}{b.topic ? ` · ${b.topic}` : ""}</span>
-                        </span>
-                        <span className="cal-row-actions" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          <a className="cal-gcal" href={googleCalUrl(b)} target="_blank" rel="noreferrer" title="Add to Google Calendar">📆 Google</a>
-                          <button className="cal-danger" onClick={() => onCancel(b._id)}>Cancel</button>
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </>
-            )}
-
-            {isTeacher && (
-              <>
-                <div className="cal-card">
-                  <div className="cal-card-title">🕑 My availability</div>
-                  {availMsg && <div className={`cal-msg ${availMsg.type}`}>{availMsg.text}</div>}
-                  {WEEK_EDIT.map(({ key, label }) => (
-                    <div className="cal-day-row" key={key}>
-                      <div className="cal-day-name">{label}</div>
-                      <div className="cal-chips">
-                        {(days[key] || []).length === 0 ? (
-                          <span className="cal-chip-none">No windows</span>
-                        ) : (
-                          days[key].map((w, i) => (
-                            <span className="cal-chip" key={`${w[0]}-${w[1]}-${i}`}>
-                              {w[0]}–{w[1]}
-                              <button onClick={() => removeWindow(key, i)} aria-label="Remove">✕</button>
-                            </span>
-                          ))
-                        )}
-                      </div>
-                      <div className="cal-addrow">
-                        <input
-                          type="time"
-                          value={addStart[key] || ""}
-                          onChange={(e) => setAddStart((p) => ({ ...p, [key]: e.target.value }))}
-                        />
-                        <span className="cal-sep">to</span>
-                        <input
-                          type="time"
-                          value={addEnd[key] || ""}
-                          onChange={(e) => setAddEnd((p) => ({ ...p, [key]: e.target.value }))}
-                        />
-                        <button className="cal-add-btn" onClick={() => addWindow(key)}>Add</button>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="cal-avail-foot">
-                    <div>
-                      <div className="spl-label">Slot length</div>
-                      <select
-                        className="spl-select"
-                        value={slotMinutes}
-                        onChange={(e) => setSlotMinutes(Number(e.target.value))}
-                      >
-                        {[15, 30, 45, 60].map((m) => (
-                          <option key={m} value={m}>{m} min</option>
-                        ))}
-                      </select>
-                    </div>
-                    <button className="spl-btn primary" onClick={saveAvailability}>
-                      Save availability
-                    </button>
-                  </div>
-                </div>
-
-                <div className="cal-card">
-                  <div className="cal-card-title">
-                    📥 Upcoming bookings
-                    <span className="cal-count">{upcomingBookings.length}</span>
-                  </div>
-                  {upcomingBookings.length === 0 ? (
-                    <p className="spl-empty">No bookings yet.</p>
-                  ) : (
-                    upcomingBookings.map((b) => (
-                      <div className="spl-list-row" key={b._id}>
-                        <span className="ic">🧑‍🎓</span>
-                        <span style={{ flex: 1, minWidth: 0 }}>
-                          <b>{prettyDate(b.date, { month: "short", day: "numeric" })} · {b.start}–{b.end}</b>
-                          <span>{b.studentName}{b.topic ? ` · ${b.topic}` : ""}</span>
-                        </span>
-                        <span className="cal-row-actions" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          <a className="cal-gcal" href={googleCalUrl(b)} target="_blank" rel="noreferrer" title="Add to Google Calendar">📆 Google</a>
-                          <button className="cal-danger" onClick={() => onCancel(b._id)}>Cancel</button>
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </>
+              <div className="cal-card">
+                <div className="cal-card-title">🎓 Your lessons</div>
+                <p className="spl-empty" style={{ padding: 0 }}>
+                  This is a read-only schedule. Pick any day on the calendar to see the
+                  lessons assigned to you — each with its time, teacher, location and an
+                  “Add to Google Calendar” link.
+                </p>
+              </div>
             )}
 
             {isAdmin && (
               <div className="cal-card">
-                <div className="cal-card-title">
-                  🛡 All bookings
-                  <span className="cal-count">{bookings.length}</span>
+                <div className="cal-card-title">🛡 Teacher</div>
+                <div className="spl-label">Show lessons for</div>
+                <select
+                  className="spl-select"
+                  value={teacherFilter}
+                  onChange={(e) => { setTeacherFilter(e.target.value); cancelEdit(); setAddMsg(null); }}
+                >
+                  <option value={ALL}>All teachers</option>
+                  {providers.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      {p.name}{p.subject ? ` · ${p.subject}` : ""}{p.location ? ` · ${p.location}` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {canManage && (
+              <div className="cal-card">
+                <div className="cal-card-title">➕ Add lesson</div>
+                <div className="spl-label">
+                  {prettyDate(selectedDay, { weekday: "long", month: "long", day: "numeric" })}
+                  {addTarget ? ` · ${addTarget.name}` : ""}
                 </div>
-                {bookings.length === 0 ? (
-                  <p className="spl-empty">No bookings in the system.</p>
-                ) : (
-                  bookings
-                    .slice()
-                    .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start))
-                    .map((b) => (
-                      <div className="spl-list-row" key={b._id}>
-                        <span className="ic">🎓</span>
-                        <span style={{ flex: 1, minWidth: 0 }}>
-                          <b>{b.studentName} ↔ {b.providerName || b.teacherName}</b>
-                          <span>
-                            {prettyDate(b.date, { month: "short", day: "numeric" })} · {b.start}–{b.end}
-                            {b.location ? ` · 📍 ${b.location}` : ""}{b.topic ? ` · ${b.topic}` : ""}
-                          </span>
-                        </span>
-                        <span className="cal-row-actions">
-                          <button className="cal-danger" onClick={() => onCancel(b._id)}>Cancel</button>
-                        </span>
-                      </div>
-                    ))
+
+                {isAdmin && !canAdd && (
+                  <p className="spl-empty" style={{ padding: 0, marginTop: 8 }}>
+                    Choose a specific teacher above to add a lesson.
+                  </p>
                 )}
+
+                {addMsg && (
+                  <div className={`cal-msg ${addMsg.type}`} style={{ marginTop: 12 }}>{addMsg.text}</div>
+                )}
+
+                <div className="cal-form" style={{ marginTop: 12 }}>
+                  <div className="cal-form-row">
+                    <input type="time" className="spl-input" aria-label="Start time"
+                      disabled={!canAdd} value={form.start}
+                      onChange={(e) => setForm((p) => ({ ...p, start: e.target.value }))} />
+                    <input type="time" className="spl-input" aria-label="End time"
+                      disabled={!canAdd} value={form.end}
+                      onChange={(e) => setForm((p) => ({ ...p, end: e.target.value }))} />
+                  </div>
+                  <input className="spl-input" placeholder="Lesson title" disabled={!canAdd} value={form.title}
+                    onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} />
+                  <input className="spl-input" placeholder="Student name (optional)" disabled={!canAdd} value={form.studentName}
+                    onChange={(e) => setForm((p) => ({ ...p, studentName: e.target.value }))} />
+                  <button className="spl-btn primary" disabled={!canAdd} onClick={onAdd}>
+                    Add lesson
+                  </button>
+                </div>
               </div>
             )}
           </aside>
