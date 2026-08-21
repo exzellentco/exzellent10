@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Plus, CheckCircle, Clock } from "lucide-react";
+import { ArrowLeft, Plus, CheckCircle, Clock, Wallet, BookOpen, Users, Sparkles } from "lucide-react";
 import {
   getMyTeacherProfile,
   getTeacherDashboard,
@@ -393,6 +393,7 @@ const TeacherDashboard = () => {
             <>
               <div className="dstats">
                 <div className="dstat" style={{ cursor: "pointer" }} onClick={() => setView("earnings")} title="View earnings">
+                  <span className="di"><Wallet size={18} /></span>
                   <span>Earnings · this month</span>
                   <b>{earnMonth != null ? euroFull(earnMonth) : "—"}</b>
                   {earnMonth != null && earnDelta !== 0 && (
@@ -401,13 +402,18 @@ const TeacherDashboard = () => {
                     </i>
                   )}
                 </div>
-                <div className="dstat"><span>Published courses</span><b>{publishedCount} <small>/{totalCourses}</small></b></div>
+                <div className="dstat">
+                  <span className="di"><BookOpen size={18} /></span>
+                  <span>Published courses</span><b>{publishedCount} <small>/{totalCourses}</small></b>
+                </div>
                 <div className="dstat" style={{ cursor: "pointer" }} onClick={() => setView("students")} title="View students">
+                  <span className="di"><Users size={18} /></span>
                   <span>Active students</span>
                   <b>{activeStudents != null ? activeStudents : "—"}</b>
                   {activeStudents != null && newStudents > 0 && <i className="up">▲ {newStudents} new</i>}
                 </div>
                 <div className="dstat" style={{ cursor: "pointer" }} onClick={() => openAiTools("exam")} title="Open AI Tools">
+                  <span className="di"><Sparkles size={18} /></span>
                   <span>AI generations</span><b>{aiGenerations.toLocaleString("en-US")}</b>
                 </div>
               </div>

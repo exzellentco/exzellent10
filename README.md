@@ -133,7 +133,13 @@ Two mechanisms reach the backend, and some newer features deliberately use the s
 
 | Feature | What it does | Lives in |
 | --- | --- | --- |
-| **Auth + signup** | Login (email/password + Google), 3-step signup with **email OTP**, admin **approval** gating | `pages/Login&Signup/`, `APIs/Signup/` |
+| **Auth + signup** | **Real email/password login** (wrong password rejected, passwords never leave the server) + Google, 3-step signup with **email OTP**, admin approval | `pages/Login&Signup/`, `APIs/Signup/` |
+| **Pricing & credits** | Subscription tiers + a **credit wallet** (per-plan allowances, sign-up bonus, per-use AI cost), and growth mechanics: **countdown timer, yearly-first upsell + monthly downsell, live online/member counters** | `pages/Pricing.jsx`, `pages/Payment/Offer.jsx`, stats in mock |
+| **Invite-only + waitlist** | BestSecret-style registration gate, personal **referral codes**, admin **waitlist → invite**, referral rewards paid in **credits** | `pages/Login&Signup/Signup.jsx`, `pages/Waitlist.jsx`, `pages/Admin/WaitlistAdmin.jsx` |
+| **Community** | Skool-style feed — posts, likes, comments, spaces | `pages/Community.jsx` |
+| **Affiliate / Ambassador** | Self-selling explainer pages + a partner dashboard (referral stats & earnings) | `pages/Affiliates.jsx`, `pages/Ambassadors.jsx`, `pages/PartnerDashboard.jsx` |
+| **Live classes** | Preply-style booking, an **in-site Zoom classroom** (`/class/:id`, SDK-ready) and **attendance tracking** | `pages/BookClass.jsx`, `pages/ClassRoom.jsx` |
+| **Learning tools** | **Spaced-repetition** flashcards + streaks, **quizzes + certificates**, teacher↔student **speaking assignments** | `components/Review/`, `components/Assignments/`, `AiTools/StudyKitView.jsx` |
 | **Student dashboard** | Profile, enrolled courses, progress, a **Tools** panel (Calendar, AI, Teachers, Test Creator, Top tests, Resources) | `pages/StudentDashboard.jsx`, `components/Tools/` |
 | **Teacher dashboard** | Live stats (earnings, students, courses), **AI Content Engine**, course/section management, earnings chart | `pages/TeacherDashboard.jsx` |
 | **Admin** | Manage **teachers** (approve/edit/delete) and **students** (approve/edit/delete), courses, webinars, jobs | `pages/Admin/` |
@@ -340,6 +346,20 @@ This folder ships with working `.env` values so it runs out of the box. If you'r
 > Note: `VITE_*` values are **compiled into the browser bundle** and are public by design
 > (Stripe *publishable* key, Google client ID, Cloudinary preset). The only true secret is the
 > server-side `GROQ_API_KEY` in `mock-backend/.env`, which never reaches the browser.
+
+---
+
+## 15. Changelog
+
+### Unreleased — dashboards, pricing mechanics & landing polish *(since the last push `86d219c`)*
+- **Pricing page growth mechanics** — an evergreen **countdown timer**, **yearly billing presented first** with a monthly *downsell* nudge (airline-style upsell→downsell), and a live **"X online now · N members and growing"** social-proof bar.
+- **Live-stats backend** — `GET /api/stats` (active users in a 5-minute window + a gently-growing member count) and `POST /api/stats/heartbeat`; login marks a user active.
+- **Dashboard visual upgrades** — student: a circular **progress ring**, a **🔥 streak** and icon **stat tiles**; teacher: iconed stat tiles; admin (students & teachers): **summary stat rows**.
+- **Learning-ecosystem page** (`public/learning-ecosystem.html`) — a **3D rotating teacher ring**, a live social-proof hero bar, individual **tutor cards**, CSS **product-preview mockups**, and fixed the **"Start free" / "Apply to teach"** CTAs (were dead `mailto:` links) to real `/signup` and `/teacher-form`, plus a **"See plans" → `/pricing`** entry.
+- **Housekeeping** — fixed all ESLint errors (config-file Node env + stray directives); `npm run build` and `npm run lint` are clean.
+
+### `86d219c` — Launch feature set
+Credits & pricing, real email+password auth, invite-only registration + waitlist + referral tracking, community feed, affiliate/ambassador pages + partner dashboard, Preply-style booking + in-site Zoom classroom + attendance, AI tools with credit caps, spaced repetition, quizzes + certificates, teacher↔student assignments, plus course-browsing and webinar fixes.
 
 ---
 

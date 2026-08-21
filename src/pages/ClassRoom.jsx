@@ -96,7 +96,6 @@ const embedZoomMeeting = async ({
     return true;
   } catch (err) {
     // Swallow — page degrades to the fallback panel.
-    // eslint-disable-next-line no-console
     console.error("[ClassRoom] Zoom embed failed:", err);
     return false;
   }
@@ -167,7 +166,6 @@ const ClassRoom = () => {
         const att = await markAttendance(bookingId);
         if (!cancelled && att && att.success !== false) setAttended(true);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.warn("[ClassRoom] attendance not recorded:", err);
       }
       if (cancelled) return;
@@ -189,7 +187,6 @@ const ClassRoom = () => {
         }
         // configured === false → fall through to the in-site panel.
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.warn("[ClassRoom] Zoom signature/embed skipped:", err);
       }
 

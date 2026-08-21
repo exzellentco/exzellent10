@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Info, Trash2, Check, Pencil, X } from "lucide-react";
+import { UserPlus, Info, Trash2, Check, Pencil, X, Users, BadgeCheck, Clock, GraduationCap } from "lucide-react";
 import { fetchTeacherProfile, approveTeacher, deleteTeacher, updateTeacherProfile } from "../../APIs/AdminAddTechers";
 import DashboardShell from "../../components/DashboardShell";
 
@@ -180,6 +180,22 @@ const Teachers = ({ isTeachersPageLoading, setTeachersPageLoading }) => {
     );
   }
 
+  // Stats
+  const totalTeachers = teachers.length;
+  const approvedCount = teachers.filter((t) => t.isApproved).length;
+  const pendingTeachers = totalTeachers - approvedCount;
+  const languagesTaught = teachers.reduce(
+    (sum, t) => sum + (Array.isArray(t.taughtLanguages) ? t.taughtLanguages.length : 0),
+    0
+  );
+
+  const teacherStats = [
+    { value: totalTeachers, label: "Total teachers", Icon: Users },
+    { value: approvedCount, label: "Approved", Icon: BadgeCheck },
+    { value: pendingTeachers, label: "Pending", Icon: Clock },
+    { value: languagesTaught, label: "Languages taught", Icon: GraduationCap },
+  ];
+
   return (
     <DashboardShell
       role="admin"
@@ -192,6 +208,17 @@ const Teachers = ({ isTeachersPageLoading, setTeachersPageLoading }) => {
         </button>
       }
     >
+      {/* Stats */}
+      <div className="ex-stats ex-reveal">
+        {teacherStats.map((s) => (
+          <div key={s.label} className="ex-stat">
+            <s.Icon size={18} style={{ color: "var(--pL)", marginBottom: 8, opacity: 0.9 }} />
+            <b>{s.value}</b>
+            <span>{s.label}</span>
+          </div>
+        ))}
+      </div>
+
       {teachers.length === 0 ? (
         <div className="ex-card" style={{ textAlign: "center" }}>
           <p className="ex-lead" style={{ margin: "0 auto" }}>No teachers found.</p>

@@ -7,6 +7,9 @@ import {
   Mail,
   BookOpen,
   AlertTriangle,
+  Flame,
+  Video,
+  Coins,
 } from "lucide-react";
 import EditProfileForm from "../components/StudentComponent/EditProfileForm";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
@@ -30,7 +33,16 @@ import ReviewPanel from "../components/Review/ReviewPanel";
 import StudentAssignments from "../components/Assignments/StudentAssignments";
 import BookLessonModal from "../components/Calendar/BookLessonModal";
 import ReferralPanel from "../components/Referral/ReferralPanel";
-import { getMyAttendance } from "../APIs/learning";
+import { getMyAttendance, getStreak } from "../APIs/learning";
+
+// Small visual stat tile for the dashboard.
+const StatTile = ({ icon, value, label, accent }) => (
+  <div style={{ border: "1px solid var(--ex-line)", borderRadius: 14, padding: "12px 14px" }}>
+    <span style={{ color: accent || "var(--pL)", display: "inline-flex" }}>{icon}</span>
+    <div style={{ fontFamily: "var(--ex-font)", fontWeight: 700, fontSize: "1.3rem", marginTop: 6, lineHeight: 1 }}>{value}</div>
+    <div style={{ color: "var(--ex-muted)", fontSize: ".78rem", marginTop: 3 }}>{label}</div>
+  </div>
+);
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);
@@ -56,6 +68,7 @@ const StudentDashboard = () => {
   const [progressLoading, setProgressLoading] = useState(false);
   const [registeredWebinars, setRegisteredWebinars] = useState([]);
   const [attendance, setAttendance] = useState({ attendedCount: 0, bookedCount: 0 });
+  const [streak, setStreak] = useState(0);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -307,6 +320,9 @@ const StudentDashboard = () => {
         }
       })
       .catch(() => {});
+    getStreak()
+      .then((res) => { if (alive && res?.streak) setStreak(res.streak.count || 0); })
+      .catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -491,28 +507,44 @@ const StudentDashboard = () => {
               </div>
             )}
 
-            {/* Quick stats */}
+            {/* Quick stats — visual */}
             <div className="mt-6 pt-6" style={{ borderTop: "1px solid var(--ex-line)" }}>
-              <div className="ex-eyebrow">Quick stats</div>
-              <div className="grid gap-3">
-                <div className="flex items-center justify-between" style={{ border: "1px solid var(--ex-line)", borderRadius: 12, padding: "12px 14px" }}>
-                  <span>Courses enrolled</span>
-                  <span style={{ fontWeight: 700, color: "var(--pL)" }}>{enrolledCourses.length}</span>
+              <div className="ex-eyebrow">Your progress</div>
+
+              {/* average-progress ring */}
+              <div className="flex items-center gap-4" style={{ border: "1px solid var(--ex-line)", borderRadius: 16, padding: "14px 16px", marginBottom: 12 }}>
+                <div style={{ position: "relative", width: 92, height: 92, flexShrink: 0 }}>
+                  <svg width="92" height="92" viewBox="0 0 92 92">
+                    <circle cx="46" cy="46" r="39" fill="none" stroke="var(--ex-line)" strokeWidth="9" />
+                    <circle cx="46" cy="46" r="39" fill="none" stroke="var(--pL)" strokeWidth="9" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 39}
+                      strokeDashoffset={2 * Math.PI * 39 * (1 - Math.min(100, avgProgress) / 100)}
+                      transform="rotate(-90 46 46)" style={{ transition: "stroke-dashoffset .8s ease" }} />
+                  </svg>
+                  <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
+                    <span style={{ fontFamily: "var(--ex-font)", fontWeight: 700, fontSize: "1.35rem" }}>{avgProgress}%</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between" style={{ border: "1px solid var(--ex-line)", borderRadius: 12, padding: "12px 14px" }}>
-                  <span>Average progress</span>
-                  <span style={{ fontWeight: 700, color: "var(--pL)" }}>{avgProgress}%</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: "1.02rem" }}>Average progress</div>
+                  <div className="ex-lead" style={{ fontSize: ".85rem" }}>
+                    Across {enrolledCourses.length} course{enrolledCourses.length === 1 ? "" : "s"}
+                  </div>
                 </div>
-                <div className="flex items-center justify-between" style={{ border: "1px solid var(--ex-line)", borderRadius: 12, padding: "12px 14px" }}>
-                  <span>Credits balance</span>
-                  <span className="flex items-center gap-2">
-                    <span style={{ fontWeight: 700, color: "var(--pL)" }}>{(studentData?.credits ?? 0).toLocaleString()}</span>
-                    <button className="ex-btn ex-btn-ghost" style={{ padding: "4px 10px", fontSize: ".75rem" }} onClick={() => navigate("/offer")}>Top up</button>
-                  </span>
-                </div>
-                <div className="flex items-center justify-between" style={{ border: "1px solid var(--ex-line)", borderRadius: 12, padding: "12px 14px" }}>
-                  <span>Classes attended</span>
-                  <span style={{ fontWeight: 700, color: "var(--pL)" }}>{attendance.attendedCount} / {attendance.bookedCount}</span>
+              </div>
+
+              {/* stat tiles */}
+              <div className="grid grid-cols-2 gap-3">
+                <StatTile icon={<BookOpen size={17} />} value={enrolledCourses.length} label="Courses" />
+                <StatTile icon={<Flame size={17} />} value={streak} label={`day streak`} accent="#fb923c" />
+                <StatTile icon={<Video size={17} />} value={`${attendance.attendedCount}/${attendance.bookedCount}`} label="Classes" />
+                <div style={{ border: "1px solid var(--ex-line)", borderRadius: 14, padding: "12px 14px" }}>
+                  <div className="flex items-center justify-between">
+                    <span style={{ color: "var(--pL)", display: "inline-flex" }}><Coins size={17} /></span>
+                    <button className="ex-btn ex-btn-ghost" style={{ padding: "3px 9px", fontSize: ".68rem" }} onClick={() => navigate("/offer")}>Top up</button>
+                  </div>
+                  <div style={{ fontFamily: "var(--ex-font)", fontWeight: 700, fontSize: "1.3rem", marginTop: 6, lineHeight: 1 }}>{(studentData?.credits ?? 0).toLocaleString()}</div>
+                  <div style={{ color: "var(--ex-muted)", fontSize: ".78rem", marginTop: 3 }}>Credits</div>
                 </div>
               </div>
             </div>

@@ -382,6 +382,115 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
   transition:transform .3s var(--ease),border-color .25s,background .25s}
 .exzi-pop-x:hover{border-color:rgba(var(--pRGB),.6);background:rgba(var(--pRGB),.16);transform:rotate(90deg)}
 @media(prefers-reduced-motion:reduce){.exzi-pop,.exzi-pop-card{transition:opacity .2s}.exzi-pop-card{transform:none}.exzi-pop-x:hover{transform:none}}
+
+/* ---------- 3D teacher ring gallery ---------- */
+#teacher-ring{overflow:hidden}
+.tr-stage{position:relative;height:560px;margin-top:36px;perspective:1700px;perspective-origin:50% 40%;
+  cursor:grab;touch-action:pan-y;user-select:none}
+.tr-stage:active{cursor:grabbing}
+.tr-ring{position:absolute;top:150px;left:50%;width:0;height:0;transform-style:preserve-3d;
+  transform:translateX(-50%) rotateX(-7deg) rotateY(var(--rot,0deg));will-change:transform}
+.tr-card{position:absolute;top:-118px;left:-83px;width:166px;height:236px;padding:0;border:0;background:none;
+  transform-style:preserve-3d}
+.tr-card-inner{position:relative;width:100%;height:100%;border-radius:15px;overflow:hidden;
+  border:1px solid var(--line);background:var(--surface);
+  box-shadow:0 18px 44px rgba(0,0,0,.5);filter:brightness(.66) saturate(.92);
+  transition:transform .32s var(--ease),filter .32s,box-shadow .32s;backface-visibility:hidden}
+.tr-card-inner img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.tr-card-inner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 52%,rgba(0,0,0,.5))}
+.tr-card.is-front .tr-card-inner{filter:none;transform:translateZ(48px) scale(1.32);
+  box-shadow:0 34px 80px rgba(0,0,0,.6),0 0 0 1px rgba(var(--pRGB),.55),0 0 46px rgba(var(--pRGB),.4)}
+.tr-caption{position:absolute;left:0;right:0;bottom:2px;text-align:center;pointer-events:none;z-index:6}
+.tr-caption .tr-name{font-family:var(--font-display);font-weight:700;font-size:1.5rem}
+.tr-caption .tr-sub{color:var(--muted);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;margin-top:3px}
+.tr-caption .tr-enlarge{margin-top:9px;color:var(--pL);font-weight:700;font-size:.72rem;letter-spacing:.14em}
+/* lightbox */
+.tr-lightbox{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:16px;background:rgba(3,4,10,.9);backdrop-filter:blur(10px)}
+.tr-lightbox[hidden]{display:none}
+.tr-lightbox img{width:min(340px,78vw);aspect-ratio:3/4;object-fit:cover;border-radius:22px;
+  border:1px solid var(--line);box-shadow:0 40px 90px rgba(0,0,0,.6)}
+.tr-lb-close{position:absolute;top:20px;right:26px;font-size:1.5rem;color:var(--muted)}
+.tr-lb-close:hover{color:var(--text)}
+.tr-lb-name{font-family:var(--font-display);font-weight:700;font-size:1.6rem;text-align:center}
+.tr-lb-sub{color:var(--muted);text-align:center;letter-spacing:.1em;text-transform:uppercase;font-size:.82rem}
+@media(max-width:680px){.tr-stage{height:430px;perspective:1100px}.tr-ring{top:118px}
+  .tr-card{width:120px;height:170px;top:-85px;left:-60px}.tr-caption .tr-name{font-size:1.2rem}}
+
+/* ---------- live social-proof bar ---------- */
+.live-proof{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:22px;font-size:.92rem;color:var(--muted)}
+.live-proof b{color:var(--text);font-family:var(--font-display)}
+.lp-dot{width:9px;height:9px;border-radius:50%;background:#22c55e;animation:lpPulse 1.8s infinite}
+@keyframes lpPulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.lp-sep{opacity:.5;margin:0 2px}
+
+/* ---------- individual tutor cards (horizontal strip) ---------- */
+.tutor-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:46px}
+.tutor-head h3{font-family:var(--font-display);font-size:1.16rem;font-weight:700}
+.tutor-head .tutor-sub{font-size:.82rem;color:var(--muted)}
+.tutor-strip{display:flex;gap:18px;margin-top:20px;overflow-x:auto;scroll-snap-type:x proximity;
+  padding:6px 2px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tutor-strip::-webkit-scrollbar{display:none}
+.tutor-card{scroll-snap-align:start;flex:0 0 250px;display:flex;flex-direction:column;overflow:hidden;
+  border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(180deg,rgba(20,24,46,.55),rgba(9,11,24,.5));backdrop-filter:blur(10px);
+  transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+.tutor-card:hover{transform:translateY(-6px);border-color:rgba(var(--pRGB),.45);box-shadow:0 24px 56px rgba(0,0,0,.45)}
+.tutor-photo{position:relative;aspect-ratio:1/1;overflow:hidden;
+  background:linear-gradient(135deg,var(--violet),var(--cyan))}
+.tutor-photo img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .5s var(--ease)}
+.tutor-card:hover .tutor-photo img{transform:scale(1.05)}
+.tutor-flag{position:absolute;top:10px;left:10px;font-size:.68rem;font-weight:600;color:#fff;
+  background:rgba(3,4,10,.6);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);
+  padding:4px 10px;border-radius:999px}
+.tutor-rating{position:absolute;top:10px;right:10px;font-size:.72rem;font-weight:700;color:#fde68a;
+  background:rgba(3,4,10,.6);border:1px solid rgba(253,224,71,.32);backdrop-filter:blur(6px);
+  padding:4px 9px;border-radius:999px}
+.tutor-body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:3px;flex:1}
+.tutor-name{font-family:var(--font-display);font-weight:700;font-size:1.02rem}
+.tutor-subject{font-size:.82rem;color:var(--muted)}
+.tutor-meta{margin-top:6px;font-size:.74rem;color:var(--muted)}
+.tutor-foot{margin-top:auto;padding-top:13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tutor-price{font-size:.82rem;color:var(--text)}
+.tutor-price b{font-family:var(--font-display);color:var(--pL)}
+.tutor-book{font-size:.8rem;font-weight:700;color:#06121c;background:var(--pL);padding:7px 15px;border-radius:999px;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.tutor-book:hover{transform:translateY(-1px);box-shadow:0 8px 20px -6px rgba(var(--pRGB),.7)}
+@media(max-width:520px){.tutor-card{flex-basis:78vw}}
+
+/* ---------- dashboard preview upgrade ---------- */
+.dash-preview .dash-frame{position:relative;
+  transition:transform .5s var(--ease),border-color .5s var(--ease),box-shadow .5s var(--ease)}
+.dash-preview:hover .dash-frame{transform:translateY(-4px);border-color:rgba(var(--pRGB),.4);
+  box-shadow:0 42px 104px rgba(0,0,0,.55),0 0 60px rgba(var(--pRGB),.14)}
+.dash-preview .dash-shot{min-height:322px}
+/* CSS-only mock dashboard, shown until a real screenshot is dropped in */
+.dash-mock{position:absolute;inset:0;display:flex;flex-direction:column;gap:13px;padding:22px}
+.dm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dm-title{font-family:var(--font-display);font-weight:700;font-size:.98rem;color:var(--text);line-height:1.25}
+.dm-title span{display:block;font-family:var(--font-body);font-weight:500;font-size:.72rem;color:var(--muted);margin-top:2px}
+.dm-badge{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pL);
+  background:rgba(var(--pRGB),.14);border:1px solid rgba(var(--pRGB),.34);padding:5px 11px;border-radius:999px;white-space:nowrap}
+.dm-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dm-tile{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:13px;padding:12px 13px;
+  display:flex;flex-direction:column;gap:3px}
+.dm-tile .dm-k{font-size:.65rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.dm-tile .dm-v{font-family:var(--font-display);font-weight:700;font-size:1.5rem;line-height:1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dm-tile .dm-t{font-size:.68rem;color:var(--greenL)}
+.dm-panel{flex:1;min-height:0;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:13px;
+  padding:13px 15px;display:flex;flex-direction:column;gap:11px}
+.dm-panel-head{display:flex;align-items:center;justify-content:space-between;
+  font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dm-bars{flex:1;display:flex;align-items:flex-end;gap:7px;min-height:58px}
+.dm-bars i{flex:1;border-radius:6px 6px 0 0;transform-origin:bottom;
+  background:linear-gradient(180deg,rgba(var(--pRGB),.9),rgba(var(--pRGB),.22));
+  animation:dmGrow .9s var(--ease) both}
+@keyframes dmGrow{from{transform:scaleY(0)}}
+.dm-row{font-size:.76rem;color:var(--text);display:flex;align-items:center;gap:8px}
+.dm-dot{width:8px;height:8px;border-radius:50%;background:var(--greenL);box-shadow:0 0 8px var(--greenL);flex:none}
+@media(max-width:560px){.dash-mock{padding:16px;gap:10px}.dm-tile .dm-v{font-size:1.25rem}}
 </style>
 </head>
 <body>
@@ -406,7 +515,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
     </div>
     <div class="hdr-right">
       <div class="authbar"><a class="auth-login" href="/login">Log in</a><a class="auth-signup" href="/signup">Sign up</a></div>
-      <a class="cta-sm" id="hdrCta" href="#join">Start free</a>
+      <a class="cta-sm" id="hdrCta" href="/signup">Start free</a>
     </div>
   </div>
   <!-- ROW 2 — sub navigation, rebuilt per persona (Dashboard always present) -->
@@ -452,7 +561,13 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
     <p class="exzi-note">✦ Tap the mic for hands-free voice — or call and video chat with Exzi, right here.</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#tutors">Meet your tutors <span aria-hidden="true">→</span></a>
-      <a class="btn btn-ghost" href="#join">Start free</a>
+      <a class="btn btn-ghost" href="/signup">Start free</a>
+    </div>
+    <div class="live-proof" id="liveProof">
+      <span class="lp-dot"></span>
+      <b id="lpOnline">—</b>&nbsp;learning right now
+      <span class="lp-sep">·</span>
+      <b id="lpMembers">—</b>&nbsp;members and growing
     </div>
   </section>
   <section id="dashboard">
@@ -465,10 +580,22 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
           <div class="dash-bar"><i></i><i></i><i></i><span class="dash-url">exzellent.co/student-dashboard</span></div>
           <div class="dash-shot">
             <img src="/previews/student-dashboard.png" alt="Student dashboard preview" onerror="this.remove()">
-            <div class="dash-ph">
-              <span class="big">🎓</span>
-              <b>Student dashboard preview</b>
-              <span>Drop a screenshot at <code>/public/previews/student-dashboard.png</code></span>
+            <!-- CSS-only mock; a real /previews/student-dashboard.png screenshot renders on top. -->
+            <div class="dash-mock" aria-hidden="true">
+              <div class="dm-head">
+                <div class="dm-title">Welcome back, Mina<span>Tuesday · 3 tasks due today</span></div>
+                <div class="dm-badge">● Live</div>
+              </div>
+              <div class="dm-tiles">
+                <div class="dm-tile"><span class="dm-k">Lessons</span><b class="dm-v">128</b><span class="dm-t">▲ 12 this week</span></div>
+                <div class="dm-tile"><span class="dm-k">Day streak</span><b class="dm-v">24</b><span class="dm-t">▲ personal best</span></div>
+                <div class="dm-tile"><span class="dm-k">CEFR level</span><b class="dm-v">B2</b><span class="dm-t">78% to C1</span></div>
+              </div>
+              <div class="dm-panel">
+                <div class="dm-panel-head"><span>Speaking practice</span><span>this week</span></div>
+                <div class="dm-bars"><i style="height:42%"></i><i style="height:66%"></i><i style="height:38%"></i><i style="height:80%"></i><i style="height:56%"></i><i style="height:92%"></i><i style="height:70%"></i></div>
+                <div class="dm-row"><span class="dm-dot"></span>Next: Spanish with Sofía · 17:00</div>
+              </div>
             </div>
           </div>
         </div>
@@ -522,8 +649,38 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
         <ul><li>Habits, focus, resilience</li><li>Career direction & interviews</li><li>From €26 / hour</li></ul><a class="go-link" href="#join">Browse growth coaches →</a>
       </div>
     </div>
+    <!-- Individual tutor cards.
+         PLACEHOLDER faces from randomuser.me/api/portraits/{men|women}/{n}.jpg —
+         swap these for real tutor photos and profiles before launch. Cards injected by the tutorCards() IIFE. -->
+    <div class="tutor-head">
+      <h3>Popular tutors this week</h3>
+      <span class="tutor-sub">Live availability · book a free intro</span>
+    </div>
+    <div class="tutor-strip" id="tutorStrip" aria-label="Individual tutors"></div>
     </div>
   </section>
+
+  <section id="teacher-ring">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow" style="justify-content:center">Our teachers</span>
+      <h2 class="h2">Meet <span class="g">the people who teach you</span></h2>
+      <p class="lead" style="margin-inline:auto">The faces behind Exzellent — drag to spin the ring, click a teacher to enlarge.</p>
+    </div>
+    <div class="tr-stage" id="trStage" aria-label="Rotating gallery of teachers">
+      <div class="tr-ring" id="trRing"></div>
+      <div class="tr-caption">
+        <div class="tr-name" id="trName">—</div>
+        <div class="tr-sub" id="trSub">—</div>
+        <div class="tr-enlarge">CLICK TO ENLARGE +</div>
+      </div>
+    </div>
+  </section>
+  <div class="tr-lightbox" id="trLightbox" hidden>
+    <button class="tr-lb-close" id="trLbClose" aria-label="Close">✕</button>
+    <img id="trLbImg" alt=""/>
+    <div><div class="tr-lb-name" id="trLbName"></div><div class="tr-lb-sub" id="trLbSub"></div></div>
+  </div>
+
   <section id="teachers">
     <div class="wrap" style="text-align:center">
       <span class="eyebrow" style="justify-content:center">Real voices</span>
@@ -620,8 +777,8 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
         <h2>Your first session is <span class="g">one click away.</span></h2>
         <p>Browse everything free. Book a tutor when you're ready, and let Exzi carry the rest.</p>
         <div class="hero-ctas">
-          <a class="btn btn-primary" href="mailto:exzellent.co@gmail.com?subject=Student%20early%20access">Start free <span aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="#">Talk to Exzi</a>
+          <a class="btn btn-primary" href="/signup">Start free <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="/pricing">See plans</a>
         </div>
       </div>
     </div>
@@ -644,7 +801,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
     <div class="exzi-reply" data-exzi-reply hidden></div>
     <p class="exzi-note">✦ Exzi drafts your lesson plans, handles the admin, and keeps your calendar honest.</p>
     <div class="hero-ctas">
-      <a class="btn btn-primary" href="#join">Start teaching <span aria-hidden="true">→</span></a>
+      <a class="btn btn-primary" href="/teacher-form">Start teaching <span aria-hidden="true">→</span></a>
       <a class="btn btn-ghost" href="#earnings">See what you'd earn</a>
     </div>
   </section>
@@ -658,10 +815,22 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
           <div class="dash-bar"><i></i><i></i><i></i><span class="dash-url">exzellent.co/teacher-dashboard</span></div>
           <div class="dash-shot">
             <img src="/previews/teacher-dashboard.png" alt="Teacher dashboard preview" onerror="this.remove()">
-            <div class="dash-ph">
-              <span class="big">🎙️</span>
-              <b>Teacher dashboard preview</b>
-              <span>Drop a screenshot at <code>/public/previews/teacher-dashboard.png</code></span>
+            <!-- CSS-only mock; a real /previews/teacher-dashboard.png screenshot renders on top. -->
+            <div class="dash-mock" aria-hidden="true">
+              <div class="dm-head">
+                <div class="dm-title">Good morning, Anja<span>2 lessons today · 1 plan to review</span></div>
+                <div class="dm-badge">● Live</div>
+              </div>
+              <div class="dm-tiles">
+                <div class="dm-tile"><span class="dm-k">Students</span><b class="dm-v">54</b><span class="dm-t">▲ 6 this month</span></div>
+                <div class="dm-tile"><span class="dm-k">This month</span><b class="dm-v">€2.4k</b><span class="dm-t">▲ 18%</span></div>
+                <div class="dm-tile"><span class="dm-k">Rating</span><b class="dm-v">4.9</b><span class="dm-t">312 reviews</span></div>
+              </div>
+              <div class="dm-panel">
+                <div class="dm-panel-head"><span>Lessons taught</span><span>this week</span></div>
+                <div class="dm-bars"><i style="height:50%"></i><i style="height:72%"></i><i style="height:44%"></i><i style="height:86%"></i><i style="height:60%"></i><i style="height:78%"></i><i style="height:96%"></i></div>
+                <div class="dm-row"><span class="dm-dot"></span>Next: German A2 group · 15:30</div>
+              </div>
             </div>
           </div>
         </div>
@@ -717,7 +886,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
         <h2>Teaching, without <span class="g">the admin.</span></h2>
         <p>Apply in ten minutes. We review, verify and get your profile live — then the learners come to you.</p>
         <div class="hero-ctas">
-          <a class="btn btn-primary" href="mailto:exzellent.co@gmail.com?subject=Teaching%20with%20EXZELLENT">Apply to teach <span aria-hidden="true">→</span></a>
+          <a class="btn btn-primary" href="/teacher-form">Apply to teach <span aria-hidden="true">→</span></a>
           <a class="btn btn-ghost" href="mailto:exzellent.co@gmail.com">Ask a question</a>
         </div>
       </div>
@@ -757,7 +926,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
   const PERSONAS = {
     student: {
       accent:['#06B6D4','#67e8f9','6,182,212'],
-      cta:{label:'Start free', href:'#join'},
+      cta:{label:'Start free', href:'/signup'},
       nav:[
         {t:'Dashboard', h:'#dashboard'},
         {t:'Labs', h:'#labs', key:true},
@@ -772,7 +941,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
     },
     teacher: {
       accent:['#F97316','#fdba74','249,115,22'],
-      cta:{label:'Start teaching', href:'#join'},
+      cta:{label:'Start teaching', href:'/teacher-form'},
       nav:[
         {t:'Dashboard', h:'#dashboard'},
         {t:'My learners', h:'#learners', key:true},
@@ -1360,6 +1529,159 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
   const start = (location.hash || '#student').slice(1);
   setPersona(PERSONAS[start] ? start : 'student', false);
   requestAnimationFrame(() => moveThumb(btns.find(b => b.classList.contains('on'))));
+})();
+</script>
+<script>
+/* ---------- 3D teacher ring gallery ---------- */
+(function teacherRing(){
+  const stage=document.getElementById('trStage'), ring=document.getElementById('trRing');
+  const nameEl=document.getElementById('trName'), subEl=document.getElementById('trSub');
+  const lb=document.getElementById('trLightbox'), lbImg=document.getElementById('trLbImg'),
+        lbName=document.getElementById('trLbName'), lbSub=document.getElementById('trLbSub'),
+        lbClose=document.getElementById('trLbClose');
+  if(!stage||!ring) return;
+
+  /* Demo teacher faces so the ring is full even before the roster grows.
+     Real teachers from /api/teachers are shown first; replace these with real
+     photos as the team expands. */
+  const demo=[
+    {name:'Marco Rossi',sub:'Italian · A1–C2',img:'https://randomuser.me/api/portraits/men/32.jpg'},
+    {name:'Sofía García',sub:'Spanish · DELE',img:'https://randomuser.me/api/portraits/women/44.jpg'},
+    {name:'Emma Johnson',sub:'English · IELTS',img:'https://randomuser.me/api/portraits/women/21.jpg'},
+    {name:'Pierre Dubois',sub:'French · DELF',img:'https://randomuser.me/api/portraits/men/12.jpg'},
+    {name:'Yuki Tanaka',sub:'Japanese · JLPT',img:'https://randomuser.me/api/portraits/women/68.jpg'},
+    {name:'Ahmed Hassan',sub:'Arabic',img:'https://randomuser.me/api/portraits/men/45.jpg'},
+    {name:'Anja Novak',sub:'German · TestDaF',img:'https://randomuser.me/api/portraits/women/33.jpg'},
+    {name:'Chen Wei',sub:'Mandarin · HSK',img:'https://randomuser.me/api/portraits/men/76.jpg'},
+    {name:'Olena Kovalenko',sub:'Ukrainian',img:'https://randomuser.me/api/portraits/women/52.jpg'},
+    {name:'Lucas Silva',sub:'Portuguese',img:'https://randomuser.me/api/portraits/men/22.jpg'},
+    {name:'Fatima Al-Sayed',sub:'Arabic',img:'https://randomuser.me/api/portraits/women/59.jpg'},
+    {name:'Jonas Berg',sub:'Swedish',img:'https://randomuser.me/api/portraits/men/50.jpg'},
+    {name:'Priya Sharma',sub:'Hindi',img:'https://randomuser.me/api/portraits/women/64.jpg'},
+    {name:'Tomasz Wójcik',sub:'Polish',img:'https://randomuser.me/api/portraits/men/40.jpg'},
+    {name:'María Papadopoulos',sub:'Greek',img:'https://randomuser.me/api/portraits/women/71.jpg'},
+    {name:'David Okafor',sub:'English · Business',img:'https://randomuser.me/api/portraits/men/60.jpg'},
+    {name:'Ingrid Larsen',sub:'Norwegian',img:'https://randomuser.me/api/portraits/women/12.jpg'}
+  ];
+
+  let items=[], N=0, step=0, R=460, rot=0, vel=0, hover=false, dragging=false, dragged=false, lastX=0, raf=0;
+  const IDLE=0.045;
+
+  fetch('/api/teachers').then(r=>r.json()).then(j=>{
+    const real=(((j&&j.data)||j)||[]).map(t=>({
+      name:t.name,
+      sub:((t.taughtLanguages||t.subjects||[])[0])||(t.academicDegrees&&t.academicDegrees[0])||'Language teacher',
+      img:t.profileImage
+    })).filter(t=>t.img&&t.name);
+    build(real.concat(demo));
+  }).catch(()=>build(demo));
+
+  function build(list){
+    items=list; N=items.length; step=360/N;
+    const cardW=(window.innerWidth<=680)?120:166;
+    R=Math.max(300,Math.round(N*cardW*0.82/(2*Math.PI)));
+    ring.innerHTML='';
+    items.forEach((t,i)=>{
+      const a=i*step;
+      const el=document.createElement('button');
+      el.type='button'; el.className='tr-card';
+      el.style.transform='rotateY('+a+'deg) translateZ('+R+'px)';
+      const img=document.createElement('img'); img.src=t.img; img.alt=t.name; img.draggable=false;
+      img.onerror=function(){ this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg,var(--violet),var(--cyan))'; };
+      const inner=document.createElement('div'); inner.className='tr-card-inner'; inner.appendChild(img);
+      el.appendChild(inner);
+      el.addEventListener('click',()=>{ if(!dragged) openLB(t); });
+      ring.appendChild(el); t._el=el; t._a=a;
+    });
+    loop();
+  }
+
+  function loop(){
+    cancelAnimationFrame(raf);
+    (function frame(){
+      if(dragging){/* rot follows pointer */}
+      else if(Math.abs(vel)>IDLE){ rot+=vel; vel*=0.94; }
+      else if(!hover){ rot+=IDLE; }
+      ring.style.setProperty('--rot', rot+'deg');
+      let best=1e9, bi=0;
+      for(let i=0;i<N;i++){ let ang=((items[i]._a+rot)%360+360)%360; if(ang>180)ang-=360; const d=Math.abs(ang); if(d<best){best=d;bi=i;} }
+      for(let i=0;i<N;i++) items[i]._el.classList.toggle('is-front', i===bi);
+      if(items[bi]){ nameEl.textContent=items[bi].name; subEl.textContent=items[bi].sub; }
+      raf=requestAnimationFrame(frame);
+    })();
+  }
+
+  stage.addEventListener('pointerdown',e=>{ dragging=true; dragged=false; lastX=e.clientX; vel=0; try{stage.setPointerCapture(e.pointerId);}catch(_){} });
+  stage.addEventListener('pointermove',e=>{ if(!dragging)return; const dx=e.clientX-lastX; if(Math.abs(dx)>3)dragged=true; rot+=dx*0.32; vel=dx*0.05; lastX=e.clientX; });
+  const end=()=>{ dragging=false; };
+  stage.addEventListener('pointerup',end); stage.addEventListener('pointercancel',end); window.addEventListener('pointerup',end);
+  stage.addEventListener('mouseenter',()=>{ hover=true; });
+  stage.addEventListener('mouseleave',()=>{ hover=false; });
+
+  function openLB(t){ lbImg.src=t.img; lbImg.alt=t.name; lbName.textContent=t.name; lbSub.textContent=t.sub; lb.hidden=false; }
+  lbClose.addEventListener('click',()=>{ lb.hidden=true; });
+  lb.addEventListener('click',e=>{ if(e.target===lb) lb.hidden=true; });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') lb.hidden=true; });
+})();
+
+/* ---------- live social-proof (online now + members) ---------- */
+(function liveProof(){
+  const on=document.getElementById('lpOnline'), mem=document.getElementById('lpMembers');
+  if(!on||!mem) return;
+  let members=0;
+  function pull(){
+    fetch('/api/stats').then(r=>r.json()).then(s=>{
+      if(s&&s.online!=null) on.textContent=(s.online).toLocaleString();
+      if(s&&s.members!=null){ members=s.members; mem.textContent=members.toLocaleString()+'+'; }
+    }).catch(()=>{});
+  }
+  pull(); setInterval(pull,25000);
+  // gentle flicker of the "online" number between polls
+  setInterval(function(){
+    const cur=parseInt((on.textContent||'').replace(/\D/g,''),10);
+    if(!cur) return;
+    const j=Math.random()<0.6?0:(Math.random()<0.5?1:-1);
+    on.textContent=Math.max(1,cur+j).toLocaleString();
+  },7000);
+})();
+
+/* ---------- individual tutor cards (placeholder roster) ---------- */
+(function tutorCards(){
+  const strip=document.getElementById('tutorStrip');
+  if(!strip) return;
+  /* PLACEHOLDER tutors — faces from randomuser.me/api/portraits.
+     Replace with the real roster (photo, name, subject, rating, price) before launch. */
+  const tutors=[
+    {name:'Sofía García',   subject:'Spanish · DELE prep',        flag:'🇪🇸 Spanish',  rating:'4.9', meta:'640 lessons · 4 yrs', price:'22', img:'https://randomuser.me/api/portraits/women/44.jpg'},
+    {name:'Marco Rossi',    subject:'Italian · Conversation',     flag:'🇮🇹 Italian',  rating:'4.8', meta:'410 lessons · 3 yrs', price:'24', img:'https://randomuser.me/api/portraits/men/32.jpg'},
+    {name:'Emma Johnson',   subject:'English · IELTS & Business', flag:'🇬🇧 English',  rating:'5.0', meta:'980 lessons · 6 yrs', price:'28', img:'https://randomuser.me/api/portraits/women/21.jpg'},
+    {name:'Anja Novak',     subject:'German · TestDaF',           flag:'🇩🇪 German',   rating:'4.9', meta:'720 lessons · 5 yrs', price:'26', img:'https://randomuser.me/api/portraits/women/33.jpg'},
+    {name:'Pierre Dubois',  subject:'French · DELF prep',         flag:'🇫🇷 French',   rating:'4.7', meta:'350 lessons · 3 yrs', price:'23', img:'https://randomuser.me/api/portraits/men/12.jpg'},
+    {name:'Yuki Tanaka',    subject:'Japanese · JLPT',            flag:'🇯🇵 Japanese', rating:'4.9', meta:'300 lessons · 4 yrs', price:'25', img:'https://randomuser.me/api/portraits/women/68.jpg'}
+  ];
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const frag=document.createDocumentFragment();
+  tutors.forEach(t=>{
+    const c=document.createElement('div');
+    c.className='tutor-card';
+    c.innerHTML=
+      '<div class="tutor-photo">'+
+        '<span class="tutor-flag">'+esc(t.flag)+'</span>'+
+        '<span class="tutor-rating">★ '+esc(t.rating)+'</span>'+
+        '<img loading="lazy" alt="'+esc(t.name)+'" src="'+esc(t.img)+'" onerror="this.style.display=\'none\'">'+
+      '</div>'+
+      '<div class="tutor-body">'+
+        '<div class="tutor-name">'+esc(t.name)+'</div>'+
+        '<div class="tutor-subject">'+esc(t.subject)+'</div>'+
+        '<div class="tutor-meta">'+esc(t.meta)+'</div>'+
+        '<div class="tutor-foot">'+
+          '<span class="tutor-price">from <b>€'+esc(t.price)+'</b>/hr</span>'+
+          '<a class="tutor-book" href="#join">Book</a>'+
+        '</div>'+
+      '</div>';
+    frag.appendChild(c);
+  });
+  strip.appendChild(frag);
 })();
 </script>
 </body>

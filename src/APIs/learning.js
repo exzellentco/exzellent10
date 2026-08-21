@@ -64,6 +64,10 @@ export const zoomMeetingNumber = (url = "") => { const m = String(url).match(/\/
 export const getPlans = () => req("GET", "/api/plans"); // { data:[plans], signupBonus }
 export const subscribe = (planId) => req("POST", "/api/subscribe", { planId }); // allocates plan credits
 
+/* ---- live stats: online-now + member social proof ---- */
+export const getStats = () => req("GET", "/api/stats");            // { online, members, activeWindowMin }
+export const heartbeat = () => req("POST", "/api/stats/heartbeat"); // marks the caller active, returns { online }
+
 /* ---- invite gate + waitlist (BestSecret-style) ---- */
 export const verifyInvite = (code) => req("POST", "/api/referrals/verify", { code }); // { valid, referral }
 export const joinWaitlist = ({ email, name, note } = {}) => req("POST", "/api/waitlist", { email, name, note });

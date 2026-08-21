@@ -82,6 +82,7 @@
 .tdash .dstat b { display: block; font-family: var(--display); font-size: 26px; font-weight: 700; margin-top: 6px; line-height: 1; }
 .tdash .dstat b small { font-size: 12px; color: var(--faint); font-weight: 500; }
 .tdash .dstat .up { font-size: 11.5px; font-weight: 700; color: var(--greenL); font-style: normal; }
+.tdash .dstat .di { width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px; color: var(--cyanL); background: rgba(255,255,255,.05); border: 1px solid var(--line); }
 .tdash .dpanel { border: 1px solid var(--line); background: linear-gradient(180deg, rgba(20,24,46,.55), rgba(9,11,24,.5)); border-radius: 18px; padding: 20px; margin-bottom: 18px; }
 .tdash .dph .tag2 { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--cyanL); }
 .tdash .dph h2 { font-family: var(--display); font-size: 20px; font-weight: 700; margin-top: 8px; letter-spacing: -.02em; }

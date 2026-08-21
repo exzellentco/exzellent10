@@ -1,6 +1,6 @@
 import axios from "../../utils/axios";
 import React, { useEffect, useState } from "react";
-import { Mail, Trash2, ChevronDown, Users, Check, Pencil, X } from "lucide-react";
+import { Mail, Trash2, ChevronDown, Users, Check, Pencil, X, UserCheck, Clock, Wallet } from "lucide-react";
 import DashboardShell from "../../components/DashboardShell";
 import { approveStudent, updateStudent } from "../../APIs/AdminStudents";
 
@@ -61,9 +61,9 @@ const GetStudent = () => {
 
   // Stats
   const totalCount = students.length;
+  const pendingCount = students.filter((s) => isPending(s)).length;
+  const activeCount = totalCount - pendingCount;
   const paidCount = students.filter((s) => s.paid).length;
-  const unpaidCount = totalCount - paidCount;
-  const totalEnrollments = students.reduce((sum, s) => sum + (s.enrolledCount || 0), 0);
 
   const handleSendBulkEmail = async (e) => {
     e.preventDefault();
@@ -201,10 +201,10 @@ const GetStudent = () => {
   };
 
   const stats = [
-    { value: totalCount, label: "Total students" },
-    { value: paidCount, label: "Paid" },
-    { value: unpaidCount, label: "Unpaid" },
-    { value: totalEnrollments, label: "Total enrollments" },
+    { value: totalCount, label: "Total students", Icon: Users },
+    { value: activeCount, label: "Active", Icon: UserCheck },
+    { value: pendingCount, label: "Pending", Icon: Clock },
+    { value: paidCount, label: "Paid", Icon: Wallet },
   ];
 
   return (
@@ -224,6 +224,7 @@ const GetStudent = () => {
       <div className="ex-stats ex-reveal">
         {stats.map((s) => (
           <div key={s.label} className="ex-stat">
+            <s.Icon size={18} style={{ color: "var(--pL)", marginBottom: 8, opacity: 0.9 }} />
             <b>{s.value}</b>
             <span>{s.label}</span>
           </div>

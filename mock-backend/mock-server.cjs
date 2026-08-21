@@ -370,6 +370,23 @@ POSTS.push(
 
 // A Zoom meeting link for a lesson (placeholder; swap for real Zoom API links).
 const zoomUrl = () => `https://zoom.us/j/${Math.floor(1000000000 + Math.random() * 8999999999)}?pwd=exzellent`;
+
+// ---- live stats: "online now" counter + gently-growing member social proof --
+const ACTIVE = {};                       // userId -> lastSeen (ms)
+const ACTIVE_WINDOW_MS = 5 * 60 * 1000;  // "active" = seen in the last 5 minutes
+const STATS_EPOCH = Date.parse("2026-08-01T00:00:00Z");
+const MEMBERS_BASE = 20000;              // social-proof starting number
+const markActive = (id) => { if (id) ACTIVE[id] = Date.now(); };
+// Real active sessions in the window + a gentle, slowly-varying base so the
+// number reads as "alive" even in a quiet demo.
+const onlineCount = () => {
+  const now = Date.now();
+  const real = Object.values(ACTIVE).filter((t) => now - t < ACTIVE_WINDOW_MS).length;
+  const base = 26 + Math.round((Math.sin(now / 700000) + 1) * 9); // ~26–44, drifts slowly
+  return base + real;
+};
+// Grows ~1 every 6 minutes of real elapsed time — monotonic, no storage needed.
+const memberCount = () => MEMBERS_BASE + Math.max(0, Math.floor((Date.now() - STATS_EPOCH) / (6 * 60 * 1000)));
 const myCredits = (id) => {
   if (id in MY_CREDITS) return MY_CREDITS[id];
   const s = STUDENTS.find((x) => x._id === id);
@@ -1212,6 +1229,7 @@ const routes = [
       return { success: false, message: "Incorrect password. Please try again." };
     }
     const role = acct.userType || roleFromEmail(body.email);
+    markActive(acct._id); // counts toward the "online now" number
     return { success: true, accessToken: makeToken(role, acct._id), ...pub(acct) };
   }],
   // Google/OAuth: no password — fetch-or-create the account for that email.
@@ -1923,6 +1941,10 @@ const routes = [
   }],
   // ---- marketing email blast (mock)
   ["POST", /^\/api\/emails\/marketing$/, () => ({ success: true, message: `Queued to ${STUDENTS.length} students (mock).` })],
+
+  // ---- live stats (online-now counter + gently-growing member social proof)
+  ["GET", /^\/api\/stats$/, () => ({ success: true, online: onlineCount(), members: memberCount(), activeWindowMin: 5 })],
+  ["POST", /^\/api\/stats\/heartbeat$/, (_b, _p, _r, token) => { markActive(userIdFromToken(token)); return { success: true, online: onlineCount(), members: memberCount() }; }],
 
   // ---- subscription plans + credits
   ["GET", /^\/api\/plans$/, () => ({ success: true, data: PLANS, signupBonus: SIGNUP_BONUS })],

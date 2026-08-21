@@ -30,4 +30,12 @@ export default [
       ],
     },
   },
+  {
+    // Build/tooling config files are CommonJS Node modules.
+    files: ['*.config.js', '*.cjs'],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: { sourceType: 'commonjs' },
+    },
+  },
 ]
