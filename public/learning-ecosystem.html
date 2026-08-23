@@ -428,10 +428,12 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
 .tutor-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:46px}
 .tutor-head h3{font-family:var(--font-display);font-size:1.16rem;font-weight:700}
 .tutor-head .tutor-sub{font-size:.82rem;color:var(--muted)}
-.tutor-strip{display:flex;gap:18px;margin-top:20px;overflow-x:auto;scroll-snap-type:x proximity;
-  padding:6px 2px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tutor-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:20px;padding:6px 0 8px}
+@media(max-width:1000px){.tutor-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.tutor-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:440px){.tutor-strip{grid-template-columns:1fr}}
 .tutor-strip::-webkit-scrollbar{display:none}
-.tutor-card{scroll-snap-align:start;flex:0 0 250px;display:flex;flex-direction:column;overflow:hidden;
+.tutor-card{display:flex;flex-direction:column;overflow:hidden;
   border:1px solid var(--line);border-radius:18px;
   background:linear-gradient(180deg,rgba(20,24,46,.55),rgba(9,11,24,.5));backdrop-filter:blur(10px);
   transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
@@ -1656,8 +1658,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
     {name:'Marco Rossi',    subject:'Italian · Conversation',     flag:'🇮🇹 Italian',  rating:'4.8', meta:'410 lessons · 3 yrs', price:'24', img:'https://randomuser.me/api/portraits/men/32.jpg'},
     {name:'Emma Johnson',   subject:'English · IELTS & Business', flag:'🇬🇧 English',  rating:'5.0', meta:'980 lessons · 6 yrs', price:'28', img:'https://randomuser.me/api/portraits/women/21.jpg'},
     {name:'Anja Novak',     subject:'German · TestDaF',           flag:'🇩🇪 German',   rating:'4.9', meta:'720 lessons · 5 yrs', price:'26', img:'https://randomuser.me/api/portraits/women/33.jpg'},
-    {name:'Pierre Dubois',  subject:'French · DELF prep',         flag:'🇫🇷 French',   rating:'4.7', meta:'350 lessons · 3 yrs', price:'23', img:'https://randomuser.me/api/portraits/men/12.jpg'},
-    {name:'Yuki Tanaka',    subject:'Japanese · JLPT',            flag:'🇯🇵 Japanese', rating:'4.9', meta:'300 lessons · 4 yrs', price:'25', img:'https://randomuser.me/api/portraits/women/68.jpg'}
+    {name:'Pierre Dubois',  subject:'French · DELF prep',         flag:'🇫🇷 French',   rating:'4.7', meta:'350 lessons · 3 yrs', price:'23', img:'https://randomuser.me/api/portraits/men/12.jpg'}
   ];
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const frag=document.createDocumentFragment();
