@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXZELLENT — Nine points, one ecosystem</title>
+<meta name="description" content="The nine points of Exzellent as one spatial interface — start in the Learning Ecosystem: three labs, real tutors, one companion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   EXZELLENT · Nine-Point Stack — the entry
+   The old star page and the new stack, integrated: the nine points of
+   the company are nine layers of one spatial interface. The star mark
+   itself (the real logo, embedded) stands faint behind the stack.
+   Palette from the logo: violet · illuminating green · gold · neon
+   orange · black.
+   ===================================================================== */
+:root{
+  --bg:#04050A; --surface:rgba(15,18,32,.80); --surface-solid:#0F1220;
+  --line:rgba(148,163,215,.16); --line2:rgba(148,163,215,.3);
+  --text:#EEF1FB; --muted:#9AA3C2; --dim:#6E7796;
+  --violet:#8A4BF5; --violetL:#A78BFA; --lav:#C9AAFF;
+  --grad:linear-gradient(100deg,var(--violet),var(--lav));
+  --acc:138,75,245;               /* active section accent (rgb) */
+  --glowA:.30; --starA:.055;      /* atmosphere + backdrop star strength */
+  --ink:#07040F;
+  --ease:cubic-bezier(.22,.9,.24,1);
+  --dur:.72s;
+  --logo-url:url("data:image/png;base64,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");
+}
+[data-theme="light"]{
+  --bg:#F2F3FA; --surface:rgba(255,255,255,.84); --surface-solid:#FFFFFF;
+  --line:rgba(21,27,63,.12); --line2:rgba(21,27,63,.24);
+  --text:#0B0E1E; --muted:#454E71; --dim:#7A82A3;
+  --glowA:.15; --starA:.07;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font:400 15px/1.55 Inter,system-ui,sans-serif;
+  overflow:hidden;-webkit-font-smoothing:antialiased;transition:background .6s,color .6s}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid rgb(var(--acc));outline-offset:3px;border-radius:10px}
+::selection{background:rgba(var(--acc),.35)}
+
+/* ---------------- Atmosphere + the star ---------------- */
+.atmos{position:fixed;inset:0;pointer-events:none;z-index:0}
+.atmos .g1,.atmos .g2{position:absolute;border-radius:50%;filter:blur(90px);transition:background 1s}
+.atmos .g1{width:62vmax;height:62vmax;left:-18vmax;top:-24vmax;background:rgba(var(--acc),calc(var(--glowA)*.55))}
+.atmos .g2{width:50vmax;height:50vmax;right:-16vmax;bottom:-20vmax;background:rgba(var(--acc),calc(var(--glowA)*.32))}
+.atmos .grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[data-theme="light"] .atmos .grain{opacity:.04;mix-blend-mode:multiply}
+.bigstar{position:fixed;left:50%;top:54%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;
+  width:min(86vmin,940px);aspect-ratio:240/159;background-image:var(--logo-url);
+  background-size:contain;background-position:center;background-repeat:no-repeat;
+  opacity:var(--starA);transition:opacity .6s}
+
+/* ---------------- Header ---------------- */
+.hdr{position:fixed;inset:0 0 auto 0;z-index:60;height:64px;display:grid;
+  grid-template-columns:1fr auto 1fr;align-items:center;padding:0 clamp(14px,2.4vw,28px)}
+.utils{display:flex;align-items:center;gap:8px}
+.u-btn{height:34px;min-width:34px;padding:0 10px;border-radius:10px;border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);
+  font:500 12.5px/1 Inter,sans-serif;backdrop-filter:blur(10px);background:var(--surface);
+  transition:color .25s,border-color .25s}
+.u-btn:hover{color:var(--text);border-color:var(--line2)}
+.brand{display:flex;align-items:center;gap:10px;justify-self:center;font:700 13px/1 "Space Grotesk",sans-serif;letter-spacing:.16em}
+.mark{width:34px;height:24px;background-image:var(--logo-url);background-size:contain;
+  background-position:center;background-repeat:no-repeat;
+  filter:drop-shadow(0 0 10px rgba(var(--acc),.55));transition:filter .6s}
+.auth{display:flex;align-items:center;gap:9px;justify-self:end}
+.a-in{padding:.62em 1.05em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--muted)}
+.a-in:hover{color:var(--text)}
+.a-start{padding:.66em 1.2em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--ink);
+  background:linear-gradient(100deg,rgb(var(--acc)),var(--lav));box-shadow:0 6px 22px rgba(var(--acc),.35);
+  transition:transform .25s var(--ease),box-shadow .25s}
+.a-start:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(var(--acc),.5)}
+@media(max-width:700px){.u-btn span{display:none}.a-in{display:none}}
+
+/* ---------------- Stage & layers ---------------- */
+.stage{position:fixed;inset:0;z-index:10}
+.layer{position:absolute;left:50%;top:16svh;width:min(1240px,93vw);height:78svh;
+  transform:translateX(-50%);transform-origin:50% 0;
+  border-radius:28px;border:1px solid rgba(var(--c),.32);
+  background:linear-gradient(155deg,rgba(var(--c),.12),var(--surface) 46%);
+  backdrop-filter:blur(18px);
+  box-shadow:0 -1px 0 rgba(255,255,255,.05) inset,0 34px 90px rgba(0,0,0,.55),0 10px 44px rgba(var(--c),.12);
+  transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease),filter var(--dur) var(--ease);
+  will-change:transform,opacity,filter}
+[data-theme="light"] .layer{box-shadow:0 34px 80px rgba(30,35,80,.18),0 10px 40px rgba(var(--c),.14)}
+.layer[data-pos="behind"]{cursor:pointer}
+.layer[data-pos="behind"] .inner{opacity:0;pointer-events:none;transition:opacity .3s}
+.layer[data-pos="gone"]{pointer-events:none}
+.peek{position:absolute;inset:0 0 auto 0;height:34px;border-radius:28px 28px 0 0;z-index:5;
+  font:600 11px/34px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(var(--c),0);text-align:center;transition:color .3s,background .3s}
+.layer[data-pos="behind"]:hover{filter:brightness(1.12)}
+.layer[data-pos="behind"]:hover .peek{color:rgba(var(--c),.95);background:linear-gradient(rgba(var(--c),.10),transparent)}
+.layer[data-pos="active"] .peek{display:none}
+
+/* inner composition */
+.inner{position:absolute;inset:0;display:grid;grid-template-columns:1.12fr .88fr;
+  gap:clamp(18px,3vw,44px);padding:clamp(20px,3vw,44px);opacity:1;transition:opacity .45s .18s}
+.side{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.statement{font:700 clamp(30px,4.6vw,58px)/1.06 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin-bottom:clamp(20px,3vh,34px)}
+.statement em{font-style:normal;background:linear-gradient(100deg,rgb(var(--c)),var(--lav));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ident{color:var(--muted);font-size:clamp(14px,1.5vw,16.5px);max-width:36ch;margin:-6px 0 26px}
+h2.l-title{font:700 clamp(26px,3.6vw,44px)/1.1 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin-bottom:14px}
+
+/* Hot buttons */
+.hot{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:clamp(20px,3vh,30px)}
+.hb{position:relative;display:inline-flex;align-items:center;gap:.55em;padding:.72em 1.1em;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);backdrop-filter:blur(8px);
+  font:600 13px/1 Inter,sans-serif;color:var(--muted);
+  transition:transform .25s var(--ease),border-color .25s,color .25s,box-shadow .25s}
+.hb i{width:7px;height:7px;border-radius:50%;background:rgb(var(--hc));box-shadow:0 0 8px rgba(var(--hc),.8)}
+.hb .ar{opacity:0;margin-left:-4px;transform:translateX(-4px);transition:all .25s var(--ease);color:rgb(var(--hc))}
+.hb:hover{transform:translateY(-2px);color:var(--text);border-color:rgba(var(--hc),.55);box-shadow:0 8px 22px rgba(var(--hc),.16)}
+.hb:hover .ar{opacity:1;transform:none;margin-left:0}
+
+/* CTA */
+.cta{align-self:flex-start;display:inline-flex;align-items:center;gap:.7em;
+  padding:1em 1.6em;border-radius:16px;font:600 15.5px/1 Inter,sans-serif;color:var(--ink);
+  background:linear-gradient(100deg,rgb(var(--c)),rgba(var(--c),.72));
+  box-shadow:0 14px 40px rgba(var(--c),.35);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.cta .ar{transition:transform .3s var(--ease)}
+.cta:hover{transform:translateY(-2px);box-shadow:0 18px 55px rgba(var(--c),.5)}
+.cta:hover .ar{transform:translateX(5px)}
+
+/* ---------------- Cinematic preview ---------------- */
+.cine{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(var(--c),.24);
+  background:radial-gradient(120% 120% at 20% 0%,rgba(var(--c),.15),rgba(4,5,10,.5) 55%);min-height:0}
+[data-theme="light"] .cine{background:radial-gradient(120% 120% at 20% 0%,rgba(var(--c),.14),rgba(255,255,255,.5) 55%)}
+.cine video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scene{position:absolute;inset:0;display:grid;place-items:center;padding:clamp(14px,2.5vw,34px);
+  opacity:0;transform:scale(1.015);transition:opacity 1s var(--ease),transform 6s linear}
+.scene.on{opacity:1;transform:scale(1.05)}
+.cap{position:absolute;left:18px;bottom:14px;font:600 11px/1 Inter,sans-serif;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:9px}
+.cap i{width:16px;height:2px;border-radius:2px;background:rgb(var(--c))}
+.dots{position:absolute;right:16px;bottom:16px;display:flex;gap:5px}
+.dots b{width:5px;height:5px;border-radius:50%;background:rgba(var(--c),.28);transition:background .4s,transform .4s}
+.dots b.on{background:rgb(var(--c));transform:scale(1.3)}
+
+/* mock UI used inside scenes */
+.mock{width:min(400px,92%);border-radius:16px;border:1px solid var(--line);
+  background:var(--surface-solid);box-shadow:0 24px 60px rgba(0,0,0,.35);padding:16px 17px;font-size:13px}
+[data-theme="light"] .mock{box-shadow:0 24px 60px rgba(30,35,80,.14)}
+.mock .mh{display:flex;align-items:center;gap:8px;font:600 12px/1 Inter,sans-serif;color:var(--dim);margin-bottom:12px}
+.mock .mh i{width:8px;height:8px;border-radius:50%;background:rgb(var(--c))}
+.mrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.mrow:first-of-type{border-top:none}
+.bar{flex:1;height:6px;border-radius:999px;background:rgba(148,163,215,.16);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:rgb(var(--c))}
+.bub{max-width:85%;padding:9px 12px;border-radius:13px;border:1px solid var(--line);margin:5px 0;font-size:12.5px}
+.bub.me{margin-left:auto;background:rgba(var(--c),.14);border-color:rgba(var(--c),.3)}
+.wave{display:flex;align-items:flex-end;gap:3px;height:34px;margin:10px 0 6px}
+.wave i{width:4px;border-radius:2px;background:rgb(var(--c));height:30%;animation:wv 1.1s ease-in-out infinite}
+@keyframes wv{50%{height:95%}}
+.chip{display:inline-block;padding:.42em .8em;border-radius:999px;border:1px solid var(--line);
+  font:500 12px/1 Inter,sans-serif;color:var(--muted);margin:3px 4px 0 0}
+.chip.on{background:rgba(var(--c),.15);border-color:rgb(var(--c));color:var(--text)}
+.ring{width:74px;height:74px;border-radius:50%;flex:none;
+  background:conic-gradient(rgb(var(--c)) calc(var(--v)*1%),rgba(148,163,215,.16) 0);
+  display:grid;place-items:center}
+.ring b{width:56px;height:56px;border-radius:50%;background:var(--surface-solid);display:grid;place-items:center;font:700 14px/1 "Space Grotesk",sans-serif}
+.tk{display:flex;align-items:center;gap:9px;padding:7px 0;color:var(--muted);font-size:12.5px}
+.tk b{width:16px;height:16px;flex:none;border-radius:6px;border:1px solid rgba(var(--c),.5);display:grid;place-items:center;font-size:10px;color:rgb(var(--c))}
+
+/* ---------------- Rail / status / steps ---------------- */
+.rail{position:fixed;right:clamp(10px,1.6vw,22px);top:50%;transform:translateY(-50%);z-index:55;
+  display:flex;flex-direction:column;gap:11px}
+.rd{position:relative;width:22px;height:10px;display:grid;place-items:center}
+.rd i{width:6px;height:6px;border-radius:50%;background:var(--dim);opacity:.45;transition:all .35s var(--ease)}
+.rd:hover i{opacity:.9}
+.rd[aria-current="true"] i{width:20px;border-radius:999px;background:rgb(var(--acc));opacity:1;box-shadow:0 0 12px rgba(var(--acc),.7)}
+.rd .tip{position:absolute;right:30px;top:50%;transform:translateY(-50%) translateX(4px);white-space:nowrap;
+  font:600 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  background:var(--surface);border:1px solid var(--line);padding:.55em .8em;border-radius:8px;backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:all .25s var(--ease)}
+.rd:hover .tip,.rd:focus-visible .tip{opacity:1;transform:translateY(-50%)}
+.now{position:fixed;left:clamp(14px,2vw,26px);bottom:18px;z-index:55;display:flex;align-items:center;gap:10px;
+  font:600 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.now i{width:18px;height:2px;border-radius:2px;background:rgb(var(--acc));transition:background .6s}
+.steps{position:fixed;right:clamp(10px,1.6vw,22px);bottom:18px;z-index:55;display:flex;flex-direction:column;gap:8px}
+.st{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);
+  backdrop-filter:blur(8px);color:var(--muted);display:grid;place-items:center;transition:color .25s,border-color .25s}
+.st:hover{color:var(--text);border-color:var(--line2)}
+.st[disabled]{opacity:.35;pointer-events:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------------- Responsive ---------------- */
+@media(max-width:900px){
+  .layer{top:12svh;height:82svh;width:94vw}
+  .inner{grid-template-columns:1fr;grid-template-rows:38% 1fr;gap:14px;padding:16px}
+  .side{justify-content:flex-start;padding-top:4px;overflow:hidden}
+  .statement{font-size:clamp(26px,7.4vw,34px);margin-bottom:16px}
+  .hot{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none}
+  .hot::-webkit-scrollbar{display:none}
+  .hb{flex:none}
+  .cta{width:100%;justify-content:center}
+  .rail{display:none}
+  .steps{flex-direction:row;right:auto;left:50%;transform:translateX(-50%);bottom:12px}
+  .now{display:none}
+  .bigstar{width:120vmin;opacity:calc(var(--starA)*.8)}
+}
+
+/* ---------------- Reduced motion ---------------- */
+@media(prefers-reduced-motion:reduce){
+  .layer{transition:opacity .2s linear}
+  .scene{transition:opacity .3s linear;transform:none!important}
+  .wave i{animation:none;height:60%}
+  .cta:hover,.hb:hover,.a-start:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ Atmosphere + the star behind everything ============ -->
+<div class="atmos" aria-hidden="true"><div class="g1"></div><div class="g2"></div><div class="grain"></div></div>
+<div class="bigstar" aria-hidden="true"></div>
+
+<!-- ============ Header ============ -->
+<header class="hdr">
+  <div class="utils">
+    <button class="u-btn" id="uProfile" aria-label="Profile">&#9679;<span data-i18n="profile">Profile</span></button>
+    <button class="u-btn" id="uTheme" aria-label="Switch to light mode">&#9789;<span data-i18n="theme">Light</span></button>
+    <button class="u-btn" id="uLang" aria-label="Sprache: Deutsch"><span>EN</span></button>
+  </div>
+  <a class="brand" href="/" aria-label="EXZELLENT"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
+  <div class="auth">
+    <a class="a-in" href="/login" data-i18n="signin">Sign in</a>
+    <a class="a-start" href="/signup" data-i18n="start">Start for free</a>
+  </div>
+</header>
+
+<!-- ============ Stack ============ -->
+<main class="stage" id="stage" aria-roledescription="layered ecosystem navigator" aria-label="The nine points of Exzellent"></main>
+
+<!-- ============ Rail / steps / status ============ -->
+<nav class="rail" id="rail" aria-label="The nine points"></nav>
+<div class="now" aria-hidden="true"><i></i><span id="nowT">Learning Ecosystem</span></div>
+<div class="steps">
+  <button class="st" id="stPrev" aria-label="Previous point">&#8593;</button>
+  <button class="st" id="stNext" aria-label="Next point">&#8595;</button>
+</div>
+<p class="sr" role="status" aria-live="polite" id="live"></p>
+
+<script>
+/* =====================================================================
+   The nine points — same points as the old star page, now as layers.
+   Palette from the logo: violet 138,75,245 · illuminating green
+   61,240,160 · gold 240,196,66 · neon orange 255,122,41 · black.
+   media.src is the slot for the real GIF/video per point; the Learning
+   Ecosystem film cycles everything that lives inside it until then.
+   ===================================================================== */
+const ECOSYSTEM=[
+ {key:"eco",     c:"138,75,245", route:"/learning-ecosystem.html",
+   title:{en:"Learning Ecosystem",de:"Learning Ecosystem"},
+   ident:{en:"",de:""}, media:{src:""}},
+ {key:"expats",  c:"61,240,160", route:"/coming-soon",
+   title:{en:"Expats & Career",de:"Expats & Karriere"},
+   ident:{en:"For international talent — and the employers hiring them.",de:"Für internationale Talente — und die Arbeitgeber, die sie suchen."}, media:{src:""}},
+ {key:"studio",  c:"255,122,41", route:"/coming-soon",
+   title:{en:"Exzellent AI Studio",de:"Exzellent AI Studio"},
+   ident:{en:"Most AI projects fail on the boring part. We sell the boring part.",de:"Die meisten KI-Projekte scheitern am langweiligen Teil. Genau den liefern wir."}, media:{src:""}},
+ {key:"exzi",    c:"167,139,250",route:"/exzi",
+   title:{en:"AI Companion — Exzi",de:"KI-Begleiter — Exzi"},
+   ident:{en:"Exzi remembers where you are — and follows through.",de:"Exzi merkt sich, wo du stehst — und bleibt dran."}, media:{src:""}},
+ {key:"marketing",c:"255,122,41",route:"/coming-soon",
+   title:{en:"Marketing",de:"Marketing"},
+   ident:{en:"Attention into momentum.",de:"Aus Aufmerksamkeit wird Momentum."}, media:{src:""}},
+ {key:"business",c:"240,196,66", route:"/coming-soon",
+   title:{en:"Business",de:"Business"},
+   ident:{en:"B2B, partnerships, operations — keeping the vessel on course.",de:"B2B, Partnerschaften, Betrieb — das Schiff bleibt auf Kurs."}, media:{src:""}},
+ {key:"services",c:"61,240,160", route:"/coming-soon",
+   title:{en:"Tools & Services",de:"Tools & Services"},
+   ident:{en:"Every service on one page, routed to the right point.",de:"Alle Services auf einer Seite — zum richtigen Punkt geleitet."}, media:{src:""}},
+ {key:"funding", c:"240,196,66", route:"/coming-soon",
+   title:{en:"Funding & Entrepreneurship",de:"Funding & Entrepreneurship"},
+   ident:{en:"Building — and funding — companies the honest way.",de:"Unternehmen bauen und finanzieren — auf die ehrliche Art."}, media:{src:""}},
+ {key:"community",c:"255,122,41",route:"/community",
+   title:{en:"Community",de:"Community"},
+   ident:{en:"People making the same move, in one place.",de:"Menschen auf demselben Weg, an einem Ort."}, media:{src:""}}
+];
+
+/* hot entry points on the first layer — direct doors into the ecosystem */
+const HOT=[
+ {t:{en:"Language Lab",de:"Language Lab"},href:"/labs/language.html",c:"6,182,212"},
+ {t:{en:"Skill Lab",de:"Skill Lab"},href:"/labs/skill-lab.html",c:"249,115,22"},
+ {t:{en:"Growth Lab",de:"Growth Lab"},href:"/labs/growth-lab.html",c:"16,185,129"},
+ {t:{en:"Student Dashboard",de:"Student Dashboard"},href:"/student-dashboard",c:"138,75,245"},
+ {t:{en:"Book a class",de:"Book a class"},href:"/book",c:"255,122,41"}
+];
+
+const I18N={
+ en:{profile:"Profile",theme:"Light",signin:"Sign in",start:"Start for free",
+     s1:"Three Labs.",s2:"Real Tutors.",s3:"One Companion.",
+     enterEco:"Enter the Ecosystem",enter:"Enter",
+     scenes:{speak:"Language course \u00b7 speaking, scored",chat:"AI tutor \u00b7 knows the chapter",
+             skill:"Skill Lab \u00b7 a real task, automated",growth:"Growth Lab \u00b7 rhythm, not guilt",
+             sdash:"Student dashboard \u00b7 progress + teacher",book:"Booking \u00b7 pick your teacher",
+             exzi:"Exzi \u00b7 follows through",expats:"Route planner \u00b7 EN + DE",
+             studio:"AI Studio \u00b7 the unglamorous part, done",marketing:"Content engine \u00b7 plan, publish",
+             business:"Partnerships \u00b7 scoped and on course",services:"One index \u00b7 the right point",
+             funding:"The founder\u2019s ledger \u00b7 written down",community:"Community \u00b7 same move, one place",
+             eco:"One connected ecosystem"}},
+ de:{profile:"Profil",theme:"Hell",signin:"Anmelden",start:"Kostenlos starten",
+     s1:"Drei Labs.",s2:"Echte Tutoren.",s3:"Ein Begleiter.",
+     enterEco:"\u00d6kosystem betreten",enter:"\u00d6ffnen",
+     scenes:{speak:"Sprachkurs \u00b7 Sprechen, bewertet",chat:"KI-Tutor \u00b7 kennt das Kapitel",
+             skill:"Skill Lab \u00b7 echte Aufgabe, automatisiert",growth:"Growth Lab \u00b7 Rhythmus statt Druck",
+             sdash:"Dashboard \u00b7 Fortschritt + Lehrer",book:"Buchung \u00b7 Tutor w\u00e4hlen",
+             exzi:"Exzi \u00b7 bleibt dran",expats:"Routenplaner \u00b7 EN + DE",
+             studio:"AI Studio \u00b7 der unbequeme Teil, erledigt",marketing:"Content-Engine \u00b7 planen, ver\u00f6ffentlichen",
+             business:"Partnerschaften \u00b7 sauber aufgesetzt",services:"Ein Index \u00b7 der richtige Punkt",
+             funding:"Das Gr\u00fcnder-Logbuch \u00b7 aufgeschrieben",community:"Community \u00b7 derselbe Weg, ein Ort",
+             eco:"Ein verbundenes \u00d6kosystem"}}
+};
+let lang="en", theme="dark", active=0, busy=false;
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const T=()=>I18N[lang];
+
+/* =====================================================================
+   Cinematic scenes — CSS product mocks with sample data. The Learning
+   Ecosystem cycles through everything under it (the "film"); every
+   other point shows its own moment. Replace with real GIF/MP4 by
+   setting ECOSYSTEM[i].media.src.
+   ===================================================================== */
+const S={
+ speak:()=>`<div class="mock"><div class="mh"><i></i>Language Lab</div>
+   <div style="font:600 15px/1.3 Inter">\u201eIch h\u00e4tte gern einen Kaffee.\u201c</div>
+   <div class="wave">${[...Array(16)].map((_,k)=>`<i style="animation-delay:${(k*.09).toFixed(2)}s"></i>`).join("")}</div>
+   <div class="mrow"><span style="color:var(--dim)">Aussprache</span><div class="bar"><i style="width:92%"></i></div><b style="font:700 14px 'Space Grotesk'">92</b></div></div>`,
+ chat:()=>`<div class="mock"><div class="mh"><i></i>AI tutor</div>
+   <div class="bub me">Why is it \u201eder\u201c here?</div>
+   <div class="bub">Because \u201eKaffee\u201c is masculine \u2014 and you saw this in chapter 5. Two more examples \u2192</div></div>`,
+ skill:()=>`<div class="mock"><div class="mh"><i></i>Skill Lab</div>
+   <div style="font:600 14px Inter;margin-bottom:6px">Weekly report \u2192 automated</div>
+   <div class="tk"><b>\u2713</b>Collect the numbers</div><div class="tk"><b>\u2713</b>Draft the summary</div>
+   <div class="tk"><b>\u25cf</b>Send every Friday, 9:00</div></div>`,
+ growth:()=>`<div class="mock" style="display:flex;gap:16px;align-items:center">
+   <div class="ring" style="--v:68"><b>68%</b></div>
+   <div><div style="font:600 14px Inter">12-day rhythm</div>
+   <div style="color:var(--dim);font-size:12.5px;margin-top:4px">You\u2019re caught up for today.</div></div></div>`,
+ sdash:()=>`<div class="mock"><div class="mh"><i></i>My learning</div>
+   <div style="font:600 14px Inter">German A2 \u2014 Complete Course</div>
+   <div class="mrow"><div class="bar"><i style="width:42%"></i></div><b style="font:700 13px 'Space Grotesk'">42%</b></div>
+   <div class="mrow"><span class="chip on">Alice M\u00fcller \u00b7 online</span><span class="chip">Book a session</span></div></div>`,
+ book:()=>`<div class="mock"><div class="mh"><i></i>Book a teacher</div>
+   <div style="font:600 14px Inter;margin-bottom:8px">Alice M\u00fcller \u00b7 \u20ac28/h</div>
+   <span class="chip">Thu 18:00</span><span class="chip on">Sat 10:30 \u2713</span><span class="chip">Mon 18:00</span></div>`,
+ exzi:()=>`<div class="mock"><div class="mh"><i></i>Exzi</div>
+   <div class="bub">You planned the telc mock for today. Done \u2014 or should I move it to 18:00?</div>
+   <div class="mrow"><span class="chip on">remembers chapter 6</span><span class="chip">private by design</span></div></div>`,
+ expats:()=>`<div class="mock"><div class="mh"><i></i>Route planner</div>
+   <div class="tk"><b>\u2713</b>Qualification recognition \u2014 started</div>
+   <div class="tk"><b>\u2713</b>German for work \u2014 A2 track</div>
+   <div class="tk"><b>\u25cf</b>Application file \u2014 Lebenslauf review</div></div>`,
+ studio:()=>`<div class="mock"><div class="mh"><i></i>Custom AI build</div>
+   <div class="tk"><b>\u2713</b>Fixed price before work starts</div>
+   <div class="tk"><b>\u2713</b>EU hosting \u00b7 no training on your content</div>
+   <div class="tk"><b>\u2713</b>Training, handover \u2014 it survives after we leave</div></div>`,
+ marketing:()=>`<div class="mock"><div class="mh"><i></i>Content engine</div>
+   <div class="tk"><b>Mo</b>Reel \u2014 the learning journey</div>
+   <div class="tk"><b>Mi</b>Blog \u2014 what learners search</div>
+   <div class="tk"><b>Fr</b>Campaign \u2014 cohort launch</div></div>`,
+ business:()=>`<div class="mock"><div class="mh"><i></i>Partnership</div>
+   <div class="tk"><b>\u2713</b>Scope agreed \u00b7 pilot defined</div>
+   <div class="tk"><b>\u2713</b>Operations mapped</div>
+   <div class="tk"><b>\u25cf</b>First cohort onboarding</div></div>`,
+ services:()=>`<div class="mock"><div class="mh"><i></i>One index</div>
+   <div class="mrow"><span>German course</span><span class="chip on" style="margin-left:auto">Learning Ecosystem</span></div>
+   <div class="mrow"><span>Custom AI build</span><span class="chip on" style="margin-left:auto">AI Studio</span></div>
+   <div class="mrow"><span>Hiring internationally</span><span class="chip on" style="margin-left:auto">Expats & Career</span></div></div>`,
+ funding:()=>`<div class="mock"><div class="mh"><i></i>The ledger</div>
+   <div class="tk"><b>\u2713</b>Bootstrapped \u2014 and written down</div>
+   <div class="tk"><b>\u2713</b>How we fund, spend and repay</div>
+   <div class="tk"><b>\u25cf</b>For founders building their own thing</div></div>`,
+ community:()=>`<div class="mock"><div class="mh"><i></i>Community</div>
+   <div class="tk"><b>\u2726</b>Berlin \u2014 Stammtisch, Saturday</div>
+   <div class="tk"><b>\u2726</b>Anmeldung guide \u2014 updated</div>
+   <div class="tk"><b>\u2726</b>Study partners \u00b7 A2, evenings</div></div>`
+};
+const SCENES={eco:["speak","chat","skill","growth","sdash","book","exzi"],
+  expats:["expats"],studio:["studio"],exzi:["exzi"],marketing:["marketing"],
+  business:["business"],services:["services"],funding:["funding"],community:["community"]};
+
+/* =====================================================================
+   Build the layers
+   ===================================================================== */
+const stage=document.getElementById("stage");
+ECOSYSTEM.forEach((s,i)=>{
+  const el=document.createElement("section");
+  el.className="layer"; el.style.setProperty("--c",s.c); el.dataset.i=i;
+  el.setAttribute("aria-label",s.title.en);
+  const scenes=SCENES[s.key].map((k,n)=>`<div class="scene${n===0?" on":""}" data-k="${k}">${S[k]()}</div>`).join("");
+  const sdots=SCENES[s.key].length>1?`<div class="dots">${SCENES[s.key].map((_,n)=>`<b class="${n===0?"on":""}"></b>`).join("")}</div>`:"";
+  const media=s.media.src?`<video src="${s.media.src}" muted autoplay loop playsinline></video>`:scenes+sdots;
+  const side=i===0
+    ? `<h1 class="statement"><span data-i18n="s1">Three Labs.</span><br><span data-i18n="s2">Real Tutors.</span><br><em data-i18n="s3">One Companion.</em></h1>
+       <div class="hot" role="group" aria-label="Quick entry">${HOT.map((h,n)=>`
+         <a class="hb" style="--hc:${h.c}" href="${h.href}" data-hot="${n}"><i></i><span>${h.t.en}</span><span class="ar">\u2192</span></a>`).join("")}
+       </div>
+       <a class="cta" href="${s.route}" data-route><span data-i18n="enterEco">Enter the Ecosystem</span><span class="ar">\u2192</span></a>`
+    : `<h2 class="l-title">${s.title.en}</h2>
+       <p class="ident">${s.ident.en}</p>
+       <a class="cta" href="${s.route}" data-route><span data-i18n="enter">Enter</span><span class="ar">\u2192</span></a>`;
+  el.innerHTML=`<button class="peek" tabindex="-1">${s.title.en}</button>
+    <div class="inner"><div class="cine" aria-hidden="true">${media}<div class="cap"><i></i><span class="capT">${T().scenes[s.key]}</span></div></div>
+    <div class="side">${side}</div></div>`;
+  stage.appendChild(el);
+});
+const layers=[...stage.children];
+
+/* rail */
+const rail=document.getElementById("rail");
+ECOSYSTEM.forEach((s,i)=>{
+  const b=document.createElement("button");
+  b.className="rd"; b.dataset.go=i;
+  b.innerHTML=`<i></i><span class="tip">${s.title.en}</span>`;
+  b.setAttribute("aria-label",s.title.en);
+  rail.appendChild(b);
+});
+
+/* =====================================================================
+   Placement: depth \u2192 inertia \u2192 focus
+   ===================================================================== */
+function place(){
+  layers.forEach((el,i)=>{
+    const d=i-active;
+    if(d===0){ el.dataset.pos="active";
+      el.style.transform=`translateX(-50%) translateY(0) scale(1)`;
+      el.style.opacity=1; el.style.filter="none"; el.style.zIndex=30;
+    } else if(d>0){ el.dataset.pos="behind";
+      const k=Math.min(d,5), vis=d<=4;
+      el.style.transform=`translateX(-50%) translateY(${-k*22}px) scale(${1-k*.045})`;
+      el.style.opacity=vis?Math.max(.14,.62-k*.13):0;
+      el.style.filter=`blur(${Math.min(k*1.6,6)}px)`;
+      el.style.zIndex=30-k; el.style.pointerEvents=vis?"auto":"none";
+    } else { el.dataset.pos="gone";
+      el.style.transform=`translateX(-50%) translateY(9svh) scale(1.07)`;
+      el.style.opacity=0; el.style.filter="blur(8px)"; el.style.zIndex=40;
+    }
+  });
+  document.documentElement.style.setProperty("--acc",ECOSYSTEM[active].c);
+  document.getElementById("nowT").textContent=ECOSYSTEM[active].title[lang];
+  document.getElementById("stPrev").disabled=active===0;
+  document.getElementById("stNext").disabled=active===ECOSYSTEM.length-1;
+  rail.querySelectorAll(".rd").forEach((b,i)=>b.setAttribute("aria-current",String(i===active)));
+  document.getElementById("live").textContent=`${ECOSYSTEM[active].title[lang]} \u2014 active`;
+  cycle();
+}
+function go(i){
+  i=Math.max(0,Math.min(ECOSYSTEM.length-1,i));
+  if(i===active||busy)return;
+  busy=true; active=i; place();
+  setTimeout(()=>busy=false, reduced?80:560);
+}
+
+/* scene cycler — active layer only */
+let sceneTimer=null;
+function cycle(){
+  clearInterval(sceneTimer);
+  const el=layers[active], sc=[...el.querySelectorAll(".scene")], dt=[...el.querySelectorAll(".dots b")];
+  const cap=el.querySelector(".capT"); if(cap)cap.textContent=T().scenes[ECOSYSTEM[active].key];
+  if(sc.length<2)return;
+  let n=sc.findIndex(x=>x.classList.contains("on")); if(n<0)n=0;
+  sceneTimer=setInterval(()=>{
+    sc[n].classList.remove("on"); dt[n]&&dt[n].classList.remove("on");
+    n=(n+1)%sc.length;
+    sc[n].classList.add("on"); dt[n]&&dt[n].classList.add("on");
+    if(cap){const k=sc[n].dataset.k;cap.textContent=T().scenes[k]||T().scenes[ECOSYSTEM[active].key];}
+  }, reduced?5200:3600);
+}
+
+/* =====================================================================
+   Input: wheel / touch / keys / clicks — one spatial system
+   ===================================================================== */
+let acc=0, cool=0;
+addEventListener("wheel",e=>{
+  const now=Date.now(); if(now<cool)return;
+  acc+=e.deltaY;
+  if(Math.abs(acc)>90){ go(active+(acc>0?1:-1)); acc=0; cool=now+720; }
+},{passive:true});
+let ty=null;
+addEventListener("touchstart",e=>ty=e.touches[0].clientY,{passive:true});
+addEventListener("touchend",e=>{
+  if(ty===null)return; const dy=ty-e.changedTouches[0].clientY; ty=null;
+  if(Math.abs(dy)>58) go(active+(dy>0?1:-1));
+},{passive:true});
+addEventListener("keydown",e=>{
+  if(e.target.matches("input,textarea"))return;
+  if(["ArrowDown","PageDown","ArrowRight"].includes(e.key)){e.preventDefault();go(active+1);}
+  else if(["ArrowUp","PageUp","ArrowLeft"].includes(e.key)){e.preventDefault();go(active-1);}
+  else if(e.key==="Home"){e.preventDefault();go(0);}
+  else if(e.key==="End"){e.preventDefault();go(ECOSYSTEM.length-1);}
+});
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]"); if(g){go(+g.dataset.go);return;}
+  const behind=e.target.closest('.layer[data-pos="behind"]'); if(behind){go(+behind.dataset.i);return;}
+});
+document.getElementById("stPrev").addEventListener("click",()=>go(active-1));
+document.getElementById("stNext").addEventListener("click",()=>go(active+1));
+
+/* Enter = entering a world */
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-route]"); if(!a)return;
+  if(reduced)return;
+  e.preventDefault();
+  const el=layers[active];
+  el.style.transition="transform .5s var(--ease),opacity .5s var(--ease),filter .5s var(--ease)";
+  el.style.transform="translateX(-50%) translateY(6svh) scale(1.1)";
+  el.style.opacity=0; el.style.filter="blur(10px)";
+  setTimeout(()=>location.href=a.href,430);
+});
+
+/* =====================================================================
+   ThemeToggle · LanguageSelector (in-session state only)
+   ===================================================================== */
+const uTheme=document.getElementById("uTheme");
+function applyTheme(){
+  document.documentElement.dataset.theme=theme;
+  uTheme.innerHTML=(theme==="dark"?"\u263D":"\u2600")+`<span>${theme==="dark"?(lang==="de"?"Hell":"Light"):(lang==="de"?"Dunkel":"Dark")}</span>`;
+  uTheme.setAttribute("aria-label",theme==="dark"?"Switch to light mode":"Switch to dark mode");
+}
+uTheme.addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";applyTheme();});
+if(matchMedia("(prefers-color-scheme: light)").matches){theme="light";}
+applyTheme();
+
+const uLang=document.getElementById("uLang");
+function applyLang(){
+  document.documentElement.lang=lang;
+  uLang.innerHTML=`<span>${lang.toUpperCase()}</span>`;
+  uLang.setAttribute("aria-label",lang==="en"?"Sprache: Deutsch":"Language: English");
+  document.querySelectorAll("[data-i18n]").forEach(n=>{const k=n.dataset.i18n;if(T()[k])n.textContent=T()[k];});
+  layers.forEach((el,i)=>{
+    if(i===0)return;
+    el.querySelector(".l-title").textContent=ECOSYSTEM[i].title[lang];
+    el.querySelector(".ident").textContent=ECOSYSTEM[i].ident[lang];
+  });
+  document.querySelectorAll("[data-hot]").forEach(a=>{
+    a.querySelector("span:not(.ar)").textContent=HOT[+a.dataset.hot].t[lang];
+  });
+  applyTheme(); place();
+}
+uLang.addEventListener("click",()=>{lang=lang==="en"?"de":"en";applyLang();});
+
+document.getElementById("uProfile").addEventListener("click",()=>location.href="/student-dashboard");
+
+place();
+</script>
+</body>
+</html>

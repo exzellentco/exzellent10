@@ -82,7 +82,7 @@ if (isLoggedIn) {
 } else {
   centerNavItems = [
     { name: "Home", to: "/" },
-    { name: "Pricing", to: "/pricing" },
+    { name: "Pricing", to: "/offer" },
     { name: "Community", to: "/community" },
     { name: "Affiliates", to: "/affiliates" },
     { name: "Ambassadors", to: "/ambassadors" },

@@ -98,7 +98,7 @@ Two mechanisms reach the backend, and some newer features deliberately use the s
 │  └─ README-FAKE-LOGIN.md    #   notes on the fake-login system
 │
 ├─ public/                    # STATIC assets + marketing HTML (served as-is)
-│  ├─ home.html               #   the nine-point "star" landing page
+│  ├─ exzellent-index.html #   the nine-point "star" landing page
 │  ├─ learning-ecosystem.html #   student/teacher personas, labs, dashboard previews
 │  ├─ exzi.html               #   the Exzi AI-companion playground  (route: /exzi)
 │  ├─ labs/                   #   language / skill / growth lab pages

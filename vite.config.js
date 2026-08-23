@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 const cleanUrls = {
   name: 'clean-urls',
   configureServer(server) {
-    const map = { '/exzi': '/exzi.html', '/exzi/': '/exzi.html' }
+    const map = { '/exzi': '/exzi.html', '/exzi/': '/exzi.html', '/': '/exzellent-index.html' }
     server.middlewares.use((req, _res, next) => {
       const q = req.url.indexOf('?')
       const path = q === -1 ? req.url : req.url.slice(0, q)

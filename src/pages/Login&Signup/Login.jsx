@@ -160,7 +160,7 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      <a href="/home.html" className="auth-back">← Back to Exzellent</a>
+      <a href="/exzellent-index.html" className="auth-back">← Back to Exzellent</a>
       <div className="auth-card">
         <img src="/logo.png" className="auth-logo" alt="Exzellent" />
         <h2 className="auth-title">Welcome <span className="g">back</span></h2>

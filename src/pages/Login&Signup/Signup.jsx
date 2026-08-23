@@ -464,7 +464,7 @@ const Signup = () => {
 
   return (
     <div className="auth-page">
-      <a href="/home.html" className="auth-back">← Back to Exzellent</a>
+      <a href="/exzellent-index.html" className="auth-back">← Back to Exzellent</a>
       <div className="auth-card">
         <img src="/logo.png" className="auth-logo" alt="Exzellent" />
         {step < 2 && (

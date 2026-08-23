@@ -625,7 +625,7 @@ const BookClass = () => {
                   <p>{bookError}</p>
                   {notEnoughCredits && (
                     <Link
-                      to="/pricing"
+                      to="/offer"
                       className="ex-btn ex-btn-ghost"
                       style={{ marginTop: 8, width: "100%" }}
                     >

@@ -38,12 +38,11 @@ import CalendarPage from "./pages/CalendarPage";
 import TeacherTC from "./pages/Legal/TeacherTC";
 import TeacherForm from "./pages/Login&Signup/TeacherForm";
 import WebinarDetails from "./pages/WebinarDetails";
-import Offer from "./pages/Payment/Offer";
 import ObjectDetection from './pages/ObjectDetection';
 import Contact from "./pages/Contact";
 import ComingSoon from "./pages/Errors/ComingSoon";
 import CookieBanner from "./components/CookieBanner";
-import Pricing from "./pages/Pricing";
+import Offer from "./pages/Payment/Offer";
 import Waitlist from "./pages/Waitlist";
 import Community from "./pages/Community";
 import BookClass from "./pages/BookClass";
@@ -136,8 +135,7 @@ const App = () => {
     if (userRole === "Student") return <Navigate to="/student-dashboard" replace />;
     if (userRole === "Admin") return <Navigate to="/get-student" replace />;
     if (userRole === "Teacher") return <Navigate to="/teacher-dashboard" replace />;
-    // Public landing page is the static site at /home.html (outside React Router).
-    window.location.replace("/home.html");
+    window.location.replace("/exzellent-index.html");
     return null;
   };
 
@@ -148,7 +146,6 @@ const App = () => {
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login checkAuth={checkAuth} />} />
         <Route path="/signup" element={<Signup checkAuth={checkAuth} />} />
-        <Route path="/pricing" element={<Pricing />} />
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/community" element={<Community />} />
         <Route path="/book" element={<BookClass />} />
