@@ -1,1 +1,1 @@
-{ "rewrites": [ { "source": "/exzi", "destination": "/exzi.html" }, { "source": "/(.*)", "destination": "/" } ] }
+{ "rewrites": [ { "source": "/exzi", "destination": "/exzi.html" }, { "source": "/((?!api/).*)", "destination": "/" } ] }
