@@ -1,90 +1,73 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react"; // <-- import icons
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import axios from "../../utils/axios";
-import { fetchStudentProfile } from "../../APIs/StudentApi/StudentDetails";
 
 const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false); // <-- add state
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      window.location.href = "/student-dashboard"; // Redirect to home if already logged in
+      window.location.href = "/student-dashboard";
     }
-
-    // Initialize Google OAutho
-    initializeGoogleOAuth();
   }, []);
 
-  const initializeGoogleOAuth = () => {
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleGoogleEmailLogin,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      });
-
-      // Clear existing content and render button
-      const buttonElement = document.getElementById("google-login-button");
-      if (buttonElement) {
-        buttonElement.innerHTML = "";
-        window.google.accounts.id.renderButton(buttonElement, {
-          theme: "outline",
-          size: "large",
-          text: "signin_with",
-          shape: "rectangular",
-          logo_alignment: "left",
-        });
-      }
-    } else {
-      // Load Google API script if not available
+  const initGoogle = useCallback(() => {
+    if (!window.google) {
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
       script.async = true;
       script.defer = true;
-      script.onload = initializeGoogleOAuth;
+      script.onload = () => renderGoogleButton();
       document.head.appendChild(script);
+      return;
+    }
+    renderGoogleButton();
+  }, []);
+
+  const renderGoogleButton = () => {
+    if (!window.google?.accounts?.id) return;
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleEmailLogin,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+    const buttonElement = document.getElementById("google-login-button");
+    if (buttonElement) {
+      buttonElement.innerHTML = "";
+      window.google.accounts.id.renderButton(buttonElement, {
+        theme: "outline",
+        size: "large",
+        text: "signin_with",
+        shape: "rectangular",
+        logo_alignment: "left",
+      });
     }
   };
 
   const handleGoogleEmailLogin = async (response) => {
     setGoogleLoading(true);
-
     try {
-      // Send the Google ID token to our backend API using axios axios
       const result = await axios.post("/api/users/google-auth", {
         token: response.credential,
       });
-
-      // If successful, set the cookie and redirect to home
       if (result.data.success) {
         localStorage.setItem("user", JSON.stringify(result.data));
-
-        document.cookie = `token=${result.data.accessToken}; max-age= ${
+        document.cookie = `token=${result.data.accessToken}; max-age=${
           60 * 60 * 12
         }; path=/; secure; samesite=strict`;
         const userRole = result.data.userType;
         if (userRole === "Admin") {
           navigate("/get-student");
-        } else if (userRole === "Student") {
-          // Check if student is paid
-          const userId = result.data._id;
-          try {
-            const profile = await fetchStudentProfile(userId);
-            if (profile.paid) {
-              navigate("/student-dashboard");
-            } else {
-              navigate("/offer");
-            }
-          } catch {
-            navigate("/offer");
-          }
+        } else if (userRole === "Teacher") {
+          navigate("/teacher-dashboard");
         } else {
-          navigate("/");
+          navigate("/student-dashboard");
         }
       } else {
         setLoginError(result.data.message || "Google login failed");
@@ -115,37 +98,21 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoginError("");
-
+    setSubmitting(true);
     try {
       const response = await axios.post("/api/users/login", formData);
-
       if (response.data.success) {
         localStorage.setItem("user", JSON.stringify(response.data));
-
-        document.cookie = `token=${response.data.accessToken}; max-age= ${
+        document.cookie = `token=${response.data.accessToken}; max-age=${
           60 * 60 * 12
         }; path=/; secure; samesite=strict`;
-
         const userRole = response.data.userType;
         if (userRole === "Admin") {
           navigate("/get-student");
-        } else if (userRole === "Student") {
-          // Check if student is paid
-          const userId = response.data._id;
-          try {
-            const profile = await fetchStudentProfile(userId);
-            if (profile.paid) {
-              navigate("/student-dashboard");
-            } else {
-              navigate("/student-dashboard");
-            }
-          } catch {
-            navigate("/student-dashboard");
-          }
         } else if (userRole === "Teacher") {
           navigate("/teacher-dashboard");
         } else {
-          navigate("/")
+          navigate("/student-dashboard");
         }
       } else {
         setLoginError(response.data.message || "Invalid email or password.");
@@ -155,6 +122,8 @@ const Login = () => {
         error.response?.data?.message ||
           "Network error. Please check your connection and try again."
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -169,7 +138,13 @@ const Login = () => {
         {loginError && <div className="auth-error">{loginError}</div>}
 
         {/* Google Login Button */}
-        <div id="google-login-button" style={{ display: "flex", justifyContent: "center", minHeight: 44 }} />
+        <div
+          id="google-login-button"
+          onClick={initGoogle}
+          role="button"
+          tabIndex={0}
+          style={{ display: "flex", justifyContent: "center", minHeight: 44, cursor: "pointer" }}
+        />
         {googleLoading && (
           <div style={{ textAlign: "center", color: "var(--a-violet-l)", fontSize: ".88rem", marginTop: 8 }}>
             <span className="auth-spinner" /> Signing in with Google…
@@ -202,7 +177,9 @@ const Login = () => {
             <Link to="/forgot-password" className="auth-link" style={{ fontSize: ".85rem" }}>Forgot password?</Link>
           </div>
 
-          <button type="submit" className="auth-btn">Log in</button>
+          <button type="submit" className="auth-btn" disabled={submitting}>
+            {submitting ? "Signing in…" : "Log in"}
+          </button>
 
           <div className="auth-foot">
             Don't have an account? <Link to="/signup" className="auth-link">Create one</Link>
