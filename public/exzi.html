@@ -174,6 +174,24 @@ body.embed .hdr{padding-right:66px}  /* keep header buttons clear of the popup's
   var hdrStatus = document.getElementById("hdrStatus");
   var hint = document.getElementById("hint");
 
+  // ─── BACKEND ───────────────────────────────────────────────────────────────
+  // Exzi is a STATIC page on Vercel, so a relative "/api/..." fetch would hit
+  // Vercel (which has no /api functions) and 404 — it never reaches the API
+  // server. The absolute URL below is required. In local dev the Vite proxy is
+  // bypassed too, which is fine: the real backend allows localhost:3000 origins.
+  var API_BASE = "https://exzellent-backend-1.onrender.com";
+  var CHAT_URL = API_BASE + "/api/tools/aria";
+  // Not implemented on the backend yet — see the note in transcribe().
+  var TRANSCRIBE_URL = API_BASE + "/api/ai/transcribe";
+
+  // The endpoint is a public, rate-limited, ONE-SHOT tutor: it accepts a single
+  // {message, language} and keeps no server-side session. To give follow-ups
+  // ("say that again simpler") some context, we prepend a short transcript of
+  // recent turns and keep the whole thing inside the endpoint's 500-char cap.
+  var LANG = "en";           // page is lang="en"; use "de" for the German prompt
+  var MAX_MESSAGE = 500;     // endpoint rejects longer with HTTP 400
+  var CONTEXT_TURNS = 4;     // how many prior messages to fold in
+
   var history = [];          // [{role:'user'|'assistant', content}]
   var busy = false;
   var ttsOn = true;
@@ -227,6 +245,32 @@ body.embed .hdr{padding-right:66px}  /* keep header buttons clear of the popup's
     speechSynthesis.speak(u);
   }
 
+  // Fold the tail of the conversation into one string, because the endpoint is
+  // one-shot and has no memory. Trimmed from the OLDEST turn first so the
+  // current question always survives the 500-char cap.
+  function buildMessage(text) {
+    if (text.length >= MAX_MESSAGE) return text.slice(0, MAX_MESSAGE);
+    var prior = history.slice(-1 - CONTEXT_TURNS, -1);   // exclude the just-pushed turn
+    while (prior.length) {
+      var transcript = prior
+        .map(function (m) { return (m.role === "user" ? "Me: " : "You: ") + m.content; })
+        .join("\n");
+      var candidate = transcript + "\nMe: " + text;
+      if (candidate.length <= MAX_MESSAGE) return candidate;
+      prior = prior.slice(1);                            // drop the oldest turn, retry
+    }
+    return text;
+  }
+
+  function errorFor(status, data) {
+    var msg = data && data.message;
+    if (status === 400) return msg || "That message was too long for me — could you shorten it?";
+    if (status === 429) return "I'm getting a lot of questions right now. Please wait a moment and try again.";
+    if (status === 404) return "Exzi isn't wired up on this server yet. Please let the team know.";
+    if (status >= 500) return "My AI service is temporarily unavailable. Please try again in a minute.";
+    return msg || "I couldn't generate a reply just now. Please try again.";
+  }
+
   async function ask(text) {
     if (busy) return;
     busy = true; send.disabled = true;
@@ -235,12 +279,22 @@ body.embed .hdr{padding-right:66px}  /* keep header buttons clear of the popup's
     addThinking();
     setMood("thinking"); setStatus("Thinking…");
     try {
-      var res = await fetch("/api/ai/chat", {
+      var res = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history })
+        body: JSON.stringify({ message: buildMessage(text), language: LANG })
       });
-      var data = await res.json();
+
+      var data = null;
+      try { data = await res.json(); } catch (_) { /* non-JSON error page */ }
+
+      if (!res.ok) {
+        removeThinking();
+        addBubble("assistant", errorFor(res.status, data));
+        setMood("idle"); setStatus("Online · your AI companion");
+        return;
+      }
+
       var reply = (data && (data.reply || data.message)) || "I couldn't generate a reply just now. Please try again.";
       removeThinking();
       addBubble("assistant", reply);
@@ -248,8 +302,9 @@ body.embed .hdr{padding-right:66px}  /* keep header buttons clear of the popup's
       speak(reply);
       if (document.body.getAttribute("data-mood") !== "speaking") setStatus("Online · your AI companion");
     } catch (e) {
+      // Only genuine network/CORS failures land here — HTTP errors are handled above.
       removeThinking();
-      addBubble("assistant", "Something went wrong reaching Exzi. Is the backend running?");
+      addBubble("assistant", "I can't reach the Exzellent servers right now. Please check your connection and try again.");
       setMood("idle"); setStatus("Offline");
     } finally {
       busy = false; resize();
@@ -327,15 +382,22 @@ body.embed .hdr{padding-right:66px}  /* keep header buttons clear of the popup's
     var type = (audioChunks[0] && audioChunks[0].type) || "audio/webm";
     var blob = new Blob(audioChunks, { type: type });
     if (!blob.size) { setStatus("Online · your AI companion"); hint.textContent = defaultHint; return; }
+    // NOTE: there is no public transcription endpoint yet. The backend's
+    // /api/pronunciation/transcribe and /api/speech routes both require a
+    // logged-in user AND a multipart upload, while Exzi is anonymous and posts
+    // a raw blob. Until a public route exists, voice input cannot work here —
+    // so fail with an honest message rather than blaming the backend.
     try {
-      var res = await fetch("/api/ai/transcribe", { method: "POST", headers: { "Content-Type": type }, body: blob });
-      var data = await res.json();
+      var res = await fetch(TRANSCRIBE_URL, { method: "POST", headers: { "Content-Type": type }, body: blob });
+      var data = null;
+      try { data = await res.json(); } catch (_) {}
       setStatus("Online · your AI companion");
-      if (data && data.success && data.text) { hint.textContent = defaultHint; ask(data.text); }
+      if (res.ok && data && data.success && data.text) { hint.textContent = defaultHint; ask(data.text); }
+      else if (res.status === 404) { hint.textContent = "Voice input isn't available yet — please type your question."; }
       else { hint.textContent = "Couldn't catch that: " + ((data && data.message) || "no speech detected") + ". Try again."; }
     } catch (e) {
       setStatus("Online · your AI companion");
-      hint.textContent = "Transcription failed — is the backend running?";
+      hint.textContent = "Voice input isn't available yet — please type your question.";
     }
   }
 
