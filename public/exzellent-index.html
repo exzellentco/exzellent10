@@ -2,364 +2,725 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EXZELLENT — Nine points, one ecosystem</title>
-<meta name="description" content="The nine points of Exzellent as one spatial interface — start in the Learning Ecosystem: three labs, real tutors, one companion.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EXZELLENT — The twelve petals</title>
+<meta name="description" content="The twelve petals of Exzellent as one rotating stack — enter any petal quickly, or scroll down for its full story.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
-   EXZELLENT · Nine-Point Stack — the entry
-   The old star page and the new stack, integrated: the nine points of
-   the company are nine layers of one spatial interface. The star mark
-   itself (the real logo, embedded) stands faint behind the stack.
-   Palette from the logo: violet · illuminating green · gold · neon
-   orange · black.
+   EXZELLENT · petals — twelve petals, one rotating stack
+   No hero copy. The stack speaks first; the story of the active petal
+   lives below it and swaps as the stack turns.
    ===================================================================== */
 :root{
-  --bg:#04050A; --surface:rgba(15,18,32,.80); --surface-solid:#0F1220;
+  --bg:#04050A; --surface:rgba(15,18,32,.82); --solid:#0F1220;
   --line:rgba(148,163,215,.16); --line2:rgba(148,163,215,.3);
   --text:#EEF1FB; --muted:#9AA3C2; --dim:#6E7796;
-  --violet:#8A4BF5; --violetL:#A78BFA; --lav:#C9AAFF;
+  --violet:#8A4BF5; --vio2:#A78BFA; --lav:#C9AAFF;
+  --green:#3DF0A0; --gold:#F0C442; --orange:#FF7A29; --cyan:#67E8F9;
+  --goldT:#FFD97A; --goldB:rgba(255,217,122,.80); --goldDim:rgba(255,217,122,.62);
   --grad:linear-gradient(100deg,var(--violet),var(--lav));
-  --acc:138,75,245;               /* active section accent (rgb) */
-  --glowA:.30; --starA:.055;      /* atmosphere + backdrop star strength */
-  --ink:#07040F;
-  --ease:cubic-bezier(.22,.9,.24,1);
-  --dur:.72s;
-  --logo-url:url("data:image/png;base64,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");
+  --acc:138,75,245; --ink:#07040F;
+  --ease:cubic-bezier(.22,.9,.24,1); --nav:72px;
+  --logo-url:url("data:image/png;base64,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");
 }
 [data-theme="light"]{
-  --bg:#F2F3FA; --surface:rgba(255,255,255,.84); --surface-solid:#FFFFFF;
-  --line:rgba(21,27,63,.12); --line2:rgba(21,27,63,.24);
+  --bg:#F2F3FA; --surface:rgba(255,255,255,.88); --solid:#FFFFFF;
+  --line:rgba(21,27,63,.12); --line2:rgba(21,27,63,.26);
   --text:#0B0E1E; --muted:#454E71; --dim:#7A82A3;
-  --glowA:.15; --starA:.07;
+  --goldT:#8A6608; --goldB:rgba(122,92,8,.92); --goldDim:rgba(122,92,8,.72);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font:400 15px/1.55 Inter,system-ui,sans-serif;
-  overflow:hidden;-webkit-font-smoothing:antialiased;transition:background .6s,color .6s}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 15px/1.6 Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;transition:background .6s,color .6s;overflow-x:hidden}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid rgb(var(--acc));outline-offset:3px;border-radius:10px}
 ::selection{background:rgba(var(--acc),.35)}
+.wrap{width:min(1220px,94vw);margin-inline:auto}
 
-/* ---------------- Atmosphere + the star ---------------- */
 .atmos{position:fixed;inset:0;pointer-events:none;z-index:0}
-.atmos .g1,.atmos .g2{position:absolute;border-radius:50%;filter:blur(90px);transition:background 1s}
-.atmos .g1{width:62vmax;height:62vmax;left:-18vmax;top:-24vmax;background:rgba(var(--acc),calc(var(--glowA)*.55))}
-.atmos .g2{width:50vmax;height:50vmax;right:-16vmax;bottom:-20vmax;background:rgba(var(--acc),calc(var(--glowA)*.32))}
-.atmos .grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-[data-theme="light"] .atmos .grain{opacity:.04;mix-blend-mode:multiply}
-.bigstar{position:fixed;left:50%;top:54%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;
-  width:min(86vmin,940px);aspect-ratio:240/159;background-image:var(--logo-url);
-  background-size:contain;background-position:center;background-repeat:no-repeat;
-  opacity:var(--starA);transition:opacity .6s}
+.atmos i{position:absolute;border-radius:50%;filter:blur(90px);transition:background 1s}
+.atmos i:nth-child(1){width:58vmax;height:58vmax;left:-16vmax;top:-22vmax;background:rgba(var(--acc),.14)}
+.atmos i:nth-child(2){width:46vmax;height:46vmax;right:-14vmax;bottom:-18vmax;background:rgba(var(--acc),.08)}
+.bigstar{position:fixed;left:50%;top:52%;z-index:0;pointer-events:none;
+  width:min(84vmin,900px);aspect-ratio:240/159;background-image:var(--logo-url);
+  background-size:contain;background-position:center;background-repeat:no-repeat;opacity:.045;
+  transform:translate(-50%,-50%);will-change:transform}
+[data-theme="light"] .bigstar{opacity:.06}
 
-/* ---------------- Header ---------------- */
-.hdr{position:fixed;inset:0 0 auto 0;z-index:60;height:64px;display:grid;
-  grid-template-columns:1fr auto 1fr;align-items:center;padding:0 clamp(14px,2.4vw,28px)}
-.utils{display:flex;align-items:center;gap:8px}
+/* ================= header ================= */
+.hdr{position:fixed;inset:0 0 auto 0;z-index:70;height:var(--nav);display:flex;align-items:center;
+  background:transparent;border-bottom:1px solid transparent;transition:background .35s,border-color .35s}
+.hdr.scrolled{background:rgba(4,5,10,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+[data-theme="light"] .hdr.scrolled{background:rgba(242,243,250,.9)}
+.hdr-in{display:flex;align-items:center;gap:10px;width:min(1240px,94vw);margin-inline:auto}
+.brand{display:flex;align-items:center;gap:11px;font:700 14px/1 "Space Grotesk",sans-serif;letter-spacing:.14em}
+.mark{width:52px;aspect-ratio:880/583;height:auto;background-image:var(--logo-url);background-size:contain;
+  background-position:center;background-repeat:no-repeat;flex:none;transform-origin:center;
+  filter:drop-shadow(0 0 12px rgba(var(--acc),.75)) drop-shadow(0 0 34px rgba(138,75,245,.5));
+  animation:beat 2.4s ease-in-out infinite}
+@keyframes beat{ /* da-dum … rest */
+  0%,42%,100%{transform:scale(1);filter:drop-shadow(0 0 12px rgba(var(--acc),.75)) drop-shadow(0 0 34px rgba(138,75,245,.5))}
+  8%{transform:scale(1.14);filter:drop-shadow(0 0 26px rgba(var(--acc),1)) drop-shadow(0 0 60px rgba(138,75,245,.85))}
+  16%{transform:scale(1)}
+  24%{transform:scale(1.09);filter:drop-shadow(0 0 20px rgba(var(--acc),.9)) drop-shadow(0 0 48px rgba(138,75,245,.7))}}
+.petalwrap{position:relative;margin-left:6px}
+.petalbtn{display:inline-flex;align-items:center;gap:8px;padding:.55em .9em;border-radius:999px;
+  border:1px solid rgba(var(--acc),.4);background:rgba(var(--acc),.10);
+  font:600 12px/1 Inter,sans-serif;letter-spacing:.06em;color:var(--text);transition:border-color .25s,background .25s;max-width:56vw}
+.petalbtn .pt{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.petalbtn:hover,.petalbtn[aria-expanded="true"]{border-color:rgb(var(--acc));background:rgba(var(--acc),.16)}
+.petalbtn .car{font-size:8px;color:var(--vio2);transition:transform .25s var(--ease);flex:none}
+.petalbtn[aria-expanded="true"] .car{transform:rotate(180deg)}
+.petalbtn small{font:600 9px/1 Inter,sans-serif;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;flex:none}
+.pmenu{position:absolute;left:0;top:calc(100% + 10px);min-width:320px;border-radius:16px;border:1px solid var(--line);
+  background:rgba(10,12,22,.97);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 26px 70px rgba(0,0,0,.55);padding:12px;opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .3s var(--ease),transform .3s var(--ease),visibility 0s .3s;max-height:min(72svh,600px);overflow-y:auto}
+[data-theme="light"] .pmenu{background:rgba(255,255,255,.98);box-shadow:0 26px 60px rgba(30,35,80,.2)}
+.petalwrap[data-open="true"] .pmenu{opacity:1;visibility:visible;transform:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.pmenu .mh{font:600 9.5px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:6px 8px 8px}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font:600 13px/1.2 Inter,sans-serif;color:var(--muted);transition:background .2s,color .2s;width:100%;text-align:left}
+.mi:hover{background:rgba(148,163,215,.08);color:var(--text)}
+.mi i{font-style:normal;font:700 10px/1 "Space Grotesk",sans-serif;color:rgb(var(--mc));width:18px;flex:none}
+.mi b{width:6px;height:6px;border-radius:50%;background:rgb(var(--mc));box-shadow:0 0 8px rgba(var(--mc),.8);flex:none}
+.mi[aria-current="true"]{color:var(--text);background:rgba(var(--mc),.1)}
+.hright{margin-left:auto;display:flex;align-items:center;gap:8px}
 .u-btn{height:34px;min-width:34px;padding:0 10px;border-radius:10px;border:1px solid var(--line);
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);
-  font:500 12.5px/1 Inter,sans-serif;backdrop-filter:blur(10px);background:var(--surface);
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;color:var(--muted);
+  font:500 12.5px/1 Inter,sans-serif;background:var(--surface);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   transition:color .25s,border-color .25s}
 .u-btn:hover{color:var(--text);border-color:var(--line2)}
-.brand{display:flex;align-items:center;gap:10px;justify-self:center;font:700 13px/1 "Space Grotesk",sans-serif;letter-spacing:.16em}
-.mark{width:34px;height:24px;background-image:var(--logo-url);background-size:contain;
-  background-position:center;background-repeat:no-repeat;
-  filter:drop-shadow(0 0 10px rgba(var(--acc),.55));transition:filter .6s}
-.auth{display:flex;align-items:center;gap:9px;justify-self:end}
-.a-in{padding:.62em 1.05em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--muted)}
-.a-in:hover{color:var(--text)}
-.a-start{padding:.66em 1.2em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--ink);
+.a-start{padding:.66em 1.15em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--ink);
   background:linear-gradient(100deg,rgb(var(--acc)),var(--lav));box-shadow:0 6px 22px rgba(var(--acc),.35);
-  transition:transform .25s var(--ease),box-shadow .25s}
+  transition:transform .25s var(--ease),box-shadow .25s;white-space:nowrap}
 .a-start:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(var(--acc),.5)}
-@media(max-width:700px){.u-btn span{display:none}.a-in{display:none}}
+@media(max-width:700px){.u-btn .lbl{display:none}.a-start{display:none}}
 
-/* ---------------- Stage & layers ---------------- */
-.stage{position:fixed;inset:0;z-index:10}
-.layer{position:absolute;left:50%;top:16svh;width:min(1240px,93vw);height:78svh;
-  transform:translateX(-50%);transform-origin:50% 0;
-  border-radius:28px;border:1px solid rgba(var(--c),.32);
+/* ================= 3D petal stack ================= */
+.mazeSec{position:relative;z-index:6;padding:calc(var(--nav) + 22px) 0 4px;overflow-x:clip;overflow-y:visible}
+.maze{position:relative;height:clamp(440px,calc(100svh - 262px),620px);perspective:1300px;perspective-origin:50% 42%}
+.maze .floorx{position:absolute;left:50%;bottom:-8%;width:160%;height:70%;transform:translateX(-50%) rotateX(76deg);
+  background:repeating-linear-gradient(rgba(var(--acc),.10) 0 2px,transparent 2px 72px),
+             repeating-linear-gradient(90deg,rgba(var(--acc),.10) 0 2px,transparent 2px 72px);
+  mask-image:radial-gradient(60% 90% at 50% 0%,#000 30%,transparent 78%);
+  -webkit-mask-image:radial-gradient(60% 90% at 50% 0%,#000 30%,transparent 78%);
+  transition:background 1s;pointer-events:none}
+.track{position:absolute;inset:0;transform-style:preserve-3d}
+.card{position:absolute;left:50%;top:0;width:min(880px,86%);height:calc(100% - 26px);margin-left:calc(min(880px,86%)/-2);
+  border-radius:24px;border:1px solid rgba(var(--c),.34);
   background:linear-gradient(155deg,rgba(var(--c),.12),var(--surface) 46%);
-  backdrop-filter:blur(18px);
-  box-shadow:0 -1px 0 rgba(255,255,255,.05) inset,0 34px 90px rgba(0,0,0,.55),0 10px 44px rgba(var(--c),.12);
-  transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease),filter var(--dur) var(--ease);
-  will-change:transform,opacity,filter}
-[data-theme="light"] .layer{box-shadow:0 34px 80px rgba(30,35,80,.18),0 10px 40px rgba(var(--c),.14)}
-.layer[data-pos="behind"]{cursor:pointer}
-.layer[data-pos="behind"] .inner{opacity:0;pointer-events:none;transition:opacity .3s}
-.layer[data-pos="gone"]{pointer-events:none}
-.peek{position:absolute;inset:0 0 auto 0;height:34px;border-radius:28px 28px 0 0;z-index:5;
-  font:600 11px/34px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(var(--c),0);text-align:center;transition:color .3s,background .3s}
-.layer[data-pos="behind"]:hover{filter:brightness(1.12)}
-.layer[data-pos="behind"]:hover .peek{color:rgba(var(--c),.95);background:linear-gradient(rgba(var(--c),.10),transparent)}
-.layer[data-pos="active"] .peek{display:none}
-
-/* inner composition */
-.inner{position:absolute;inset:0;display:grid;grid-template-columns:1.12fr .88fr;
-  gap:clamp(18px,3vw,44px);padding:clamp(20px,3vw,44px);opacity:1;transition:opacity .45s .18s}
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 -1px 0 rgba(255,255,255,.05) inset,0 28px 70px rgba(0,0,0,.5),0 10px 40px rgba(var(--c),.12);
+  transition:transform .65s var(--ease),opacity .65s var(--ease),filter .65s var(--ease);
+  will-change:transform,opacity;cursor:pointer;overflow:hidden}
+.card::after{content:"";position:absolute;right:-6%;bottom:-9%;width:min(44%,300px);aspect-ratio:880/583;
+  background:var(--logo-url) center/contain no-repeat;opacity:.055;pointer-events:none}
+[data-theme="light"] .card{box-shadow:0 28px 60px rgba(30,35,80,.16),0 10px 36px rgba(var(--c),.14)}
+.card.on{cursor:default}
+.card:not(.on) .in{pointer-events:none}
+.card .in{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr);
+  grid-template-columns:1.1fr .9fr;gap:clamp(12px,2vw,26px) clamp(16px,2.6vw,36px);
+  padding:clamp(14px,2.4vw,30px);backface-visibility:hidden}
+/* --- card head: the logo, the petal number, and the tabs --- */
+.chead{grid-column:1/-1;display:flex;align-items:center;gap:13px;min-width:0;
+  padding-bottom:clamp(9px,1.2vw,13px);border-bottom:1px solid rgba(var(--c),.2)}
+.cmark{width:clamp(38px,3.4vw,48px);aspect-ratio:880/583;flex:none;
+  background:var(--logo-url) center/contain no-repeat;filter:drop-shadow(0 0 12px rgba(var(--c),.6))}
+.cbrand{font:700 12px/1 "Space Grotesk",sans-serif;letter-spacing:.16em;color:var(--text);opacity:.9}
+.chead .pnT{margin-left:auto}
+.pnT{font:600 10.5px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--goldT);white-space:nowrap}
+.ctabs{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0;margin:0 0 22px;
+  scrollbar-width:none;scroll-snap-type:x proximity}
+.ctabs::-webkit-scrollbar{display:none}
+.ct{display:inline-flex;align-items:center;gap:8px;padding:.62em 1.05em;border-radius:999px;
+  border:1px solid var(--line2);background:var(--surface);
+  font:600 12.5px/1 Inter,sans-serif;color:var(--muted);white-space:nowrap;
+  scroll-snap-align:end;transition:color .25s,border-color .25s,background .25s,transform .25s var(--ease)}
+.ct:hover{transform:translateY(-1px)}
+.ct i{width:7px;height:7px;border-radius:50%;background:rgb(var(--sc,var(--c)));flex:none;
+  box-shadow:0 0 8px rgba(var(--sc,var(--c)),.55);transition:box-shadow .25s}
+.ct:hover{color:var(--text)}
+.ct.on{color:var(--goldT);border-color:rgba(var(--c),.65);background:rgba(var(--c),.14)}
+.ct.on i{box-shadow:0 0 12px rgba(var(--sc,var(--c)),.95)}
 .side{display:flex;flex-direction:column;justify-content:center;min-width:0}
-.statement{font:700 clamp(30px,4.6vw,58px)/1.06 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin-bottom:clamp(20px,3vh,34px)}
-.statement em{font-style:normal;background:linear-gradient(100deg,rgb(var(--c)),var(--lav));-webkit-background-clip:text;background-clip:text;color:transparent}
-.ident{color:var(--muted);font-size:clamp(14px,1.5vw,16.5px);max-width:36ch;margin:-6px 0 26px}
-h2.l-title{font:700 clamp(26px,3.6vw,44px)/1.1 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin-bottom:14px}
-
-/* Hot buttons */
-.hot{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:clamp(20px,3vh,30px)}
-.hb{position:relative;display:inline-flex;align-items:center;gap:.55em;padding:.72em 1.1em;border-radius:999px;
-  border:1px solid var(--line);background:var(--surface);backdrop-filter:blur(8px);
-  font:600 13px/1 Inter,sans-serif;color:var(--muted);
-  transition:transform .25s var(--ease),border-color .25s,color .25s,box-shadow .25s}
-.hb i{width:7px;height:7px;border-radius:50%;background:rgb(var(--hc));box-shadow:0 0 8px rgba(var(--hc),.8)}
-.hb .ar{opacity:0;margin-left:-4px;transform:translateX(-4px);transition:all .25s var(--ease);color:rgb(var(--hc))}
-.hb:hover{transform:translateY(-2px);color:var(--text);border-color:rgba(var(--hc),.55);box-shadow:0 8px 22px rgba(var(--hc),.16)}
-.hb:hover .ar{opacity:1;transform:none;margin-left:0}
-
-/* CTA */
-.cta{align-self:flex-start;display:inline-flex;align-items:center;gap:.7em;
-  padding:1em 1.6em;border-radius:16px;font:600 15.5px/1 Inter,sans-serif;color:var(--ink);
+.side .pn{font:600 10.5px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgb(var(--c));
+  display:flex;align-items:center;gap:.8em;margin-bottom:12px}
+.side .pn::before{content:"";width:20px;height:2px;border-radius:2px;background:rgb(var(--c))}
+.side h2{font:700 clamp(22px,3vw,36px)/1.1 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin-bottom:11px;color:var(--goldT)}
+.side .ident{color:var(--goldB);font-size:clamp(13.5px,1.35vw,15.5px);max-width:38ch;margin-bottom:22px}
+.gorow{display:flex;gap:10px;flex-wrap:wrap}
+.go{display:inline-flex;align-items:center;gap:.65em;
+  padding:.9em 1.4em;border-radius:14px;font:600 14.5px/1 Inter,sans-serif;color:var(--ink);
   background:linear-gradient(100deg,rgb(var(--c)),rgba(var(--c),.72));
-  box-shadow:0 14px 40px rgba(var(--c),.35);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
-.cta .ar{transition:transform .3s var(--ease)}
-.cta:hover{transform:translateY(-2px);box-shadow:0 18px 55px rgba(var(--c),.5)}
-.cta:hover .ar{transform:translateX(5px)}
-
-/* ---------------- Cinematic preview ---------------- */
-.cine{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(var(--c),.24);
-  background:radial-gradient(120% 120% at 20% 0%,rgba(var(--c),.15),rgba(4,5,10,.5) 55%);min-height:0}
+  box-shadow:0 12px 34px rgba(var(--c),.32);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.go:hover{transform:translateY(-2px);box-shadow:0 16px 46px rgba(var(--c),.48)}
+.go .ar{transition:transform .3s var(--ease)}
+.go:hover .ar{transform:translateX(5px)}
+.story-link{display:inline-flex;align-items:center;gap:.55em;padding:.9em 1.2em;border-radius:14px;
+  font:600 13.5px/1 Inter,sans-serif;color:var(--muted);border:1px solid var(--line);background:var(--surface)}
+.story-link:hover{color:var(--text);border-color:var(--line2)}
+/* film + mocks */
+.cine{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(var(--c),.24);
+  background:radial-gradient(120% 120% at 20% 0%,rgba(var(--c),.14),rgba(4,5,10,.5) 55%);min-height:0}
 [data-theme="light"] .cine{background:radial-gradient(120% 120% at 20% 0%,rgba(var(--c),.14),rgba(255,255,255,.5) 55%)}
-.cine video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.scene{position:absolute;inset:0;display:grid;place-items:center;padding:clamp(14px,2.5vw,34px);
+.scene{position:absolute;inset:0;display:grid;place-items:center;padding:clamp(12px,2.2vw,28px);
   opacity:0;transform:scale(1.015);transition:opacity 1s var(--ease),transform 6s linear}
 .scene.on{opacity:1;transform:scale(1.05)}
-.cap{position:absolute;left:18px;bottom:14px;font:600 11px/1 Inter,sans-serif;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:9px}
+.cap{position:absolute;left:16px;bottom:13px;font:600 10.5px/1 Inter,sans-serif;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--goldDim);display:flex;align-items:center;gap:8px}
 .cap i{width:16px;height:2px;border-radius:2px;background:rgb(var(--c))}
-.dots{position:absolute;right:16px;bottom:16px;display:flex;gap:5px}
+.dots{position:absolute;right:14px;bottom:14px;display:flex;gap:5px}
 .dots b{width:5px;height:5px;border-radius:50%;background:rgba(var(--c),.28);transition:background .4s,transform .4s}
 .dots b.on{background:rgb(var(--c));transform:scale(1.3)}
-
-/* mock UI used inside scenes */
-.mock{width:min(400px,92%);border-radius:16px;border:1px solid var(--line);
-  background:var(--surface-solid);box-shadow:0 24px 60px rgba(0,0,0,.35);padding:16px 17px;font-size:13px}
-[data-theme="light"] .mock{box-shadow:0 24px 60px rgba(30,35,80,.14)}
-.mock .mh{display:flex;align-items:center;gap:8px;font:600 12px/1 Inter,sans-serif;color:var(--dim);margin-bottom:12px}
+.mock{width:min(420px,94%);border-radius:15px;border:1px solid var(--line);
+  background:var(--solid);box-shadow:0 22px 55px rgba(0,0,0,.35);padding:14px 15px;font-size:12.5px}
+[data-theme="light"] .mock{box-shadow:0 22px 55px rgba(30,35,80,.14)}
+.mock .mh{display:flex;align-items:center;gap:8px;font:600 11.5px/1 Inter,sans-serif;color:var(--dim);margin-bottom:10px}
 .mock .mh i{width:8px;height:8px;border-radius:50%;background:rgb(var(--c))}
-.mrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.mrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
 .mrow:first-of-type{border-top:none}
 .bar{flex:1;height:6px;border-radius:999px;background:rgba(148,163,215,.16);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:999px;background:rgb(var(--c))}
-.bub{max-width:85%;padding:9px 12px;border-radius:13px;border:1px solid var(--line);margin:5px 0;font-size:12.5px}
+.bub{max-width:85%;padding:8px 11px;border-radius:12px;border:1px solid var(--line);margin:5px 0;font-size:12px}
 .bub.me{margin-left:auto;background:rgba(var(--c),.14);border-color:rgba(var(--c),.3)}
-.wave{display:flex;align-items:flex-end;gap:3px;height:34px;margin:10px 0 6px}
+.wave{display:flex;align-items:flex-end;gap:3px;height:28px;margin:8px 0 5px}
 .wave i{width:4px;border-radius:2px;background:rgb(var(--c));height:30%;animation:wv 1.1s ease-in-out infinite}
 @keyframes wv{50%{height:95%}}
-.chip{display:inline-block;padding:.42em .8em;border-radius:999px;border:1px solid var(--line);
-  font:500 12px/1 Inter,sans-serif;color:var(--muted);margin:3px 4px 0 0}
+.chip{display:inline-block;padding:.4em .75em;border-radius:999px;border:1px solid var(--line);
+  font:500 11.5px/1 Inter,sans-serif;color:var(--muted);margin:3px 4px 0 0}
 .chip.on{background:rgba(var(--c),.15);border-color:rgb(var(--c));color:var(--text)}
-.ring{width:74px;height:74px;border-radius:50%;flex:none;
-  background:conic-gradient(rgb(var(--c)) calc(var(--v)*1%),rgba(148,163,215,.16) 0);
-  display:grid;place-items:center}
-.ring b{width:56px;height:56px;border-radius:50%;background:var(--surface-solid);display:grid;place-items:center;font:700 14px/1 "Space Grotesk",sans-serif}
-.tk{display:flex;align-items:center;gap:9px;padding:7px 0;color:var(--muted);font-size:12.5px}
+.ring{width:66px;height:66px;border-radius:50%;flex:none;
+  background:conic-gradient(rgb(var(--c)) calc(var(--v)*1%),rgba(148,163,215,.16) 0);display:grid;place-items:center}
+.ring b{width:50px;height:50px;border-radius:50%;background:var(--solid);display:grid;place-items:center;font:700 12px/1 "Space Grotesk",sans-serif}
+.tk{display:flex;align-items:center;gap:9px;padding:6px 0;color:var(--muted);font-size:12px}
 .tk b{width:16px;height:16px;flex:none;border-radius:6px;border:1px solid rgba(var(--c),.5);display:grid;place-items:center;font-size:10px;color:rgb(var(--c))}
 
-/* ---------------- Rail / status / steps ---------------- */
-.rail{position:fixed;right:clamp(10px,1.6vw,22px);top:50%;transform:translateY(-50%);z-index:55;
-  display:flex;flex-direction:column;gap:11px}
-.rd{position:relative;width:22px;height:10px;display:grid;place-items:center}
-.rd i{width:6px;height:6px;border-radius:50%;background:var(--dim);opacity:.45;transition:all .35s var(--ease)}
-.rd:hover i{opacity:.9}
-.rd[aria-current="true"] i{width:20px;border-radius:999px;background:rgb(var(--acc));opacity:1;box-shadow:0 0 12px rgba(var(--acc),.7)}
-.rd .tip{position:absolute;right:30px;top:50%;transform:translateY(-50%) translateX(4px);white-space:nowrap;
-  font:600 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
-  background:var(--surface);border:1px solid var(--line);padding:.55em .8em;border-radius:8px;backdrop-filter:blur(8px);
-  opacity:0;pointer-events:none;transition:all .25s var(--ease)}
-.rd:hover .tip,.rd:focus-visible .tip{opacity:1;transform:translateY(-50%)}
-.now{position:fixed;left:clamp(14px,2vw,26px);bottom:18px;z-index:55;display:flex;align-items:center;gap:10px;
-  font:600 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-.now i{width:18px;height:2px;border-radius:2px;background:rgb(var(--acc));transition:background .6s}
-.steps{position:fixed;right:clamp(10px,1.6vw,22px);bottom:18px;z-index:55;display:flex;flex-direction:column;gap:8px}
-.st{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);
-  backdrop-filter:blur(8px);color:var(--muted);display:grid;place-items:center;transition:color .25s,border-color .25s}
+/* rail — all twelve, always visible */
+.rail12{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 8px;padding:14px 0 2px}
+.r9{display:inline-flex;align-items:center;gap:7px;padding:.5em .85em;border-radius:999px;border:1px solid transparent;
+  font:600 11.5px/1 Inter,sans-serif;color:var(--dim);transition:color .25s,border-color .25s,background .25s}
+.r9 i{font-style:normal;font:700 9.5px/1 "Space Grotesk",sans-serif;letter-spacing:.05em}
+.r9 b{width:5px;height:5px;border-radius:50%;background:rgb(var(--tc));flex:none}
+.r9:hover{color:var(--text)}
+.r9[aria-selected="true"]{color:var(--text);border-color:rgba(var(--tc),.55);background:rgba(var(--tc),.12)}
+.mazenav{display:flex;justify-content:center;align-items:center;gap:10px;padding:2px 0 6px}
+.st{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--surface);
+  color:var(--muted);display:grid;place-items:center;transition:color .25s,border-color .25s}
 .st:hover{color:var(--text);border-color:var(--line2)}
-.st[disabled]{opacity:.35;pointer-events:none}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.auto{font:600 10px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  display:inline-flex;align-items:center;gap:7px}
+.auto i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.auto.off i{background:var(--dim);box-shadow:none}
 
-/* ---------------- Responsive ---------------- */
-@media(max-width:900px){
-  .layer{top:12svh;height:82svh;width:94vw}
-  .inner{grid-template-columns:1fr;grid-template-rows:38% 1fr;gap:14px;padding:16px}
-  .side{justify-content:flex-start;padding-top:4px;overflow:hidden}
-  .statement{font-size:clamp(26px,7.4vw,34px);margin-bottom:16px}
-  .hot{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none}
-  .hot::-webkit-scrollbar{display:none}
-  .hb{flex:none}
-  .cta{width:100%;justify-content:center}
-  .rail{display:none}
-  .steps{flex-direction:row;right:auto;left:50%;transform:translateX(-50%);bottom:12px}
-  .now{display:none}
-  .bigstar{width:120vmin;opacity:calc(var(--starA)*.8)}
+/* --- scroll down to the story: outside the card, with arrows --- */
+.scue{display:flex;flex-direction:column;align-items:center;gap:9px;margin:clamp(18px,3vh,34px) auto 0;
+  padding:14px 22px 12px;border-radius:18px;border:1px solid transparent;background:transparent;
+  color:var(--dim);transition:color .25s var(--ease),border-color .25s,background .25s}
+.scue:hover{color:var(--text);border-color:rgba(var(--acc),.4);background:rgba(var(--acc),.07)}
+.scT{font:600 11.5px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.scA{position:relative;display:block;width:26px;height:24px;animation:bob 2.1s ease-in-out infinite}
+.scA i{position:absolute;left:50%;top:0;width:14px;height:14px;margin-left:-7px;
+  border-right:2.5px solid rgb(var(--acc));border-bottom:2.5px solid rgb(var(--acc));
+  border-radius:2px;transform:rotate(45deg);opacity:.9}
+.scA i:nth-child(2){top:8px;opacity:.42}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.scue:hover .scA i{opacity:1}
+@media(prefers-reduced-motion:reduce){.scA{animation:none}}
+
+/* ================= the story of the active petal ================= */
+.story{position:relative;z-index:2;padding:clamp(30px,5vh,58px) 0 20px}
+.story .eyebrow{font:600 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgb(var(--sc))}
+.story h2{font:700 clamp(26px,3.6vw,44px)/1.1 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin:12px 0 12px;color:var(--goldT)}
+.story .lead{color:var(--muted);max-width:62ch;font-size:15.5px}
+.spts{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin:24px 0 6px}
+.sp{display:flex;gap:.8em;align-items:baseline;padding:12px 4px;border-bottom:1px solid var(--line);color:var(--muted);font-size:14px}
+.sp b{color:rgb(var(--sc));font-weight:700;flex:none}
+.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.room{border-radius:16px;border:1px solid rgba(var(--rc),.32);
+  background:linear-gradient(160deg,rgba(var(--rc),.12),var(--surface) 58%);padding:18px 17px;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.room:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(var(--rc),.16)}
+.room .e{font:600 9.5px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgb(var(--rc))}
+.room h4{font:700 14.5px/1.3 "Space Grotesk",sans-serif;margin:8px 0 6px}
+.room .m{font:600 12px/1 Inter,sans-serif;color:rgb(var(--rc))}
+.sactions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.rev{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rev.in{opacity:1;transform:none}
+@media(max-width:860px){.spts{grid-template-columns:1fr}.rooms{grid-template-columns:1fr}}
+
+footer{position:relative;z-index:2;border-top:1px solid var(--line);margin-top:70px}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:22px 0 calc(22px + env(safe-area-inset-bottom));color:var(--dim);font-size:13px}
+
+/* ================= Exzi buddy ================= */
+.buddy{position:fixed;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:75;
+  display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.borb{position:relative;width:70px;height:70px;border-radius:50%;border:1.5px solid rgba(138,75,245,.55);
+  background:radial-gradient(120% 120% at 30% 20%,rgba(138,75,245,.42),var(--solid) 74%);
+  display:grid;place-items:center;box-shadow:0 14px 40px rgba(138,75,245,.35);transition:transform .3s var(--ease)}
+[data-theme="light"] .borb{background:radial-gradient(120% 120% at 30% 20%,rgba(201,170,255,.55),#fff 76%);
+  box-shadow:0 14px 38px rgba(138,75,245,.28)}
+.borb:hover{transform:translateY(-2px)}
+.borb b{width:40px;aspect-ratio:880/583;background-image:var(--logo-url);background-size:contain;background-position:center;background-repeat:no-repeat;
+  filter:drop-shadow(0 0 8px rgba(138,75,245,.55))}
+.borb::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(103,232,249,.4);animation:ring2 2.6s ease-out infinite}
+@keyframes ring2{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.35);opacity:0}}
+.borb i{position:absolute;right:4px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);border:2px solid var(--bg)}
+.bpanel{width:min(320px,86vw);border-radius:18px;border:1px solid rgba(103,232,249,.35);
+  background:rgba(10,12,22,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 26px 70px rgba(0,0,0,.55);padding:14px;
+  opacity:0;visibility:hidden;transform:translateY(10px);transition:all .35s var(--ease)}
+[data-theme="light"] .bpanel{background:rgba(255,255,255,.98)}
+.buddy[data-open="true"] .bpanel{opacity:1;visibility:visible;transform:none}
+.bpanel .bh{display:flex;align-items:center;gap:8px;font:600 10px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+.bpanel .bh i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.bpanel .ask2{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:13px;border:1px solid var(--line);background:var(--surface);margin-bottom:9px}
+.bpanel .ask2 .ph{flex:1;font:500 12.5px/1.3 Inter,sans-serif;color:var(--dim);text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bpanel .row{display:flex;gap:8px}
+.iconb{height:38px;flex:1;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:color .25s,border-color .25s}
+.iconb:hover{color:var(--text);border-color:var(--line2)}
+.iconb svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bpanel .note2{margin-top:9px;font:500 10.5px/1.45 Inter,sans-serif;color:var(--dim)}
+
+/* ================= responsive ================= */
+/* ---------- tablet ---------- */
+@media(max-width:1024px){
+  .maze{perspective:1050px}
+  .card{width:90%;margin-left:-45%}
+  .card .in{grid-template-columns:1fr .95fr}
 }
-
-/* ---------------- Reduced motion ---------------- */
+/* ---------- phone: the card becomes a single column ---------- */
+@media(max-width:760px){
+  .mazeSec{padding-top:calc(var(--nav) + 14px)}
+  .petalbtn{max-width:34vw}
+  .hdr-in{gap:6px}
+  .hright{gap:6px}
+  .ptsbtn{padding:0 9px;font-size:11.5px;height:32px}
+  .chead{gap:10px}
+  .cmark{width:36px}
+  .cbrand{font-size:11px;letter-spacing:.12em}
+  .ctabs{flex-wrap:nowrap;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
+  .ctabs::-webkit-scrollbar{display:none}
+  .ct{padding:.55em .85em;font-size:12px}
+  .maze{height:clamp(430px,calc(100svh - 236px),580px);perspective:820px;perspective-origin:50% 46%}
+  .card{width:92%;margin-left:-46%;border-radius:20px}
+  .card .in{grid-template-columns:1fr;grid-template-rows:auto minmax(110px,1fr) auto;
+    gap:10px;padding:13px}
+  .chead{gap:9px;padding-bottom:9px}
+  .pnT{font-size:9.5px;letter-spacing:.14em}
+  .ct{padding:.48em .7em;font-size:11px}
+  .side{justify-content:flex-end;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .side h2{font-size:clamp(20px,5.6vw,27px);margin-bottom:8px}
+  .side .ident{font-size:13.5px;margin-bottom:14px;max-width:none}
+  .gorow{width:100%}
+  .go,.story-link{flex:1;justify-content:center;padding:.95em 1em;font-size:14px}
+  .scene{padding:10px}
+  .scene.on{transform:none}
+  .cap{display:none}
+  .mock{width:min(330px,96%);font-size:11.5px;padding:12px 13px}
+  .mazenav{gap:14px;padding:8px 0 4px}
+  .st{width:46px;height:46px;border-radius:14px}
+  .rail12{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;justify-content:flex-start;
+    padding:12px 2px 4px;scroll-snap-type:x proximity}
+  .rail12::-webkit-scrollbar{display:none}
+  .r9{flex:none;scroll-snap-align:center;padding:.55em .8em}
+  .r9 span{display:inline}
+  .r9:first-child{margin-left:auto}
+  .r9:last-child{margin-right:auto}
+  .story{padding-top:clamp(34px,6vh,56px)}
+  .buddy{right:12px;bottom:12px}
+}
+/* ---------- small phone ---------- */
+@media(max-width:560px){
+  .brand{font-size:0;gap:0}          /* the mark carries the brand on small phones */
+  .mark{width:44px}
+  .petalbtn{max-width:36vw;padding:.5em .7em}
+  .ptsbtn{padding:0 8px;font-size:11px}
+  .u-btn{min-width:32px;padding:0 7px}
+}
+@media(max-width:400px){
+  .petalbtn small{display:none}
+  .petalbtn{max-width:32vw}
+  .ptsbtn{padding:0 7px}
+}
+@media(max-width:420px){
+  .maze{height:clamp(410px,calc(100svh - 224px),540px);perspective:700px}
+  .card{width:94%;margin-left:-47%}
+  .card .in{grid-template-rows:auto minmax(110px,1fr) auto;padding:11px}
+  .cmark{width:32px}
+  .cbrand{display:none}
+  .side h2{font-size:clamp(19px,6vw,24px)}
+  .go,.story-link{font-size:13.5px}
+}
+/* ---------- landscape phone: keep the stage usable ---------- */
+@media(max-height:560px) and (orientation:landscape){
+  .maze{height:calc(100svh - 168px);min-height:300px}
+  .card .in{grid-template-rows:auto minmax(0,1fr);grid-template-columns:1fr 1fr;padding:12px}
+  .side .ident{margin-bottom:12px}
+  .rail12{display:none}
+}
 @media(prefers-reduced-motion:reduce){
-  .layer{transition:opacity .2s linear}
+  html{scroll-behavior:auto}
+  .card{transition:opacity .2s linear}
   .scene{transition:opacity .3s linear;transform:none!important}
   .wave i{animation:none;height:60%}
-  .cta:hover,.hb:hover,.a-start:hover{transform:none}
+  .rev{opacity:1;transform:none;transition:none}
+  .borb::after{animation:none}
+  .go:hover,.a-start:hover,.room:hover,.borb:hover{transform:none}
 }
+/* ---------- status badges: where each petal really stands ---------- */
+.cst{display:inline-flex;align-items:center;gap:7px;padding:.42em .8em;border-radius:3px 14px 3px 14px;
+  border:1px solid var(--line2);font:600 10px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);white-space:nowrap}
+.cst i{width:6px;height:6px;border-radius:50%;background:var(--dim);flex:none}
+.cst.live{color:var(--green);border-color:rgba(61,240,160,.5);background:rgba(61,240,160,.10)}
+.cst.live i{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 15px var(--green)}}
+.sbadge{display:inline-flex;align-items:center;gap:7px;margin-left:12px;padding:.34em .7em;border-radius:3px 12px 3px 12px;
+  border:1px solid var(--line2);font:600 9.5px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);vertical-align:middle}
+.sbadge.live{color:var(--green);border-color:rgba(61,240,160,.5);background:rgba(61,240,160,.10)}
+.sbadge i{width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- the rail: twelve petals you can play with ---------- */
+.r9{position:relative;overflow:hidden;border-radius:4px 16px 4px 16px}
+.r9:hover{transform:translateY(-2px)}
+.r9 em{font-style:normal;font:700 8.5px/1 Inter,sans-serif;letter-spacing:.12em;color:var(--dim);
+  padding:.28em .45em;border-radius:4px;background:rgba(148,163,215,.12);margin-left:2px}
+.r9.islive em{color:var(--green);background:rgba(61,240,160,.14)}
+.r9[aria-selected="true"] em{color:var(--text)}
+.rp{position:absolute;left:0;bottom:0;height:2px;width:0;background:rgb(var(--tc));opacity:.9}
+.r9[aria-selected="true"] .rp{animation:rp 5.2s linear forwards}
+.rail12.slow .r9[aria-selected="true"] .rp{animation-duration:9s}
+.rail12.paused .r9[aria-selected="true"] .rp{animation-play-state:paused}
+.rail12.off .rp{animation:none;width:0}
+@keyframes rp{from{width:0}to{width:100%}}
+
+/* ---------- motion options ---------- */
+.motionwrap{position:relative}
+.auto .car{font-size:8px;margin-left:2px;transition:transform .25s var(--ease)}
+.auto[aria-expanded="true"] .car{transform:rotate(180deg)}
+.mopts{position:absolute;left:50%;bottom:calc(100% + 12px);transform:translate(-50%,8px);min-width:210px;
+  background:rgba(10,12,22,.97);border:1px solid var(--line);border-radius:16px;padding:10px;z-index:60;
+  box-shadow:0 26px 60px rgba(0,0,0,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;visibility:hidden;transition:opacity .28s var(--ease),transform .28s var(--ease),visibility 0s .28s}
+[data-theme="light"] .mopts{background:rgba(255,255,255,.98);box-shadow:0 26px 55px rgba(30,35,80,.18)}
+.motionwrap[data-open="true"] .mopts{opacity:1;visibility:visible;transform:translate(-50%,0);
+  transition:opacity .28s var(--ease),transform .28s var(--ease)}
+.mopts .mh{font:600 9.5px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:8px 8px 6px}
+.mopts button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;
+  font:600 12.5px/1 Inter,sans-serif;color:var(--muted);transition:background .2s,color .2s}
+.mopts button:hover{background:rgba(148,163,215,.09);color:var(--text)}
+.mopts button.on{color:var(--text);background:rgba(var(--acc),.16)}
+.mopts button::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.35}
+.mopts button.on::before{opacity:1;box-shadow:0 0 8px rgba(var(--acc),.8)}
+
+/* ---------- petal points ---------- */
+.ptsbtn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;
+  border:1px solid rgba(var(--acc),.45);background:rgba(var(--acc),.10);color:var(--goldT);
+  font:700 12.5px/1 "Space Grotesk",sans-serif;letter-spacing:.04em;transition:transform .25s var(--ease),border-color .25s}
+.ptsbtn:hover{border-color:rgb(var(--acc));transform:translateY(-1px)}
+.ptsbtn.pop{animation:ptpop .6s var(--ease)}
+@keyframes ptpop{40%{transform:scale(1.18) translateY(-2px)}}
+.ptoast{position:fixed;left:18px;bottom:18px;z-index:90;display:flex;align-items:center;gap:12px;
+  padding:13px 17px;border-radius:16px;border:1px solid rgba(var(--acc),.45);
+  background:rgba(10,12,22,.97);box-shadow:0 22px 55px rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+[data-theme="light"] .ptoast{background:rgba(255,255,255,.98);box-shadow:0 22px 50px rgba(30,35,80,.18)}
+.ptoast.on{opacity:1;transform:none}
+.ptoast b{font:700 17px/1 "Space Grotesk",sans-serif;color:var(--goldT);white-space:nowrap}
+.ptoast span{font:500 12.5px/1.35 Inter,sans-serif;color:var(--muted);max-width:34ch}
+.ptmodal{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:20px;
+  background:rgba(4,5,10,.62);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ptmodal[data-open="true"]{opacity:1;visibility:visible;transition:opacity .3s}
+.ptcard{width:min(560px,94vw);max-height:86svh;overflow-y:auto;border-radius:22px;border:1px solid rgba(var(--acc),.4);
+  background:var(--solid);padding:clamp(22px,3vw,34px);box-shadow:0 30px 80px rgba(0,0,0,.5);
+  transform:translateY(14px);transition:transform .35s var(--ease)}
+.ptmodal[data-open="true"] .ptcard{transform:none}
+.ptcard h3{font:700 clamp(21px,2.6vw,28px)/1.15 "Space Grotesk",sans-serif;color:var(--goldT);margin-bottom:8px}
+.ptcard p{color:var(--muted);font-size:14px;margin-bottom:14px}
+.ptrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.ptrow b{font:700 14px/1 "Space Grotesk",sans-serif;color:var(--goldT);min-width:44px}
+.ptnote{margin-top:16px;padding:13px 15px;border-radius:14px;border:1px solid var(--line);
+  font:500 12px/1.5 Inter,sans-serif;color:var(--dim)}
+.ptactions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.ptx{position:absolute;right:14px;top:14px}
+@media(max-width:560px){.ptoast{left:12px;right:12px;bottom:92px}.ptoast span{max-width:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
 <body>
 
-<!-- ============ Atmosphere + the star behind everything ============ -->
-<div class="atmos" aria-hidden="true"><div class="g1"></div><div class="g2"></div><div class="grain"></div></div>
-<div class="bigstar" aria-hidden="true"></div>
+<div class="atmos" aria-hidden="true"><i></i><i></i></div>
+<div class="bigstar" id="bigstar" aria-hidden="true"></div>
 
-<!-- ============ Header ============ -->
-<header class="hdr">
-  <div class="utils">
-    <button class="u-btn" id="uProfile" aria-label="Profile">&#9679;<span data-i18n="profile">Profile</span></button>
-    <button class="u-btn" id="uTheme" aria-label="Switch to light mode">&#9789;<span data-i18n="theme">Light</span></button>
-    <button class="u-btn" id="uLang" aria-label="Sprache: Deutsch"><span>EN</span></button>
-  </div>
-  <a class="brand" href="/" aria-label="EXZELLENT"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
-  <div class="auth">
-    <a class="a-in" href="/login" data-i18n="signin">Sign in</a>
-    <a class="a-start" href="/signup" data-i18n="start">Start for free</a>
+<!-- ================= header ================= -->
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="/exzellent-index.html" aria-label="EXZELLENT"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
+    <div class="petalwrap" id="pw">
+      <button class="petalbtn" id="pb" aria-expanded="false" aria-haspopup="true">
+        <span class="pt" id="pbName">Learning Ecosystem</span><small id="pbOf">1 / 12</small><span class="car">&#9660;</span>
+      </button>
+      <div class="pmenu" role="menu" aria-label="The twelve petals" id="pmenu"></div>
+    </div>
+    <div class="hright">
+      <button class="ptsbtn" id="ptsBtn" aria-label="Petal Points">&#10022; <b>0</b></button>
+      <button class="u-btn" id="uTheme" aria-label="Switch to light mode">&#9789;<span class="lbl" data-i18n="theme">Light</span></button>
+      <button class="u-btn" id="uLang" aria-label="Sprache: Deutsch"><span>EN</span></button>
+      <a class="a-start" href="/signup" data-i18n="start">Start free</a>
+    </div>
   </div>
 </header>
 
-<!-- ============ Stack ============ -->
-<main class="stage" id="stage" aria-roledescription="layered ecosystem navigator" aria-label="The nine points of Exzellent"></main>
+<!-- ================= the rotating petal stack (no writing above) ================= -->
+<section class="mazeSec wrap" aria-label="The twelve petals">
+  <div class="maze" id="maze">
+    <div class="floorx" aria-hidden="true"></div>
+    <div class="track" id="track"></div>
+  </div>
+  <div class="mazenav">
+    <button class="st" id="stPrev" aria-label="Previous petal">&#8592;</button>
+    <div class="motionwrap" id="motionwrap">
+      <button class="auto" id="autoBtn" aria-expanded="false" aria-haspopup="true"><i></i><span data-i18n="auto">Rotating</span><span class="car">&#9660;</span></button>
+      <div class="mopts" id="mopts" role="menu" aria-label="Motion"></div>
+    </div>
+    <button class="st" id="stNext" aria-label="Next petal">&#8594;</button>
+  </div>
+  <div class="rail12" id="rail12" role="tablist" aria-label="All twelve petals"></div>
+  <button class="scue" id="scue">
+    <span class="scT">Read the story</span>
+    <span class="scA" aria-hidden="true"><i></i><i></i></span>
+  </button>
+</section>
 
-<!-- ============ Rail / steps / status ============ -->
-<nav class="rail" id="rail" aria-label="The nine points"></nav>
-<div class="now" aria-hidden="true"><i></i><span id="nowT">Learning Ecosystem</span></div>
-<div class="steps">
-  <button class="st" id="stPrev" aria-label="Previous point">&#8593;</button>
-  <button class="st" id="stNext" aria-label="Next point">&#8595;</button>
+<!-- ================= the story of the active petal ================= -->
+<section class="story wrap" id="story"><div id="storyBody"></div></section>
+
+<footer>
+  <div class="wrap foot">
+    <span>&copy; 2026 Exzellent &middot; Cottbus, Germany</span>
+    <span><button class="story-link" id="ptsLink" style="padding:.5em .9em;font-size:12.5px">&#10022; <span data-i18n="ptsHow">How Petal Points work</span></button></span>
+  </div>
+</footer>
+
+<!-- ================= Exzi buddy ================= -->
+<div class="buddy" id="buddy">
+  <div class="bpanel" role="dialog" aria-label="Exzi">
+    <div class="bh"><i></i><span data-i18n="exziOn">Exzi online &middot; your AI companion</span></div>
+    <a class="ask2" href="/exzi.html"><span class="ph" data-i18n="ask2">Ask Exzi anything&hellip;</span></a>
+    <div class="row">
+      <a class="iconb" href="/exzi.html" title="Voice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></a>
+      <a class="iconb" href="/exzi.html" title="Call"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
+      <a class="iconb" href="/exzi.html" title="Video"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3"/></svg></a>
+    </div>
+    <div class="note2" data-i18n="bNote">Hands-free by design &mdash; voice, call or video. Exzi opens every petal for you, no typing needed.</div>
+  </div>
+  <button class="borb" id="borb" aria-expanded="false" aria-label="Open Exzi"><b aria-hidden="true"></b><i aria-hidden="true"></i></button>
 </div>
+
+<div class="ptoast" id="ptoast" role="status" aria-live="polite"><b id="ptoastN">+50</b><span id="ptoastT"></span></div>
+<div class="ptmodal" id="ptmodal"><div class="ptcard" style="position:relative" role="dialog" aria-label="Petal Points">
+  <button class="u-btn ptx" id="ptClose" aria-label="Close">&#10005;</button>
+  <div id="ptBody"></div>
+</div></div>
 <p class="sr" role="status" aria-live="polite" id="live"></p>
 
 <script>
-/* =====================================================================
-   The nine points — same points as the old star page, now as layers.
-   Palette from the logo: violet 138,75,245 · illuminating green
-   61,240,160 · gold 240,196,66 · neon orange 255,122,41 · black.
-   media.src is the slot for the real GIF/video per point; the Learning
-   Ecosystem film cycles everything that lives inside it until then.
-   ===================================================================== */
-const ECOSYSTEM=[
- {key:"eco",     c:"138,75,245", route:"/learning-ecosystem.html",
-   title:{en:"Learning Ecosystem",de:"Learning Ecosystem"},
-   ident:{en:"",de:""}, media:{src:""}},
- {key:"expats",  c:"61,240,160", route:"/coming-soon",
-   title:{en:"Expats & Career",de:"Expats & Karriere"},
-   ident:{en:"For international talent — and the employers hiring them.",de:"Für internationale Talente — und die Arbeitgeber, die sie suchen."}, media:{src:""}},
- {key:"studio",  c:"255,122,41", route:"/coming-soon",
-   title:{en:"Exzellent AI Studio",de:"Exzellent AI Studio"},
-   ident:{en:"Most AI projects fail on the boring part. We sell the boring part.",de:"Die meisten KI-Projekte scheitern am langweiligen Teil. Genau den liefern wir."}, media:{src:""}},
- {key:"exzi",    c:"167,139,250",route:"/exzi",
-   title:{en:"AI Companion — Exzi",de:"KI-Begleiter — Exzi"},
-   ident:{en:"Exzi remembers where you are — and follows through.",de:"Exzi merkt sich, wo du stehst — und bleibt dran."}, media:{src:""}},
- {key:"marketing",c:"255,122,41",route:"/coming-soon",
-   title:{en:"Marketing",de:"Marketing"},
-   ident:{en:"Attention into momentum.",de:"Aus Aufmerksamkeit wird Momentum."}, media:{src:""}},
- {key:"business",c:"240,196,66", route:"/coming-soon",
-   title:{en:"Business",de:"Business"},
-   ident:{en:"B2B, partnerships, operations — keeping the vessel on course.",de:"B2B, Partnerschaften, Betrieb — das Schiff bleibt auf Kurs."}, media:{src:""}},
- {key:"services",c:"61,240,160", route:"/coming-soon",
-   title:{en:"Tools & Services",de:"Tools & Services"},
-   ident:{en:"Every service on one page, routed to the right point.",de:"Alle Services auf einer Seite — zum richtigen Punkt geleitet."}, media:{src:""}},
- {key:"funding", c:"240,196,66", route:"/coming-soon",
-   title:{en:"Funding & Entrepreneurship",de:"Funding & Entrepreneurship"},
-   ident:{en:"Building — and funding — companies the honest way.",de:"Unternehmen bauen und finanzieren — auf die ehrliche Art."}, media:{src:""}},
+/* ============ the twelve petals ============ */
+const PETALS=[
+ {key:"eco",c:"138,75,245",route:"/learning-ecosystem.html",
+  n:{en:"Learning Ecosystem",de:"Learning Ecosystem"},
+  ident:{en:"Three labs, real tutors, one companion.",de:"Drei Labs, echte Tutoren, ein Begleiter."},
+  lead:{en:"The heart of Exzellent: live cohort classes on weekdays, webinars on weekends, an AI toolkit that remembers your chapter, and teachers who actually track what you do \u2014 from the free placement test to the telc exam.",
+        de:"Das Herz von Exzellent: Live-Kohorten unter der Woche, Webinare am Wochenende, ein KI-Toolkit, das dein Kapitel kennt, und Lehrkr\u00e4fte, die wirklich verfolgen, was du tust \u2014 vom kostenlosen Einstufungstest bis zur telc-Pr\u00fcfung."},
+  pts:{en:["Free AI placement test \u2014 your CEFR level in minutes","Weekday cohorts + weekend webinars in three tracks","Doubt session after every class \u00b7 tasks aimed at your weak points","Monthly certificate on the top tier \u2014 then telc A1 \u2192 A2"],
+       de:["Kostenloser KI-Einstufungstest \u2014 dein GER-Niveau in Minuten","Kohorten unter der Woche + Webinare am Wochenende in drei Tracks","Fragerunde nach jeder Stunde \u00b7 Aufgaben f\u00fcr deine Schw\u00e4chen","Monatszertifikat im Top-Tarif \u2014 dann telc A1 \u2192 A2"]},
+  rooms:true},
+ {key:"expats",c:"61,240,160",route:"/coming-soon",
+  n:{en:"Expats",de:"Expats"},
+  ident:{en:"Settling in Germany, without the guesswork.",de:"Ankommen in Deutschland \u2014 ohne R\u00e4tselraten."},
+  lead:{en:"Everything around the move itself: the route planner in English and German, qualification recognition walked step by step, and the paperwork everyone dreads \u2014 explained by people who did it.",
+        de:"Alles rund um den Umzug selbst: der Routenplaner auf Englisch und Deutsch, Anerkennung Schritt f\u00fcr Schritt, und der Papierkram, den alle f\u00fcrchten \u2014 erkl\u00e4rt von Leuten, die ihn gemacht haben."},
+  pts:{en:["Free route planner \u2014 your steps in order","Anerkennung: your qualification file, step by step","Anmeldung, insurance, banking \u2014 the honest guides","A community that made the same move"],
+       de:["Kostenloser Routenplaner \u2014 deine Schritte in Reihenfolge","Anerkennung: deine Unterlagen, Schritt f\u00fcr Schritt","Anmeldung, Versicherung, Konto \u2014 die ehrlichen Guides","Eine Community, die denselben Weg gegangen ist"]}},
+ {key:"career",c:"240,196,66",route:"/coming-soon",
+  n:{en:"Career",de:"Karriere"},
+  ident:{en:"From qualified to hired \u2014 in German.",de:"Von qualifiziert zu eingestellt \u2014 auf Deutsch."},
+  lead:{en:"Application coaching, German for work, interview preparation and real employer introductions \u2014 the bridge between speaking German and working in German.",
+        de:"Bewerbungscoaching, Deutsch f\u00fcr den Beruf, Interview-Vorbereitung und echte Arbeitgeber-Kontakte \u2014 die Br\u00fccke zwischen Deutsch sprechen und auf Deutsch arbeiten."},
+  pts:{en:["Lebenslauf & Anschreiben review \u2014 German standards","Interview training, honestly scored","German for work alongside your A2 track","Employer network \u2014 introductions, honestly framed"],
+       de:["Lebenslauf & Anschreiben \u2014 nach deutschen Standards","Interview-Training, ehrlich bewertet","Deutsch f\u00fcr den Beruf parallel zum A2-Track","Arbeitgeber-Netzwerk \u2014 ehrlich vermittelt"]}},
+ {key:"studio",c:"255,122,41",route:"/coming-soon",
+  n:{en:"AI Studio",de:"AI Studio"},
+  ident:{en:"We sell the boring part that makes AI work.",de:"Wir liefern den unbequemen Teil, der KI zum Laufen bringt."},
+  lead:{en:"Custom builds you own, ready-made tools, integration into the unglamorous systems where AI usually dies, and training so it survives after we leave.",
+        de:"Individuelle Builds, die dir geh\u00f6ren, fertige Tools, Integration in die unglamour\u00f6sen Systeme, an denen KI sonst scheitert \u2014 und Training, damit es bleibt, wenn wir gehen."},
+  pts:{en:["Fixed price before work starts","EU hosting \u2014 no training on your content","Integration & consulting","Team training and handover"],
+       de:["Fixpreis, bevor die Arbeit beginnt","EU-Hosting \u2014 kein Training auf deinen Inhalten","Integration & Beratung","Team-Training und \u00dcbergabe"]}},
+ {key:"exzi",c:"167,139,250",route:"/exzi.html",
+  n:{en:"AI Companion \u2014 Exzi",de:"KI-Begleiter \u2014 Exzi"},
+  ident:{en:"Plans with you, keeps context, follows through.",de:"Plant mit dir, beh\u00e4lt den Kontext, bleibt dran."},
+  lead:{en:"Exzi is the companion across everything: it remembers where you are, checks back whether the thing actually happened, and answers only to you \u2014 voice, call or video, hands-free.",
+        de:"Exzi ist der Begleiter \u00fcber alles hinweg: merkt sich, wo du stehst, fragt nach, ob es wirklich passiert ist, und antwortet nur dir \u2014 Stimme, Anruf oder Video, freih\u00e4ndig."},
+  pts:{en:["Memory like a teammate \u2014 chapter, plan, promise","Hands-free: voice, call, video","Private by design \u2014 EU hosting, full export & deletion","Try the scripted demo today"],
+       de:["Ged\u00e4chtnis wie ein Teamkollege \u2014 Kapitel, Plan, Versprechen","Freih\u00e4ndig: Stimme, Anruf, Video","Privat gebaut \u2014 EU-Hosting, Export & L\u00f6schung","Probier heute die Demo"]}},
  {key:"community",c:"255,122,41",route:"/community",
-   title:{en:"Community",de:"Community"},
-   ident:{en:"People making the same move, in one place.",de:"Menschen auf demselben Weg, an einem Ort."}, media:{src:""}}
+  n:{en:"Community",de:"Community"},
+  ident:{en:"People making the same move, in one place.",de:"Menschen auf demselben Weg, an einem Ort."},
+  lead:{en:"The free noticeboard of the whole flower: events, guides, study partners and Stammtische \u2014 in Germany and abroad.",
+        de:"Das kostenlose Schwarze Brett der ganzen Bl\u00fcte: Events, Guides, Lernpartner und Stammtische \u2014 in Deutschland und weltweit."},
+  pts:{en:["Free for every member","Events & Stammtische","Guides that stay updated","Study partners by level and evening"],
+       de:["Kostenlos f\u00fcr jedes Mitglied","Events & Stammtische","Guides, die aktuell bleiben","Lernpartner nach Niveau und Abend"]}},
+ {key:"marketing",c:"201,170,255",route:"/coming-soon",
+  n:{en:"Marketing",de:"Marketing"},
+  ident:{en:"Attention into momentum.",de:"Aus Aufmerksamkeit wird Momentum."},
+  lead:{en:"Positioning, campaigns and analytics for Exzellent and its partners \u2014 the petal that turns being seen into being chosen.",
+        de:"Positionierung, Kampagnen und Analytics f\u00fcr Exzellent und Partner \u2014 das Bl\u00fctenblatt, das Sichtbarkeit in Entscheidung verwandelt."},
+  pts:{en:["Brand & positioning","Campaigns & growth","Content engine \u2014 plan, publish","Analytics & iteration"],
+       de:["Marke & Positionierung","Kampagnen & Wachstum","Content-Engine \u2014 planen, ver\u00f6ffentlichen","Analytics & Iteration"]}},
+ {key:"business",c:"240,196,66",route:"/coming-soon",
+  n:{en:"Business",de:"Business"},
+  ident:{en:"Keeping the vessel on course.",de:"Das Schiff bleibt auf Kurs."},
+  lead:{en:"B2B development, partnerships and operations \u2014 the discipline that lets twelve petals grow from one flower without losing the standard.",
+        de:"B2B-Entwicklung, Partnerschaften und Betrieb \u2014 die Disziplin, mit der zw\u00f6lf Bl\u00fctenbl\u00e4tter aus einer Bl\u00fcte wachsen, ohne den Standard zu verlieren."},
+  pts:{en:["B2B development","Partnerships & pilots","Operations mapped","One standard everywhere"],
+       de:["B2B-Entwicklung","Partnerschaften & Pilotprojekte","Abl\u00e4ufe sauber abgebildet","Ein Standard \u00fcberall"]}},
+ {key:"funding",c:"61,240,160",route:"/coming-soon",
+  n:{en:"Funding",de:"Funding"},
+  ident:{en:"How the flower is financed \u2014 honestly.",de:"Wie die Bl\u00fcte finanziert wird \u2014 ehrlich."},
+  lead:{en:"Where the money comes from and where it goes: bootstrapping, loans, revenue \u2014 written down, because honest numbers are the brand.",
+        de:"Woher das Geld kommt und wohin es geht: Bootstrapping, Darlehen, Umsatz \u2014 aufgeschrieben, weil ehrliche Zahlen die Marke sind."},
+  pts:{en:["Bootstrapped and written down","How we fund, spend and repay","No hype, no invented figures","Published from the ledger"],
+       de:["Gebootstrappt und aufgeschrieben","Wie wir finanzieren, ausgeben, zur\u00fcckzahlen","Kein Hype, keine erfundenen Zahlen","Ver\u00f6ffentlicht aus dem Logbuch"]}},
+ {key:"entre",c:"240,196,66",route:"/coming-soon",
+  n:{en:"Entrepreneurship",de:"Entrepreneurship"},
+  ident:{en:"Building companies the honest way.",de:"Unternehmen bauen \u2014 auf die ehrliche Art."},
+  lead:{en:"The founder\u2019s logbook of Exzellent itself \u2014 decisions, mistakes and mechanics, kept for people building their own thing.",
+        de:"Das Gr\u00fcnder-Logbuch von Exzellent selbst \u2014 Entscheidungen, Fehler und Mechanik, festgehalten f\u00fcr Menschen, die Eigenes bauen."},
+  pts:{en:["How we build, in the open","Decisions and their reasons","Mistakes kept visible","For founders & builders"],
+       de:["Wie wir bauen \u2014 offen","Entscheidungen und ihre Gr\u00fcnde","Fehler bleiben sichtbar","F\u00fcr Gr\u00fcnder & Macher"]}},
+ {key:"tools",c:"61,240,160",route:"/coming-soon",
+  n:{en:"Tools",de:"Tools"},
+  ident:{en:"Ready-made tools that work today.",de:"Fertige Tools, die heute funktionieren."},
+  lead:{en:"The toolshed: working tools you can use now \u2014 EU-hosted, no drama, each one born from a real request in the community.",
+        de:"Der Werkzeugschuppen: Tools, die du jetzt nutzen kannst \u2014 EU-gehostet, ohne Drama, jedes aus einem echten Bedarf der Community entstanden."},
+  pts:{en:["Working today, not someday","EU-hosted","Born from real requests","Free tiers where possible"],
+       de:["Funktioniert heute, nicht irgendwann","EU-gehostet","Aus echten Anfragen entstanden","Kostenlose Stufen, wo m\u00f6glich"]}},
+ {key:"services",c:"255,122,41",route:"/coming-soon",
+  n:{en:"Services",de:"Services"},
+  ident:{en:"Done-for-you, routed to the right team.",de:"Erledigt f\u00fcr dich \u2014 beim richtigen Team."},
+  lead:{en:"Every service Exzellent offers on one index \u2014 each request routed to the petal that actually handles it, so you never read the wrong page.",
+        de:"Alle Services von Exzellent auf einem Index \u2014 jede Anfrage geleitet zum Bl\u00fctenblatt, das sie wirklich betreut. So liest du nie die falsche Seite."},
+  pts:{en:["One index, all services","Routed to the right petal","Fast to scan","Fixed scope, honest pricing"],
+       de:["Ein Index, alle Services","Geleitet zum richtigen Bl\u00fctenblatt","Schnell zu \u00fcberfliegen","Fester Umfang, ehrliche Preise"]}}
 ];
-
-/* hot entry points on the first layer — direct doors into the ecosystem */
-const HOT=[
- {t:{en:"Language Lab",de:"Language Lab"},href:"/labs/language.html",c:"6,182,212"},
- {t:{en:"Skill Lab",de:"Skill Lab"},href:"/labs/skill-lab.html",c:"249,115,22"},
- {t:{en:"Growth Lab",de:"Growth Lab"},href:"/labs/growth-lab.html",c:"16,185,129"},
- {t:{en:"Student Dashboard",de:"Student Dashboard"},href:"/student-dashboard",c:"138,75,245"},
- {t:{en:"Book a class",de:"Book a class"},href:"/book",c:"255,122,41"}
-];
-
+/* ============ where each petal really stands ============ */
+const STATUS={eco:{live:1},expats:{m:10,y:2026},career:{m:11,y:2026},studio:{m:11,y:2026},
+ exzi:{y:2027},community:{m:11,y:2026},marketing:{m:10,y:2026},business:{m:10,y:2026},
+ funding:{live:1},entre:{m:12,y:2026},tools:{m:10,y:2026},services:{live:1}};
+const DOOR={eco:{k:"enter",href:"/learning-ecosystem.html"},exzi:{k:"demo",href:"/exzi.html"},
+ funding:{k:"talk",href:"/contact"},services:{k:"talk",href:"/contact"}};
+const doorOf=k=>DOOR[k]||{k:"list",href:"/waitlist"};
+function stFull(k){const t=T(),x=STATUS[k];
+  if(x.live)return t.liveNow;
+  if(!x.m)return t.comingY.replace("{y}",x.y);
+  return t.comingM.replace("{m}",t.months[x.m-1]).replace("{y}",x.y);}
+function stTag(k){const t=T(),x=STATUS[k];return x.live?t.liveTag:(x.m?t.mshort[x.m-1]:String(x.y));}
 const I18N={
- en:{profile:"Profile",theme:"Light",signin:"Sign in",start:"Start for free",
-     s1:"Three Labs.",s2:"Real Tutors.",s3:"One Companion.",
-     enterEco:"Enter the Ecosystem",enter:"Enter",
-     scenes:{speak:"Language course \u00b7 speaking, scored",chat:"AI tutor \u00b7 knows the chapter",
-             skill:"Skill Lab \u00b7 a real task, automated",growth:"Growth Lab \u00b7 rhythm, not guilt",
-             sdash:"Student dashboard \u00b7 progress + teacher",book:"Booking \u00b7 pick your teacher",
-             exzi:"Exzi \u00b7 follows through",expats:"Route planner \u00b7 EN + DE",
-             studio:"AI Studio \u00b7 the unglamorous part, done",marketing:"Content engine \u00b7 plan, publish",
-             business:"Partnerships \u00b7 scoped and on course",services:"One index \u00b7 the right point",
-             funding:"The founder\u2019s ledger \u00b7 written down",community:"Community \u00b7 same move, one place",
-             eco:"One connected ecosystem"}},
- de:{profile:"Profil",theme:"Hell",signin:"Anmelden",start:"Kostenlos starten",
-     s1:"Drei Labs.",s2:"Echte Tutoren.",s3:"Ein Begleiter.",
-     enterEco:"\u00d6kosystem betreten",enter:"\u00d6ffnen",
-     scenes:{speak:"Sprachkurs \u00b7 Sprechen, bewertet",chat:"KI-Tutor \u00b7 kennt das Kapitel",
-             skill:"Skill Lab \u00b7 echte Aufgabe, automatisiert",growth:"Growth Lab \u00b7 Rhythmus statt Druck",
-             sdash:"Dashboard \u00b7 Fortschritt + Lehrer",book:"Buchung \u00b7 Tutor w\u00e4hlen",
-             exzi:"Exzi \u00b7 bleibt dran",expats:"Routenplaner \u00b7 EN + DE",
-             studio:"AI Studio \u00b7 der unbequeme Teil, erledigt",marketing:"Content-Engine \u00b7 planen, ver\u00f6ffentlichen",
-             business:"Partnerschaften \u00b7 sauber aufgesetzt",services:"Ein Index \u00b7 der richtige Punkt",
-             funding:"Das Gr\u00fcnder-Logbuch \u00b7 aufgeschrieben",community:"Community \u00b7 derselbe Weg, ein Ort",
-             eco:"Ein verbundenes \u00d6kosystem"}}
+ en:{theme:"Light",start:"Start free",auto:"Rotating",autoOff:"Paused",petals:"petals",
+  enter:"Enter",storyBtn:"Read the story",story:"Read the story \u2193",readStory:"Read the {n} story",
+  liveNow:"Live now",liveTag:"LIVE",comingM:"Coming {m} {y}",comingY:"Coming {y}",
+  months:["January","February","March","April","May","June","July","August","September","October","November","December"],
+  mshort:["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],
+  doors:{enter:"Enter",demo:"Try the demo",talk:"Talk to us",list:"Join the list"},
+  motion:"Motion",style:"Style",mAuto:"Auto-rotate",mDrift:"Slow drift",mOff:"Paused",
+  sFlow:"Cover flow",sWheel:"Carousel",sDeck:"Deck",
+  ptsHow:"How Petal Points work",
+  pt:{welcome:"Welcome \u2014 your first points are on us.",checkin:"Daily check-in. Nice to see you back.",
+   petal:"You opened the {n} petal.",bloom:"Full bloom \u2014 all twelve petals seen.",
+   title:"Petal Points",
+   lead:"One system across all twelve petals. Prices differ per petal and per tier \u2014 the points don\u2019t.",
+   r1:"Welcome, first visit",r2:"Daily check-in",r3:"Each petal you open",r4:"All twelve petals seen",
+   use:"When you create an account, the points on this device become credits in it \u2014 usable towards lessons and tools.",
+   note:"Kept on this device until you sign up. Nothing is sent anywhere, and nothing expires while we are in launch.",
+   signup:"Sign up to bank them",close:"Close",have:"You have"},mhPetals:"The twelve petals of Exzellent",here:"you are here",
+  point:"Petal",of:"of",fTag:"Twelve petals, one flower.",
+  exziOn:"Exzi online \u00b7 your AI companion",ask2:"Ask Exzi anything\u2026",
+  bNote:"Hands-free by design \u2014 voice, call or video. Exzi opens every petal for you, no typing needed.",
+  rooms:[["Language Lab","German that survives contact with Germany","/labs/language.html","103,232,249"],
+         ["Skill Lab","Skills the job market actually asks for","/labs/skill-lab.html","249,115,22"],
+         ["Growth Lab","From learning to actually growing","/labs/growth-lab.html","16,185,129"]],
+  roomsMore:[["Student Dashboard","/learning-ecosystem.html#dashboard","167,139,250"],["Book a Teacher","/learning-ecosystem.html#tutors","240,196,66"]],
+  open:"Open"},
+ de:{theme:"Hell",start:"Kostenlos starten",auto:"Rotiert",autoOff:"Pausiert",petals:"Bl\u00fctenbl\u00e4tter",
+  enter:"\u00d6ffnen",storyBtn:"Die Geschichte lesen",story:"Die Geschichte lesen \u2193",readStory:"Die Geschichte von {n} lesen",
+  liveNow:"Jetzt live",liveTag:"LIVE",comingM:"Ab {m} {y}",comingY:"Ab {y}",
+  months:["Januar","Februar","M\u00e4rz","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
+  mshort:["JAN","FEB","M\u00c4R","APR","MAI","JUN","JUL","AUG","SEP","OKT","NOV","DEZ"],
+  doors:{enter:"\u00d6ffnen",demo:"Demo testen",talk:"Sprich mit uns",list:"Auf die Liste"},
+  motion:"Bewegung",style:"Stil",mAuto:"Auto-Rotation",mDrift:"Langsam treiben",mOff:"Pausiert",
+  sFlow:"Cover Flow",sWheel:"Karussell",sDeck:"Kartenstapel",
+  ptsHow:"So funktionieren Petal Points",
+  pt:{welcome:"Willkommen \u2014 die ersten Punkte gehen auf uns.",checkin:"T\u00e4glicher Check-in. Sch\u00f6n, dass du da bist.",
+   petal:"Du hast das Bl\u00fctenblatt {n} ge\u00f6ffnet.",bloom:"Volle Bl\u00fcte \u2014 alle zw\u00f6lf gesehen.",
+   title:"Petal Points",
+   lead:"Ein System f\u00fcr alle zw\u00f6lf Bl\u00fctenbl\u00e4tter. Preise unterscheiden sich je Bl\u00fctenblatt und Tarif \u2014 die Punkte nicht.",
+   r1:"Willkommen, erster Besuch",r2:"T\u00e4glicher Check-in",r3:"Jedes ge\u00f6ffnete Bl\u00fctenblatt",r4:"Alle zw\u00f6lf gesehen",
+   use:"Wenn du ein Konto erstellst, werden die Punkte auf diesem Ger\u00e4t zu Guthaben \u2014 einsetzbar f\u00fcr Unterricht und Tools.",
+   note:"Bleibt auf diesem Ger\u00e4t, bis du dich anmeldest. Es wird nichts \u00fcbertragen und w\u00e4hrend des Launches verf\u00e4llt nichts.",
+   signup:"Anmelden und sichern",close:"Schlie\u00dfen",have:"Du hast"},mhPetals:"Die zw\u00f6lf Bl\u00fctenbl\u00e4tter von Exzellent",here:"du bist hier",
+  point:"Bl\u00fctenblatt",of:"von",fTag:"Zw\u00f6lf Bl\u00fctenbl\u00e4tter, eine Bl\u00fcte.",
+  exziOn:"Exzi online \u00b7 dein KI-Begleiter",ask2:"Frag Exzi alles\u2026",
+  bNote:"Freih\u00e4ndig gebaut \u2014 Stimme, Anruf oder Video. Exzi \u00f6ffnet jedes Bl\u00fctenblatt f\u00fcr dich, ganz ohne Tippen.",
+  rooms:[["Language Lab","Deutsch, das den Alltag \u00fcbersteht","/labs/language.html","103,232,249"],
+         ["Skill Lab","F\u00e4higkeiten, die der Arbeitsmarkt verlangt","/labs/skill-lab.html","249,115,22"],
+         ["Growth Lab","Vom Lernen zum Wachsen","/labs/growth-lab.html","16,185,129"]],
+  roomsMore:[["Studenten-Dashboard","/learning-ecosystem.html#dashboard","167,139,250"],["Tutor buchen","/learning-ecosystem.html#tutors","240,196,66"]],
+  open:"\u00d6ffnen"}
 };
-let lang="en", theme="dark", active=0, busy=false;
+let lang="en",theme="dark",active=0;
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const mqM=matchMedia("(max-width:900px)");
 const T=()=>I18N[lang];
 
-/* =====================================================================
-   Cinematic scenes — CSS product mocks with sample data. The Learning
-   Ecosystem cycles through everything under it (the "film"); every
-   other point shows its own moment. Replace with real GIF/MP4 by
-   setting ECOSYSTEM[i].media.src.
-   ===================================================================== */
+/* ============ scenes ============ */
 const S={
  speak:()=>`<div class="mock"><div class="mh"><i></i>Language Lab</div>
-   <div style="font:600 15px/1.3 Inter">\u201eIch h\u00e4tte gern einen Kaffee.\u201c</div>
+   <div style="font:600 14px/1.3 Inter">\u201eIch h\u00e4tte gern einen Kaffee.\u201c</div>
    <div class="wave">${[...Array(16)].map((_,k)=>`<i style="animation-delay:${(k*.09).toFixed(2)}s"></i>`).join("")}</div>
-   <div class="mrow"><span style="color:var(--dim)">Aussprache</span><div class="bar"><i style="width:92%"></i></div><b style="font:700 14px 'Space Grotesk'">92</b></div></div>`,
+   <div class="mrow"><span style="color:var(--dim)">Aussprache</span><div class="bar"><i style="width:92%"></i></div><b style="font:700 13px 'Space Grotesk'">92</b></div></div>`,
  chat:()=>`<div class="mock"><div class="mh"><i></i>AI tutor</div>
    <div class="bub me">Why is it \u201eder\u201c here?</div>
-   <div class="bub">Because \u201eKaffee\u201c is masculine \u2014 and you saw this in chapter 5. Two more examples \u2192</div></div>`,
+   <div class="bub">Because \u201eKaffee\u201c is masculine \u2014 chapter 5. Two more examples \u2192</div></div>`,
  skill:()=>`<div class="mock"><div class="mh"><i></i>Skill Lab</div>
-   <div style="font:600 14px Inter;margin-bottom:6px">Weekly report \u2192 automated</div>
+   <div style="font:600 13.5px Inter;margin-bottom:5px">Weekly report \u2192 automated</div>
    <div class="tk"><b>\u2713</b>Collect the numbers</div><div class="tk"><b>\u2713</b>Draft the summary</div>
    <div class="tk"><b>\u25cf</b>Send every Friday, 9:00</div></div>`,
- growth:()=>`<div class="mock" style="display:flex;gap:16px;align-items:center">
+ growth:()=>`<div class="mock" style="display:flex;gap:15px;align-items:center">
    <div class="ring" style="--v:68"><b>68%</b></div>
-   <div><div style="font:600 14px Inter">12-day rhythm</div>
-   <div style="color:var(--dim);font-size:12.5px;margin-top:4px">You\u2019re caught up for today.</div></div></div>`,
+   <div><div style="font:600 13.5px Inter">12-day rhythm</div>
+   <div style="color:var(--dim);font-size:12px;margin-top:3px">You\u2019re caught up for today.</div></div></div>`,
  sdash:()=>`<div class="mock"><div class="mh"><i></i>My learning</div>
-   <div style="font:600 14px Inter">German A2 \u2014 Complete Course</div>
-   <div class="mrow"><div class="bar"><i style="width:42%"></i></div><b style="font:700 13px 'Space Grotesk'">42%</b></div>
+   <div style="font:600 13.5px Inter">German A2 \u2014 Complete Course</div>
+   <div class="mrow"><div class="bar"><i style="width:42%"></i></div><b style="font:700 12.5px 'Space Grotesk'">42%</b></div>
    <div class="mrow"><span class="chip on">Alice M\u00fcller \u00b7 online</span><span class="chip">Book a session</span></div></div>`,
- book:()=>`<div class="mock"><div class="mh"><i></i>Book a teacher</div>
-   <div style="font:600 14px Inter;margin-bottom:8px">Alice M\u00fcller \u00b7 \u20ac28/h</div>
+ book:()=>`<div class="mock"><div class="mh"><i></i>Coaching session</div>
+   <div style="font:600 13.5px Inter;margin-bottom:7px">Interview training \u00b7 45 min</div>
    <span class="chip">Thu 18:00</span><span class="chip on">Sat 10:30 \u2713</span><span class="chip">Mon 18:00</span></div>`,
  exzi:()=>`<div class="mock"><div class="mh"><i></i>Exzi</div>
    <div class="bub">You planned the telc mock for today. Done \u2014 or should I move it to 18:00?</div>
-   <div class="mrow"><span class="chip on">remembers chapter 6</span><span class="chip">private by design</span></div></div>`,
+   <div class="mrow"><span class="chip on">remembers chapter 6</span><span class="chip">hands-free</span></div></div>`,
  expats:()=>`<div class="mock"><div class="mh"><i></i>Route planner</div>
    <div class="tk"><b>\u2713</b>Qualification recognition \u2014 started</div>
-   <div class="tk"><b>\u2713</b>German for work \u2014 A2 track</div>
-   <div class="tk"><b>\u25cf</b>Application file \u2014 Lebenslauf review</div></div>`,
+   <div class="tk"><b>\u2713</b>Anmeldung \u2014 booked</div>
+   <div class="tk"><b>\u25cf</b>Insurance \u2014 compare & choose</div></div>`,
  studio:()=>`<div class="mock"><div class="mh"><i></i>Custom AI build</div>
    <div class="tk"><b>\u2713</b>Fixed price before work starts</div>
    <div class="tk"><b>\u2713</b>EU hosting \u00b7 no training on your content</div>
@@ -372,159 +733,324 @@ const S={
    <div class="tk"><b>\u2713</b>Scope agreed \u00b7 pilot defined</div>
    <div class="tk"><b>\u2713</b>Operations mapped</div>
    <div class="tk"><b>\u25cf</b>First cohort onboarding</div></div>`,
- services:()=>`<div class="mock"><div class="mh"><i></i>One index</div>
-   <div class="mrow"><span>German course</span><span class="chip on" style="margin-left:auto">Learning Ecosystem</span></div>
-   <div class="mrow"><span>Custom AI build</span><span class="chip on" style="margin-left:auto">AI Studio</span></div>
-   <div class="mrow"><span>Hiring internationally</span><span class="chip on" style="margin-left:auto">Expats & Career</span></div></div>`,
  funding:()=>`<div class="mock"><div class="mh"><i></i>The ledger</div>
    <div class="tk"><b>\u2713</b>Bootstrapped \u2014 and written down</div>
    <div class="tk"><b>\u2713</b>How we fund, spend and repay</div>
    <div class="tk"><b>\u25cf</b>For founders building their own thing</div></div>`,
+ services:()=>`<div class="mock"><div class="mh"><i></i>One index</div>
+   <div class="mrow"><span>German course</span><span class="chip on" style="margin-left:auto">Learning Ecosystem</span></div>
+   <div class="mrow"><span>Custom AI build</span><span class="chip on" style="margin-left:auto">AI Studio</span></div>
+   <div class="mrow"><span>Hiring internationally</span><span class="chip on" style="margin-left:auto">Career</span></div></div>`,
  community:()=>`<div class="mock"><div class="mh"><i></i>Community</div>
    <div class="tk"><b>\u2726</b>Berlin \u2014 Stammtisch, Saturday</div>
    <div class="tk"><b>\u2726</b>Anmeldung guide \u2014 updated</div>
    <div class="tk"><b>\u2726</b>Study partners \u00b7 A2, evenings</div></div>`
 };
-const SCENES={eco:["speak","chat","skill","growth","sdash","book","exzi"],
-  expats:["expats"],studio:["studio"],exzi:["exzi"],marketing:["marketing"],
-  business:["business"],services:["services"],funding:["funding"],community:["community"]};
+const SCOL={speak:"103,232,249",chat:"103,232,249",skill:"249,115,22",growth:"16,185,129",
+ sdash:"167,139,250",book:"240,196,66",exzi:"167,139,250",expats:"61,240,160",studio:"255,122,41",
+ marketing:"201,170,255",business:"240,196,66",funding:"61,240,160",services:"255,122,41",community:"255,122,41"};
+const SLAB={
+ speak:{en:"Speaking",de:"Sprechen"},chat:{en:"AI tutor",de:"KI-Tutor"},
+ skill:{en:"Skill Lab",de:"Skill Lab"},growth:{en:"Growth",de:"Growth"},
+ sdash:{en:"Dashboard",de:"Dashboard"},book:{en:"Booking",de:"Buchung"},
+ exzi:{en:"Exzi",de:"Exzi"},expats:{en:"Route",de:"Route"},
+ studio:{en:"Builds",de:"Builds"},marketing:{en:"Content",de:"Content"},
+ business:{en:"Partners",de:"Partner"},funding:{en:"Ledger",de:"Logbuch"},
+ services:{en:"Index",de:"Index"},community:{en:"Events",de:"Events"}};
+const SCENES={eco:["speak","chat","skill","growth","sdash","exzi"],
+ expats:["expats"],career:["book"],studio:["studio"],exzi:["exzi"],community:["community"],
+ marketing:["marketing"],business:["business"],funding:["funding"],entre:["funding"],
+ tools:["services"],services:["services"]};
 
-/* =====================================================================
-   Build the layers
-   ===================================================================== */
-const stage=document.getElementById("stage");
-ECOSYSTEM.forEach((s,i)=>{
-  const el=document.createElement("section");
-  el.className="layer"; el.style.setProperty("--c",s.c); el.dataset.i=i;
-  el.setAttribute("aria-label",s.title.en);
-  const scenes=SCENES[s.key].map((k,n)=>`<div class="scene${n===0?" on":""}" data-k="${k}">${S[k]()}</div>`).join("");
-  const sdots=SCENES[s.key].length>1?`<div class="dots">${SCENES[s.key].map((_,n)=>`<b class="${n===0?"on":""}"></b>`).join("")}</div>`:"";
-  const media=s.media.src?`<video src="${s.media.src}" muted autoplay loop playsinline></video>`:scenes+sdots;
-  const side=i===0
-    ? `<h1 class="statement"><span data-i18n="s1">Three Labs.</span><br><span data-i18n="s2">Real Tutors.</span><br><em data-i18n="s3">One Companion.</em></h1>
-       <div class="hot" role="group" aria-label="Quick entry">${HOT.map((h,n)=>`
-         <a class="hb" style="--hc:${h.c}" href="${h.href}" data-hot="${n}"><i></i><span>${h.t.en}</span><span class="ar">\u2192</span></a>`).join("")}
-       </div>
-       <a class="cta" href="${s.route}" data-route><span data-i18n="enterEco">Enter the Ecosystem</span><span class="ar">\u2192</span></a>`
-    : `<h2 class="l-title">${s.title.en}</h2>
-       <p class="ident">${s.ident.en}</p>
-       <a class="cta" href="${s.route}" data-route><span data-i18n="enter">Enter</span><span class="ar">\u2192</span></a>`;
-  el.innerHTML=`<button class="peek" tabindex="-1">${s.title.en}</button>
-    <div class="inner"><div class="cine" aria-hidden="true">${media}<div class="cap"><i></i><span class="capT">${T().scenes[s.key]}</span></div></div>
-    <div class="side">${side}</div></div>`;
-  stage.appendChild(el);
+/* ============ build ============ */
+const track=document.getElementById("track");
+PETALS.forEach((p,i)=>{
+  const c=document.createElement("article");
+  c.className="card"; c.style.setProperty("--c",p.c); c.dataset.i=i;
+  c.setAttribute("aria-label",p.n.en);
+  const scenes=SCENES[p.key].map((k,n)=>`<div class="scene${n===0?" on":""}" data-k="${k}">${S[k]()}</div>`).join("");
+  const tabs=SCENES[p.key].map((k,n)=>`<button class="ct${n===0?" on":""}" data-s="${n}" role="tab" aria-selected="${n===0}" style="--sc:${SCOL[k]||p.c}"><i aria-hidden="true"></i><span class="ctT" data-k="${k}">${SLAB[k].en}</span></button>`).join("");
+  c.innerHTML=`<div class="in">
+    <div class="chead">
+      <span class="cmark" aria-hidden="true"></span>
+      <span class="cbrand">EXZELLENT</span>
+      <span class="cst${STATUS[p.key].live?" live":""}"><i aria-hidden="true"></i><span class="cstT">${stFull(p.key)}</span></span>
+      <b class="pnT">Petal ${String(i+1).padStart(2,"0")} / 12</b>
+    </div>
+    <div class="cine" aria-hidden="true">${scenes}<div class="cap"><i></i><span class="capT">${p.n.en}</span></div></div>
+    <div class="side">
+      <h2>${p.n.en}</h2>
+      <p class="ident">${p.ident.en}</p>
+      <div class="ctabs" role="tablist" aria-label="${p.n.en}">${tabs}</div>
+      <div class="gorow">
+        <a class="go" href="${doorOf(p.key).href}"><span class="goT">${T().doors[doorOf(p.key).k]}</span><span class="ar">\u2192</span></a>
+      </div>
+    </div></div>`;
+  track.appendChild(c);
 });
-const layers=[...stage.children];
+const cards=[...track.children];
 
-/* rail */
-const rail=document.getElementById("rail");
-ECOSYSTEM.forEach((s,i)=>{
+const rail=document.getElementById("rail12");
+PETALS.forEach((p,i)=>{
   const b=document.createElement("button");
-  b.className="rd"; b.dataset.go=i;
-  b.innerHTML=`<i></i><span class="tip">${s.title.en}</span>`;
-  b.setAttribute("aria-label",s.title.en);
+  b.className="r9"; b.style.setProperty("--tc",p.c); b.dataset.go=i;
+  b.setAttribute("role","tab"); b.setAttribute("aria-selected",String(i===0));
+  b.classList.toggle("islive",!!STATUS[p.key].live);
+  b.innerHTML=`<b aria-hidden="true"></b><i>${String(i+1).padStart(2,"0")}</i><span class="r9t">${p.n.en}</span><em class="r9s">${stTag(p.key)}</em><span class="rp" aria-hidden="true"></span>`;
   rail.appendChild(b);
 });
+const railBtns=[...rail.children];
 
-/* =====================================================================
-   Placement: depth \u2192 inertia \u2192 focus
-   ===================================================================== */
+function buildMenu(){
+  document.getElementById("pmenu").innerHTML=
+    `<div class="mh">${T().mhPetals}</div>`+
+    PETALS.map((p,i)=>`<button class="mi" role="menuitem" style="--mc:${p.c}" data-go="${i}" aria-current="${i===active}">
+      <i>${String(i+1).padStart(2,"0")}</i><b aria-hidden="true"></b>${p.n[lang]}</button>`).join("");
+}
+
+/* ============ story of the active petal ============ */
+function renderStory(){
+  const p=PETALS[active];
+  const roomCards=p.rooms?`
+    <div class="rooms">${T().rooms.map((r,k)=>`
+      <a class="room rev" style="--rc:${r[3]};transition-delay:${.1+k*.08}s" href="${r[2]}">
+        <span class="e">${r[0]}</span><h4>${r[1]}</h4><span class="m">${T().open} \u2192</span></a>`).join("")}
+    </div>
+    <div class="sactions">${T().roomsMore.map(r=>`
+      <a class="story-link rev" style="transition-delay:.34s" href="${r[1]}">${r[0]} \u2192</a>`).join("")}
+    </div>`:"";
+  document.getElementById("storyBody").innerHTML=`
+    <span class="eyebrow rev" style="--sc:${p.c}">${T().point} ${String(active+1).padStart(2,"0")} ${T().of} 12
+      <span class="sbadge${STATUS[p.key].live?" live":""}"><i aria-hidden="true"></i>${stFull(p.key)}</span></span>
+    <h2 class="rev" style="transition-delay:.05s">${p.n[lang]}</h2>
+    <p class="lead rev" style="transition-delay:.1s">${p.lead[lang]}</p>
+    <div class="spts">${p.pts[lang].map((x,k)=>`
+      <div class="sp rev" style="--sc:${p.c};transition-delay:${.12+k*.06}s"><b>\u2726</b>${x}</div>`).join("")}
+    </div>
+    ${roomCards}
+    <div class="sactions">
+      <a class="go rev" style="--c:${p.c};transition-delay:.3s" href="${doorOf(p.key).href}"><span>${T().doors[doorOf(p.key).k]} \u2014 ${p.n[lang]}</span><span class="ar">\u2192</span></a>
+    </div>`;
+  hookReveals();
+}
+
+/* ============ 3D placement ============ */
+/* the stack adapts to the window it is opened in */
+function geo(){
+  const w=innerWidth,h=innerHeight;
+  if(w<=420)  return {sx:92,z:-150,ry:24,ex:0, near:1,blur:2,  op:[.5,.22],far:130};
+  if(w<=760)  return {sx:88,z:-165,ry:27,ex:0, near:1,blur:2.2,op:[.55,.24],far:135};
+  if(w<=1024) return {sx:74,z:-172,ry:33,ex:26,near:2,blur:2.4,op:[.7,.34],far:140};
+  if(h<=620)  return {sx:60,z:-175,ry:35,ex:40,near:2,blur:2.4,op:[.72,.36],far:140};
+  return       {sx:62,z:-190,ry:38,ex:46,near:2,blur:2.5,op:[.75,.38],far:140};
+}
+const S3D={flow:{sx:1,z:1,ry:1,ty:0,sc:1},wheel:{sx:1.16,z:1.75,ry:1.55,ty:0,sc:.95},deck:{sx:.22,z:1.2,ry:.1,ty:30,sc:.9}};
 function place(){
-  layers.forEach((el,i)=>{
-    const d=i-active;
-    if(d===0){ el.dataset.pos="active";
-      el.style.transform=`translateX(-50%) translateY(0) scale(1)`;
-      el.style.opacity=1; el.style.filter="none"; el.style.zIndex=30;
-    } else if(d>0){ el.dataset.pos="behind";
-      const k=Math.min(d,5), vis=d<=4;
-      el.style.transform=`translateX(-50%) translateY(${-k*22}px) scale(${1-k*.045})`;
-      el.style.opacity=vis?Math.max(.14,.62-k*.13):0;
-      el.style.filter=`blur(${Math.min(k*1.6,6)}px)`;
-      el.style.zIndex=30-k; el.style.pointerEvents=vis?"auto":"none";
-    } else { el.dataset.pos="gone";
-      el.style.transform=`translateX(-50%) translateY(9svh) scale(1.07)`;
-      el.style.opacity=0; el.style.filter="blur(8px)"; el.style.zIndex=40;
+  const g=geo(), S=S3D[style3d]||S3D.flow;
+  cards.forEach((el,i)=>{
+    const d=i-active, ad=Math.abs(d);
+    el.classList.toggle("on",d===0);
+    if(d===0){
+      el.style.transform=`translateX(0) translateZ(0) rotateY(0deg)`;
+      el.style.opacity=1; el.style.zIndex=40; el.style.filter="none"; el.style.pointerEvents="auto";
+    }else if(ad<=g.near){
+      const sx=g.sx*S.sx*d, rz=(g.z*S.z)*ad-(ad>1?g.z*S.z:0), ry=(d>0?-1:1)*(g.ry*S.ry+(ad>1?8:0)),
+            ex=ad>1?(d>0?g.ex:-g.ex):0, ty=S.ty*ad, sc=Math.pow(S.sc,ad);
+      el.style.transform=`translateX(calc(${sx}% + ${ex}px)) translateY(${ty}px) translateZ(${rz}px) rotateY(${ry}deg) scale(${sc.toFixed(3)})`;
+      el.style.opacity=ad>1?g.op[1]:g.op[0];
+      el.style.zIndex=40-ad; el.style.filter=`blur(${ad>1?g.blur:0}px)`; el.style.pointerEvents="auto";
+    }else{
+      el.style.transform=`translateX(${g.far*Math.sign(d)}%) translateZ(-560px) rotateY(${d>0?-52:52}deg)`;
+      el.style.opacity=0; el.style.zIndex=10; el.style.pointerEvents="none";
     }
   });
-  document.documentElement.style.setProperty("--acc",ECOSYSTEM[active].c);
-  document.getElementById("nowT").textContent=ECOSYSTEM[active].title[lang];
-  document.getElementById("stPrev").disabled=active===0;
-  document.getElementById("stNext").disabled=active===ECOSYSTEM.length-1;
-  rail.querySelectorAll(".rd").forEach((b,i)=>b.setAttribute("aria-current",String(i===active)));
-  document.getElementById("live").textContent=`${ECOSYSTEM[active].title[lang]} \u2014 active`;
-  cycle();
+  document.documentElement.style.setProperty("--acc",PETALS[active].c);
+  railBtns.forEach((b,i)=>b.setAttribute("aria-selected",String(i===active)));
+  document.getElementById("pbName").textContent=PETALS[active].n[lang];
+  document.getElementById("pbOf").textContent=(active+1)+" / 12";
+  document.getElementById("live").textContent=PETALS[active].n[lang];
+  const sc=document.getElementById("scue");
+  if(sc)sc.querySelector(".scT").textContent=T().readStory.replace("{n}",PETALS[active].n[lang]);
+  railBtns[active]&&railBtns[active].scrollIntoView({block:"nearest",inline:"center",behavior:reduced?"auto":"smooth"});
+  syncRail(); dwell();
+  history.replaceState(null,"","#p"+String(active+1).padStart(2,"0"));
+  renderStory(); cycle();
 }
-function go(i){
-  i=Math.max(0,Math.min(ECOSYSTEM.length-1,i));
-  if(i===active||busy)return;
-  busy=true; active=i; place();
-  setTimeout(()=>busy=false, reduced?80:560);
+function show(i,user){
+  i=(i+PETALS.length)%PETALS.length;
+  if(user)pauseAuto();
+  if(i===active)return; active=i; place();
 }
 
-/* scene cycler — active layer only */
+/* scene cycler — active card only */
 let sceneTimer=null;
+function paintScene(el,n){
+  const sc=[...el.querySelectorAll(".scene")], tb=[...el.querySelectorAll(".ct")];
+  sc.forEach((x,k)=>x.classList.toggle("on",k===n));
+  tb.forEach((x,k)=>{x.classList.toggle("on",k===n);x.setAttribute("aria-selected",String(k===n));});
+  const cap=el.querySelector(".capT");
+  if(cap&&sc[n]){const key=sc[n].dataset.k;cap.textContent=(SLAB[key]&&SLAB[key][lang])||cap.textContent;}
+}
 function cycle(){
   clearInterval(sceneTimer);
-  const el=layers[active], sc=[...el.querySelectorAll(".scene")], dt=[...el.querySelectorAll(".dots b")];
-  const cap=el.querySelector(".capT"); if(cap)cap.textContent=T().scenes[ECOSYSTEM[active].key];
+  const el=cards[active], sc=[...el.querySelectorAll(".scene")];
   if(sc.length<2)return;
+  if(tabHold&&Date.now()-tabHold<14000){
+    sceneTimer=setTimeout(cycle,14000-(Date.now()-tabHold)); return;
+  }
   let n=sc.findIndex(x=>x.classList.contains("on")); if(n<0)n=0;
   sceneTimer=setInterval(()=>{
-    sc[n].classList.remove("on"); dt[n]&&dt[n].classList.remove("on");
-    n=(n+1)%sc.length;
-    sc[n].classList.add("on"); dt[n]&&dt[n].classList.add("on");
-    if(cap){const k=sc[n].dataset.k;cap.textContent=T().scenes[k]||T().scenes[ECOSYSTEM[active].key];}
-  }, reduced?5200:3600);
+    if(tabHold&&Date.now()-tabHold<14000)return;
+    n=(n+1)%sc.length; paintScene(el,n);
+  },reduced?5200:3600);
 }
+/* tabs inside the card — tap to switch the scene yourself */
+let tabHold=0;
+track.addEventListener("click",e=>{
+  const b=e.target.closest(".ct"); if(!b)return;
+  e.preventDefault(); e.stopPropagation();
+  const card=b.closest(".card"), i=+card.dataset.i;
+  if(i!==active){show(i,true);return;}
+  tabHold=Date.now(); pauseAuto();
+  paintScene(card,+b.dataset.s);
+});
 
-/* =====================================================================
-   Input: wheel / touch / keys / clicks — one spatial system
-   ===================================================================== */
-let acc=0, cool=0;
-addEventListener("wheel",e=>{
-  const now=Date.now(); if(now<cool)return;
-  acc+=e.deltaY;
-  if(Math.abs(acc)>90){ go(active+(acc>0?1:-1)); acc=0; cool=now+720; }
-},{passive:true});
-let ty=null;
-addEventListener("touchstart",e=>ty=e.touches[0].clientY,{passive:true});
-addEventListener("touchend",e=>{
-  if(ty===null)return; const dy=ty-e.changedTouches[0].clientY; ty=null;
-  if(Math.abs(dy)>58) go(active+(dy>0?1:-1));
-},{passive:true});
+/* ============ motion: how it turns, and how it looks turning ============ */
+let dir=1, lastUser=0, storyVisible=false, autoTimer=null;
+let motion="auto", style3d="flow";
+try{motion=localStorage.getItem("exz-motion")||"auto";style3d=localStorage.getItem("exz-style")||"flow";}catch(e){}
+if(reduced)motion="off";
+const SPEED={auto:5200,drift:9000,off:0};
+const autoBtn=document.getElementById("autoBtn"), mwrap=document.getElementById("motionwrap"), mopts=document.getElementById("mopts");
+const autoOnNow=()=>motion!=="off"&&!reduced;
+function buildMopts(){
+  const t=T();
+  mopts.innerHTML=`<div class="mh">${t.motion}</div>`+
+    [["auto",t.mAuto],["drift",t.mDrift],["off",t.mOff]].map(m=>`<button data-m="${m[0]}" class="${motion===m[0]?"on":""}">${m[1]}</button>`).join("")+
+    `<div class="mh">${t.style}</div>`+
+    [["flow",t.sFlow],["wheel",t.sWheel],["deck",t.sDeck]].map(m=>`<button data-s="${m[0]}" class="${style3d===m[0]?"on":""}">${m[1]}</button>`).join("");
+}
+function paintAuto(){
+  const t=T();
+  autoBtn.classList.toggle("off",!autoOnNow());
+  autoBtn.querySelector("span").textContent=motion==="auto"?t.auto:(motion==="drift"?t.mDrift:t.autoOff);
+  syncRail();
+}
+function pauseAuto(){lastUser=Date.now();syncRail();}
+function syncRail(){
+  const holding=Date.now()-lastUser<12000;
+  rail.classList.toggle("off",!autoOnNow());
+  rail.classList.toggle("slow",motion==="drift");
+  rail.classList.toggle("paused",!autoOnNow()||holding||storyVisible||document.hidden);
+}
+function startAuto(){
+  clearInterval(autoTimer);
+  if(!autoOnNow())return;
+  autoTimer=setInterval(tickAuto,SPEED[motion]);
+}
+autoBtn.addEventListener("click",e=>{e.stopPropagation();
+  const open=mwrap.dataset.open==="true"; buildMopts();
+  mwrap.dataset.open=String(!open); autoBtn.setAttribute("aria-expanded",String(!open));});
+mopts.addEventListener("click",e=>{
+  e.stopPropagation();
+  const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.m){motion=b.dataset.m;try{localStorage.setItem("exz-motion",motion);}catch(err){}startAuto();}
+  if(b.dataset.s){style3d=b.dataset.s;try{localStorage.setItem("exz-style",style3d);}catch(err){}place();}
+  mopts.querySelectorAll("[data-m]").forEach(x=>x.classList.toggle("on",x.dataset.m===motion));
+  mopts.querySelectorAll("[data-s]").forEach(x=>x.classList.toggle("on",x.dataset.s===style3d));
+  paintAuto();
+});
+document.addEventListener("click",e=>{if(!e.target.closest("#motionwrap")){mwrap.dataset.open="false";autoBtn.setAttribute("aria-expanded","false");}});
+function tickAuto(){
+  if(!autoOnNow())return;
+  if(Date.now()-lastUser<12000){syncRail();return;}
+  if(storyVisible||document.hidden){syncRail();return;}
+  let n=active+dir;
+  if(n>=PETALS.length){dir=-1;n=active-1;}
+  if(n<0){dir=1;n=active+1;}
+  active=n; place();
+}
+setInterval(syncRail,1000);
+new IntersectionObserver(es=>es.forEach(x=>{storyVisible=x.isIntersecting;syncRail();}),{threshold:.25})
+  .observe(document.getElementById("story"));
+
+/* ============ input ============ */
+track.addEventListener("click",e=>{
+  const c=e.target.closest(".card"); if(!c)return;
+  if(+c.dataset.i!==active){e.preventDefault();show(+c.dataset.i,true);}
+});
+rail.addEventListener("click",e=>{const b=e.target.closest(".r9");if(b)show(+b.dataset.go,true);});
+document.getElementById("scue").addEventListener("click",()=>{
+  pauseAuto();
+  document.getElementById("story").scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
+});
+document.getElementById("stPrev").addEventListener("click",()=>show(active-1,true));
+document.getElementById("stNext").addEventListener("click",()=>show(active+1,true));
 addEventListener("keydown",e=>{
   if(e.target.matches("input,textarea"))return;
-  if(["ArrowDown","PageDown","ArrowRight"].includes(e.key)){e.preventDefault();go(active+1);}
-  else if(["ArrowUp","PageUp","ArrowLeft"].includes(e.key)){e.preventDefault();go(active-1);}
-  else if(e.key==="Home"){e.preventDefault();go(0);}
-  else if(e.key==="End"){e.preventDefault();go(ECOSYSTEM.length-1);}
+  if(e.key==="ArrowRight"){show(active+1,true);}
+  else if(e.key==="ArrowLeft"){show(active-1,true);}
+  else if(e.key==="Escape"){pw.dataset.open="false";pb.setAttribute("aria-expanded","false");buddy.dataset.open="false";}
 });
-document.addEventListener("click",e=>{
-  const g=e.target.closest("[data-go]"); if(g){go(+g.dataset.go);return;}
-  const behind=e.target.closest('.layer[data-pos="behind"]'); if(behind){go(+behind.dataset.i);return;}
-});
-document.getElementById("stPrev").addEventListener("click",()=>go(active-1));
-document.getElementById("stNext").addEventListener("click",()=>go(active+1));
+let ds=null;
+const maze=document.getElementById("maze");
+maze.addEventListener("pointerdown",e=>{if(e.target.closest(".ct")){ds=null;return;}ds={x:e.clientX,y:e.clientY};},{passive:true});
+maze.addEventListener("pointerup",e=>{
+  if(!ds)return;
+  const dx=ds.x-e.clientX, dy=ds.y-e.clientY; ds=null;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3) show(active+(dx>0?1:-1),true);
+},{passive:true});
 
-/* Enter = entering a world */
+/* Enter = zoom through the door */
 document.addEventListener("click",e=>{
-  const a=e.target.closest("[data-route]"); if(!a)return;
+  const a=e.target.closest(".go"); if(!a)return;
   if(reduced)return;
   e.preventDefault();
-  const el=layers[active];
+  const el=cards[active];
   el.style.transition="transform .5s var(--ease),opacity .5s var(--ease),filter .5s var(--ease)";
-  el.style.transform="translateX(-50%) translateY(6svh) scale(1.1)";
+  el.style.transform="translateX(0) translateZ(240px)";
   el.style.opacity=0; el.style.filter="blur(10px)";
   setTimeout(()=>location.href=a.href,430);
 });
 
-/* =====================================================================
-   ThemeToggle · LanguageSelector (in-session state only)
-   ===================================================================== */
+/* ============ scroll: header + star parallax + reveals ============ */
+const hdr=document.getElementById("hdr"), bigstar=document.getElementById("bigstar");
+addEventListener("scroll",()=>{
+  hdr.classList.toggle("scrolled",scrollY>10);
+  if(!reduced)bigstar.style.transform=`translate(-50%,-50%) translateY(${scrollY*.06}px)`;
+},{passive:true});
+let io=null;
+function hookReveals(){
+  if(io)io.disconnect();
+  io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target);}}),{threshold:.15});
+  document.querySelectorAll(".rev:not(.in)").forEach(el=>io.observe(el));
+}
+
+/* ============ petal dropdown ============ */
+const pw=document.getElementById("pw"),pb=document.getElementById("pb");
+pb.addEventListener("click",e=>{e.stopPropagation();
+  const open=pw.dataset.open==="true";
+  buildMenu();
+  pw.dataset.open=String(!open);pb.setAttribute("aria-expanded",String(!open));});
+document.getElementById("pmenu").addEventListener("click",e=>{
+  const m=e.target.closest(".mi"); if(!m)return;
+  show(+m.dataset.go,true);
+  pw.dataset.open="false";pb.setAttribute("aria-expanded","false");
+  scrollTo({top:0,behavior:reduced?"auto":"smooth"});
+});
+document.addEventListener("click",e=>{if(!e.target.closest(".petalwrap")){pw.dataset.open="false";pb.setAttribute("aria-expanded","false");}});
+
+/* buddy */
+const buddy=document.getElementById("buddy"),borb=document.getElementById("borb");
+borb.addEventListener("click",()=>{
+  const open=buddy.dataset.open==="true";
+  buddy.dataset.open=String(!open);borb.setAttribute("aria-expanded",String(!open));});
+
+/* ============ theme + language ============ */
 const uTheme=document.getElementById("uTheme");
 function applyTheme(){
   document.documentElement.dataset.theme=theme;
-  uTheme.innerHTML=(theme==="dark"?"\u263D":"\u2600")+`<span>${theme==="dark"?(lang==="de"?"Hell":"Light"):(lang==="de"?"Dunkel":"Dark")}</span>`;
+  uTheme.innerHTML=(theme==="dark"?"\u263D":"\u2600")+`<span class="lbl">${theme==="dark"?(lang==="de"?"Hell":"Light"):(lang==="de"?"Dunkel":"Dark")}</span>`;
   uTheme.setAttribute("aria-label",theme==="dark"?"Switch to light mode":"Switch to dark mode");
 }
 uTheme.addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";applyTheme();});
@@ -536,22 +1062,98 @@ function applyLang(){
   document.documentElement.lang=lang;
   uLang.innerHTML=`<span>${lang.toUpperCase()}</span>`;
   uLang.setAttribute("aria-label",lang==="en"?"Sprache: Deutsch":"Language: English");
-  document.querySelectorAll("[data-i18n]").forEach(n=>{const k=n.dataset.i18n;if(T()[k])n.textContent=T()[k];});
-  layers.forEach((el,i)=>{
-    if(i===0)return;
-    el.querySelector(".l-title").textContent=ECOSYSTEM[i].title[lang];
-    el.querySelector(".ident").textContent=ECOSYSTEM[i].ident[lang];
+  document.querySelectorAll("[data-i18n]").forEach(n=>{const k=n.dataset.i18n;if(T()[k]!==undefined)n.textContent=T()[k];});
+  cards.forEach((c,i)=>{
+    c.querySelector("h2").textContent=PETALS[i].n[lang];
+    c.querySelector(".ident").textContent=PETALS[i].ident[lang];
+    c.querySelector(".goT").textContent=T().doors[doorOf(PETALS[i].key).k];
+    c.querySelector(".cstT").textContent=stFull(PETALS[i].key);
+    c.querySelector(".pnT").textContent=T().point+" "+String(i+1).padStart(2,"0")+" / 12";
+    c.querySelector(".capT").textContent=PETALS[i].n[lang];
+    c.querySelectorAll(".ctT").forEach(t=>{const k=t.dataset.k;if(SLAB[k])t.textContent=SLAB[k][lang];});
   });
-  document.querySelectorAll("[data-hot]").forEach(a=>{
-    a.querySelector("span:not(.ar)").textContent=HOT[+a.dataset.hot].t[lang];
-  });
-  applyTheme(); place();
+  railBtns.forEach((b,i)=>{b.querySelector(".r9t").textContent=PETALS[i].n[lang];
+    b.querySelector(".r9s").textContent=stTag(PETALS[i].key);});
+  buildMopts(); ptPaint(); if(ptmodal.dataset.open==="true")buildPtBody();
+  paintAuto(); applyTheme(); place();
 }
 uLang.addEventListener("click",()=>{lang=lang==="en"?"de":"en";applyLang();});
 
-document.getElementById("uProfile").addEventListener("click",()=>location.href="/student-dashboard");
+/* ============ Petal Points ============ */
+const PTK={n:"exz-points",log:"exz-pts-log",day:"exz-pts-day"};
+const ptmodal=document.getElementById("ptmodal");
+function ptGet(){try{return +(localStorage.getItem(PTK.n)||0)||0;}catch(e){return 0;}}
+function ptLog(){try{return JSON.parse(localStorage.getItem(PTK.log)||"[]");}catch(e){return [];}}
+function ptSave(n,log){try{localStorage.setItem(PTK.n,String(n));localStorage.setItem(PTK.log,JSON.stringify(log));}catch(e){}}
+function ptPaint(){const b=document.querySelector("#ptsBtn b");if(b)b.textContent=ptGet();}
+let toastT=null;
+function ptToast(n,msg){
+  const el=document.getElementById("ptoast");
+  document.getElementById("ptoastN").textContent="+"+n;
+  document.getElementById("ptoastT").textContent=msg;
+  el.classList.add("on"); clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove("on"),3800);
+  const chip=document.getElementById("ptsBtn");
+  if(chip){chip.classList.remove("pop");void chip.offsetWidth;chip.classList.add("pop");}
+}
+function ptAward(id,n,msg){
+  const log=ptLog(); if(log.indexOf(id)>-1)return false;
+  log.push(id); ptSave(ptGet()+n,log); ptPaint(); ptToast(n,msg); return true;
+}
+function ptCheckin(){
+  const today=new Date().toISOString().slice(0,10);
+  let last=null; try{last=localStorage.getItem(PTK.day);}catch(e){}
+  if(last===today)return;
+  try{localStorage.setItem(PTK.day,today);}catch(e){}
+  ptSave(ptGet()+10,ptLog()); ptPaint(); ptToast(10,T().pt.checkin);
+}
+let dwellT=null;
+function dwell(){
+  clearTimeout(dwellT);
+  const k=PETALS[active].key, nm=PETALS[active].n[lang];
+  dwellT=setTimeout(()=>{
+    if(ptAward("petal:"+k,5,T().pt.petal.replace("{n}",nm))){
+      const seen=ptLog().filter(x=>x.indexOf("petal:")===0).length;
+      if(seen>=PETALS.length)setTimeout(()=>ptAward("bloom",50,T().pt.bloom),1400);
+    }
+  },2600);
+}
+function buildPtBody(){
+  const t=T().pt, log=ptLog(), seen=log.filter(x=>x.indexOf("petal:")===0).length;
+  document.getElementById("ptBody").innerHTML=`
+    <h3>${t.title}</h3>
+    <p>${t.lead}</p>
+    <div class="ptrow"><b>+20</b>${t.r1}</div>
+    <div class="ptrow"><b>+10</b>${t.r2}</div>
+    <div class="ptrow"><b>+5</b>${t.r3} <span style="margin-left:auto;color:var(--dim)">${seen} / 12</span></div>
+    <div class="ptrow"><b>+50</b>${t.r4}</div>
+    <p style="margin-top:16px">${t.use}</p>
+    <div class="ptnote">${t.note}</div>
+    <div class="ptactions">
+      <a class="go" style="--c:var(--acc)" href="/signup"><span>${t.signup}</span><span class="ar">\u2192</span></a>
+      <span class="story-link" style="pointer-events:none">${t.have} <b style="color:var(--goldT);margin-left:6px">${ptGet()}</b></span>
+    </div>`;
+}
+function ptOpen(){buildPtBody();ptmodal.dataset.open="true";}
+function ptClose(){ptmodal.dataset.open="false";}
+document.getElementById("ptsBtn").addEventListener("click",ptOpen);
+document.getElementById("ptsLink").addEventListener("click",ptOpen);
+document.getElementById("ptClose").addEventListener("click",ptClose);
+ptmodal.addEventListener("click",e=>{if(e.target===ptmodal)ptClose();});
+addEventListener("keydown",e=>{if(e.key==="Escape")ptClose();});
+function ptBoot(){
+  ptPaint();
+  setTimeout(()=>{ if(!ptAward("welcome",20,T().pt.welcome)) ptCheckin(); else setTimeout(ptCheckin,4200); },900);
+}
 
-place();
+/* deep link #p01..#p12 */
+const h=location.hash.match(/^#p(\d{1,2})$/);
+if(h){const k=+h[1]-1;if(k>=0&&k<PETALS.length)active=k;}
+let rz=null;
+addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(place,120);});
+addEventListener("orientationchange",()=>setTimeout(place,220));
+mqM.addEventListener&&mqM.addEventListener("change",()=>place());
+buildMopts(); paintAuto(); startAuto(); place(); hookReveals(); ptBoot();
 </script>
 </body>
 </html>
