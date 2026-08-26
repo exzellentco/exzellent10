@@ -691,6 +691,50 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line)}
 .le .dm-dot{width:8px;height:8px;border-radius:50%;background:var(--greenL);box-shadow:0 0 8px var(--greenL);flex:none}
 @media(max-width:560px){.le .dash-mock{padding:16px;gap:10px}
 .le .dm-tile .dm-v{font-size:1.25rem}}
+
+/* ===== blend the ported (dark) region into the new design =================
+   The ported sections were built for a near-black page, so where they met the
+   new design there was a hard light-to-black edge.
+
+   Rather than painting a flat colour over the join (which reads as grey fog,
+   because the visible backdrop there is tinted, not flat --bg), the ported
+   region's own dark background starts fully transparent and fades in. The real
+   page backdrop shows through the join, so the two blend with no seam - and it
+   works in both light and dark mode without knowing either palette. */
+.le{
+  padding-top:170px;
+  padding-bottom:190px;
+  background:linear-gradient(to bottom,
+      rgba(5,6,11,0)   0,
+      rgba(5,6,11,1)   240px,
+      rgba(5,6,11,1)   calc(100% - 260px),
+      rgba(5,6,11,0)   100%) !important;
+}
+
+/* the ambience (petals, auras, vignette, grain) has to fade with it, or it
+   paints a hard rectangle across the join */
+.le #petals,.le .aura,.le .vignette,.le .grain{
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 260px, #000 calc(100% - 280px), transparent 100%);
+          mask-image:linear-gradient(to bottom, transparent 0, #000 260px, #000 calc(100% - 280px), transparent 100%);
+}
+
+/* keep real content above the fade */
+.le .pane,.le .le-controls{ position:relative; z-index:2; }
+footer{ position:relative; z-index:2; }
+
+
+/* ===== fix: the Exzi buddy swallowed taps across a 320x251 area ===========
+   .bpanel keeps its layout box when closed (visibility:hidden, not display:none),
+   so the .buddy flex container stays ~320x251 even though only the 70x70 orb is
+   visible. The container is transparent but still hit-testable, so it silently
+   ate clicks on anything underneath it. On a 390px phone that is 82% of the
+   screen width, which is why "Enter" on the Learning Ecosystem petal did nothing
+   on mobile but worked on desktop.
+   The container is now click-through; only the real controls take pointer events. */
+.buddy{ pointer-events:none; }
+.buddy .borb,
+.buddy .bpanel{ pointer-events:auto; }
+
 </style>
 </head>
 <body>

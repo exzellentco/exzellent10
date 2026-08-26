@@ -33,3 +33,6 @@ mock-backend/data.json
 
 # Claude Code tooling
 .claude/
+
+# Local safety copies made before edits (not part of the site)
+*.backup-*

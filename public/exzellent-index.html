@@ -453,6 +453,19 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);margin-top:7
 .ptx{position:absolute;right:14px;top:14px}
 @media(max-width:560px){.ptoast{left:12px;right:12px;bottom:92px}.ptoast span{max-width:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ===== fix: the Exzi buddy swallowed taps across a 320x251 area ===========
+   .bpanel keeps its layout box when closed (visibility:hidden, not display:none),
+   so the .buddy flex container stays ~320x251 even though only the 70x70 orb is
+   visible. The container is transparent but still hit-testable, so it silently
+   ate clicks on anything underneath it. On a 390px phone that is 82% of the
+   screen width, which is why "Enter" on the Learning Ecosystem petal did nothing
+   on mobile but worked on desktop.
+   The container is now click-through; only the real controls take pointer events. */
+.buddy{ pointer-events:none; }
+.buddy .borb,
+.buddy .bpanel{ pointer-events:auto; }
+
 </style>
 </head>
 <body>
