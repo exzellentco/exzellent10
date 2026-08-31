@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiUrl } from "../../APIs/apiBase";
 import { bookLesson } from "../../APIs/learning";
 
 /*
@@ -24,7 +25,10 @@ const BookLessonModal = ({ onClose, onBooked }) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/teachers");
+        // /api/teachers requires a token, so an anonymous visitor got a 401 (and a
+        // bare relative path went to the frontend host and 404'd). The public,
+        // approved-only teacher list lives at /api/calendar/providers.
+        const res = await fetch(apiUrl("/api/calendar/providers"));
         const data = await res.json().catch(() => ({}));
         const list = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
         setTeachers(list);

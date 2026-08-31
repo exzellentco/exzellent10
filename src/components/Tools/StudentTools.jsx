@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { apiUrl } from "../../APIs/apiBase";
 import { Calendar, BrainCircuit, PersonStanding, Group, TestTubeDiagonal, Blocks } from "lucide-react";
 import CalendarPopup from "./CalendarPopup";
 import ToolModal from "./ToolModal";
@@ -39,7 +40,10 @@ const StudentTools = ({ onOpenAiTools, events = [] }) => {
   useEffect(() => {
     if (open !== "teachers" || teachers.length) return;
     setTeachersLoading(true);
-    fetch("/api/teachers")
+    // /api/teachers requires a token, so an anonymous visitor got a 401 (and a
+    // bare relative path went to the frontend host and 404'd). The public,
+    // approved-only teacher list lives at /api/calendar/providers.
+    fetch(apiUrl("/api/calendar/providers"))
       .then((r) => r.json())
       .then((d) => setTeachers(Array.isArray(d.data) ? d.data : []))
       .catch(() => setTeachers([]))

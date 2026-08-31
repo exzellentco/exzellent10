@@ -1,9 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const NotFound = () => {
 
 const navigate = useNavigate();
+
+// The host rewrites every unknown path to index.html, so a missing page still
+// answers 200 and search engines record it as a "soft 404". A real 404 status
+// is not available to a static SPA, so tell crawlers not to index this page
+// and give it an honest title.
+useEffect(() => {
+  const prevTitle = document.title;
+  document.title = "Page not found | Exzellent";
+  let tag = document.querySelector('meta[name="robots"]');
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("name", "robots");
+    document.head.appendChild(tag);
+  }
+  const prevRobots = tag.getAttribute("content");
+  tag.setAttribute("content", "noindex, nofollow");
+  return () => {
+    document.title = prevTitle;
+    if (prevRobots) tag.setAttribute("content", prevRobots);
+  };
+}, []);
 
 return (
 <div className="flex flex-col place-self-center bg-bg w-full py-28 text-center">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../APIs/apiBase";
 import { Link } from "react-router-dom";
 import { getSlots } from "../APIs/calendar";
 import { bookLesson } from "../APIs/learning";
@@ -163,7 +164,10 @@ const BookClass = () => {
       try {
         setTeachersLoading(true);
         setTeachersError("");
-        const res = await fetch("/api/teachers");
+        // /api/teachers requires a token, so an anonymous visitor got a 401 (and a
+        // bare relative path went to the frontend host and 404'd). The public,
+        // approved-only teacher list lives at /api/calendar/providers.
+        const res = await fetch(apiUrl("/api/calendar/providers"));
         const data = await res.json();
         const list = data.data || data;
         if (!alive) return;

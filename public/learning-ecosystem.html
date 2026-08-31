@@ -2039,7 +2039,10 @@ const EXZI_TRANSCRIBE_URL = EXZI_API + '/api/ai/transcribe';
   let items=[], N=0, step=0, R=460, rot=0, vel=0, hover=false, dragging=false, dragged=false, lastX=0, raf=0;
   const IDLE=0.045;
 
-  fetch('/api/teachers').then(r=>r.json()).then(j=>{
+  // This is a static page on the frontend host, so a relative /api path never
+  // reaches the backend. /api/teachers also needs a token; the public,
+  // approved-only list is /api/calendar/providers.
+  fetch(EXZI_API + '/api/calendar/providers').then(r=>r.json()).then(j=>{
     const real=(((j&&j.data)||j)||[]).map(t=>({
       name:t.name,
       sub:((t.taughtLanguages||t.subjects||[])[0])||(t.academicDegrees&&t.academicDegrees[0])||'Language teacher',
