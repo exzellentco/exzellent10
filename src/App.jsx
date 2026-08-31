@@ -22,6 +22,7 @@ import ForgotPassword from "./pages/Login&Signup/ForgotPassword";
 import Footer from "./components/Footer";
 import NotFound from "./pages/Errors/NotFound";
 import axios from "./utils/axios";
+import applyPageMeta from "./utils/pageMeta";
 import PaymentSuccess from "./pages/Payment/PaymentSuccess";
 import PaymentFailure from "./pages/Payment/PaymentFailure";
 import TermsAndConditions from "./pages/Legal/t&c";
@@ -64,6 +65,10 @@ const App = () => {
   useEffect(() => {
     if (appContainerRef.current) appContainerRef.current.scrollTo({top: 0, behavior: "smooth"});
     window.scrollTo({top: 0, behavior: "smooth"});
+    // Every route is served the same index.html, so without this each page
+    // would share one title and description and the search sitelinks all show
+    // the same snippet.
+    applyPageMeta(location.pathname);
   }, [location.pathname]);
 
   const getToken = () => {
