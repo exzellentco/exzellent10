@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EXZELLENT — Learning Ecosystem</title>
+<meta name="description" content="The Learning Ecosystem — one of the twelve petals of Exzellent. Three labs, real tutors, and Exzi, your hands-free AI companion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   EXZELLENT · index — the Learning Ecosystem landing
+   Minimal writing. The wordmark carries "Learning Ecosystem", one of
+   the twelve petals, with the full petal list one click away.
+   ===================================================================== */
+:root{
+  --bg:#04050A; --surface:rgba(15,18,32,.82); --solid:#0F1220;
+  --line:rgba(148,163,215,.16); --line2:rgba(148,163,215,.3);
+  --text:#EEF1FB; --muted:#9AA3C2; --dim:#6E7796;
+  --violet:#8A4BF5; --vio2:#A78BFA; --lav:#C9AAFF;
+  --green:#3DF0A0; --gold:#F0C442; --orange:#FF7A29; --cyan:#67E8F9;
+  --grad:linear-gradient(100deg,var(--violet),var(--lav));
+  --acc:138,75,245; --ink:#07040F;
+  --ease:cubic-bezier(.22,.9,.24,1);
+  --logo-url:url("data:image/png;base64,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");
+}
+[data-theme="light"]{
+  --bg:#F2F3FA; --surface:rgba(255,255,255,.88); --solid:#FFFFFF;
+  --line:rgba(21,27,63,.12); --line2:rgba(21,27,63,.26);
+  --text:#0B0E1E; --muted:#454E71; --dim:#7A82A3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 15px/1.6 Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;transition:background .6s,color .6s;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid rgb(var(--acc));outline-offset:3px;border-radius:10px}
+::selection{background:rgba(var(--acc),.35)}
+.wrap{width:min(1220px,94vw);margin-inline:auto}
+
+.atmos{position:fixed;inset:0;pointer-events:none;z-index:0}
+.atmos i{position:absolute;border-radius:50%;filter:blur(90px)}
+.atmos i:nth-child(1){width:58vmax;height:58vmax;left:-16vmax;top:-22vmax;background:rgba(var(--acc),.14)}
+.atmos i:nth-child(2){width:46vmax;height:46vmax;right:-14vmax;bottom:-18vmax;background:rgba(var(--acc),.08)}
+.bigstar{position:fixed;left:50%;top:54%;transform:translate(-50%,-50%);z-index:0;pointer-events:none;
+  width:min(84vmin,900px);aspect-ratio:240/159;background-image:var(--logo-url);
+  background-size:contain;background-position:center;background-repeat:no-repeat;opacity:.045}
+[data-theme="light"] .bigstar{opacity:.06}
+
+/* ================= header ================= */
+.hdr{position:fixed;inset:0 0 auto 0;z-index:70;background:transparent;border-bottom:1px solid transparent;transition:background .35s,border-color .35s}
+.hdr.scrolled{background:rgba(4,5,10,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+[data-theme="light"] .hdr.scrolled{background:rgba(242,243,250,.9)}
+.h1r{height:60px;display:flex;align-items:center;gap:10px;width:min(1240px,94vw);margin-inline:auto}
+.brand{display:flex;align-items:center;gap:10px;font:700 13px/1 "Space Grotesk",sans-serif;letter-spacing:.16em}
+.mark{width:34px;height:24px;background-image:var(--logo-url);background-size:contain;
+  background-position:center;background-repeat:no-repeat;filter:drop-shadow(0 0 10px rgba(var(--acc),.55))}
+/* the petal label — right where the wordmark ends */
+.petalwrap{position:relative;margin-left:6px}
+.petalbtn{display:inline-flex;align-items:center;gap:8px;padding:.55em .9em;border-radius:999px;
+  border:1px solid rgba(var(--acc),.4);background:rgba(var(--acc),.10);
+  font:600 12px/1 Inter,sans-serif;letter-spacing:.08em;color:var(--text);transition:border-color .25s,background .25s}
+.petalbtn:hover,.petalbtn[aria-expanded="true"]{border-color:rgb(var(--acc));background:rgba(var(--acc),.16)}
+.petalbtn .car{font-size:8px;color:var(--vio2);transition:transform .25s var(--ease)}
+.petalbtn[aria-expanded="true"] .car{transform:rotate(180deg)}
+.petalbtn small{font:600 9px/1 Inter,sans-serif;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.pmenu{position:absolute;left:0;top:calc(100% + 10px);min-width:320px;border-radius:16px;border:1px solid var(--line);
+  background:rgba(10,12,22,.97);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 26px 70px rgba(0,0,0,.55);padding:12px;opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .3s var(--ease),transform .3s var(--ease),visibility 0s .3s;max-height:min(70svh,560px);overflow-y:auto}
+[data-theme="light"] .pmenu{background:rgba(255,255,255,.98);box-shadow:0 26px 60px rgba(30,35,80,.2)}
+.petalwrap[data-open="true"] .pmenu{opacity:1;visibility:visible;transform:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.pmenu .mh{font:600 9.5px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:6px 8px 8px}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font:600 13px/1.2 Inter,sans-serif;color:var(--muted);transition:background .2s,color .2s}
+.mi:hover{background:rgba(148,163,215,.08);color:var(--text)}
+.mi i{font-style:normal;font:700 10px/1 "Space Grotesk",sans-serif;color:rgb(var(--mc));width:18px;flex:none}
+.mi b{width:6px;height:6px;border-radius:50%;background:rgb(var(--mc));box-shadow:0 0 8px rgba(var(--mc),.8);flex:none}
+.mi small{margin-left:auto;font:500 10px/1 Inter,sans-serif;color:var(--dim)}
+.hright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.rolet{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.rolet a{padding:.5em .95em;border-radius:999px;font:600 12px/1 Inter,sans-serif;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.rolet a.on{background:linear-gradient(100deg,rgb(var(--acc)),var(--lav));color:var(--ink)}
+.rolet a i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
+.u-btn{height:34px;min-width:34px;padding:0 10px;border-radius:10px;border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;color:var(--muted);
+  font:500 12.5px/1 Inter,sans-serif;background:var(--surface);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:color .25s,border-color .25s}
+.u-btn:hover{color:var(--text);border-color:var(--line2)}
+.a-in{padding:.6em 1em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--muted)}
+.a-in:hover{color:var(--text)}
+.a-start{padding:.66em 1.15em;border-radius:999px;font:600 13px/1 Inter,sans-serif;color:var(--ink);
+  background:linear-gradient(100deg,rgb(var(--acc)),var(--lav));box-shadow:0 6px 22px rgba(var(--acc),.35);
+  transition:transform .25s var(--ease),box-shadow .25s;white-space:nowrap}
+.a-start:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(var(--acc),.5)}
+.burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+/* second row nav */
+.h2r{height:46px;border-top:1px solid var(--line);display:none}
+.hdr.scrolled .h2r,.h2r{background:transparent}
+.h2r .in2{display:flex;align-items:center;gap:24px;width:min(1240px,94vw);margin-inline:auto;height:100%;
+  overflow-x:auto;scrollbar-width:none}
+.h2r .in2::-webkit-scrollbar{display:none}
+.h2r a{font:600 13px/1 Inter,sans-serif;color:var(--muted);white-space:nowrap;position:relative;padding:14px 0}
+.h2r a:hover{color:var(--text)}
+.h2r a.on{color:var(--text)}
+.h2r a.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:var(--grad)}
+@media(min-width:961px){.h2r{display:block}}
+@media(max-width:960px){
+  .rolet,.a-in{display:none}
+  .u-btn .lbl{display:none}
+  .burger{display:grid;place-items:center}
+  .petalbtn small{display:none}
+}
+/* mobile sheet */
+.msheet{position:fixed;inset:0;z-index:80;background:rgba(4,5,10,.6);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.msheet[data-open="true"]{opacity:1;visibility:visible;transition:opacity .3s}
+.msheet .pane{position:absolute;right:0;top:0;bottom:0;width:min(360px,88vw);background:var(--bg);
+  border-left:1px solid var(--line);padding:18px 16px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;
+  transform:translateX(30px);transition:transform .35s var(--ease)}
+.msheet[data-open="true"] .pane{transform:none}
+.msheet .close{position:absolute;right:14px;top:14px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line)}
+.msheet .mh{font:600 10px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:16px 4px 8px}
+
+/* ================= hero — less writing ================= */
+.hero{position:relative;z-index:2;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:26px;padding:calc(60px + 46px + 20px) 0 96px;text-align:center}
+.hero h1{font:700 clamp(46px,8.4vw,104px)/1.02 "Space Grotesk",sans-serif;letter-spacing:-.03em}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--lav),var(--orange) 70%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.explore{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.explore .e{font:600 10.5px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.lp{display:inline-flex;align-items:center;gap:.6em;padding:.85em 1.3em;border-radius:999px;
+  border:1px solid rgba(var(--lc),.5);background:rgba(var(--lc),.07);
+  font:600 14px/1 Inter,sans-serif;color:var(--text);transition:transform .25s var(--ease),box-shadow .25s,background .25s}
+.lp .ar{color:rgb(var(--lc));transition:transform .25s var(--ease)}
+.lp:hover{transform:translateY(-2px);background:rgba(var(--lc),.13);box-shadow:0 10px 26px rgba(var(--lc),.18)}
+.lp:hover .ar{transform:translateX(4px)}
+/* Exzi bar */
+.exziblock{width:min(720px,92vw);display:flex;flex-direction:column;gap:10px;align-items:center}
+.exlab{font:600 10.5px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:8px}
+.exlab i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:blip 2.2s ease-in-out infinite}
+@keyframes blip{50%{box-shadow:0 0 18px var(--green)}}
+.askbar{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:18px;
+  border:1px solid rgba(103,232,249,.35);background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 14px 44px rgba(103,232,249,.10);transition:border-color .25s,box-shadow .25s}
+.askbar:hover{border-color:rgba(103,232,249,.6);box-shadow:0 16px 50px rgba(103,232,249,.16)}
+.askbar .face{width:38px;height:38px;border-radius:12px;background:rgba(var(--acc),.16);display:grid;place-items:center;flex:none}
+.askbar .face b{width:22px;height:16px;background-image:var(--logo-url);background-size:contain;background-position:center;background-repeat:no-repeat}
+.askbar .ph{flex:1;text-align:left;font:500 14.5px/1.3 Inter,sans-serif;color:var(--dim);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iconb{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);flex:none;transition:color .25s,border-color .25s,background .25s}
+.iconb:hover{color:var(--text);border-color:var(--line2)}
+.iconb.send{background:linear-gradient(100deg,rgb(var(--acc)),var(--lav));color:var(--ink);border:none}
+.iconb svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.exnote{font:500 12px/1.4 Inter,sans-serif;color:var(--dim)}
+.exnote b{color:var(--muted);font-weight:600}
+/* CTAs + live line */
+.ctarow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.cta{display:inline-flex;align-items:center;gap:.65em;padding:.98em 1.55em;border-radius:15px;
+  font:600 15px/1 Inter,sans-serif;color:var(--ink);background:linear-gradient(100deg,var(--violet),var(--lav));
+  box-shadow:0 14px 40px rgba(138,75,245,.35);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.cta:hover{transform:translateY(-2px);box-shadow:0 18px 55px rgba(138,75,245,.5)}
+.cta .ar{transition:transform .3s var(--ease)}
+.cta:hover .ar{transform:translateX(5px)}
+.ghostb{display:inline-flex;align-items:center;gap:.6em;padding:.95em 1.45em;border-radius:15px;
+  font:600 14.5px/1 Inter,sans-serif;color:var(--muted);border:1px solid var(--line);background:var(--surface)}
+.ghostb:hover{color:var(--text);border-color:var(--line2)}
+.liveline{display:flex;align-items:center;gap:18px;font:500 13px/1 Inter,sans-serif;color:var(--muted);flex-wrap:wrap;justify-content:center}
+.liveline .g{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.liveline b{font:600 13px/1 "Space Grotesk",sans-serif;color:var(--dim);letter-spacing:.06em}
+
+/* ================= labs strip (kept minimal) ================= */
+.labsec{position:relative;z-index:2;padding:10px 0 90px}
+.labs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.lab{border-radius:18px;border:1px solid rgba(var(--lc),.32);
+  background:linear-gradient(160deg,rgba(var(--lc),.12),var(--surface) 58%);padding:22px 20px;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.lab:hover{transform:translateY(-4px);box-shadow:0 16px 44px rgba(var(--lc),.16)}
+.lab .e{font:600 10px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgb(var(--lc))}
+.lab h3{font:700 17px/1.25 "Space Grotesk",sans-serif;margin:10px 0 12px}
+.lab .m{font:600 12.5px/1 Inter,sans-serif;color:rgb(var(--lc))}
+@media(max-width:860px){.labs{grid-template-columns:1fr}}
+footer{position:relative;z-index:2;border-top:1px solid var(--line)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:22px 0 calc(22px + env(safe-area-inset-bottom));color:var(--dim);font-size:13px}
+
+/* ================= Exzi buddy (floating, on the side) ================= */
+.buddy{position:fixed;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:75;
+  display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.borb{position:relative;width:56px;height:56px;border-radius:50%;border:1px solid rgba(103,232,249,.5);
+  background:radial-gradient(120% 120% at 30% 20%,rgba(138,75,245,.35),var(--solid) 70%);
+  display:grid;place-items:center;box-shadow:0 12px 34px rgba(103,232,249,.22);transition:transform .3s var(--ease)}
+.borb:hover{transform:translateY(-2px)}
+.borb b{width:26px;height:18px;background-image:var(--logo-url);background-size:contain;background-position:center;background-repeat:no-repeat}
+.borb::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(103,232,249,.4);animation:ring 2.6s ease-out infinite}
+@keyframes ring{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.35);opacity:0}}
+.borb i{position:absolute;right:2px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.bpanel{width:min(320px,86vw);border-radius:18px;border:1px solid rgba(103,232,249,.35);
+  background:rgba(10,12,22,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 26px 70px rgba(0,0,0,.55);padding:14px;
+  opacity:0;visibility:hidden;transform:translateY(10px);transition:all .35s var(--ease)}
+[data-theme="light"] .bpanel{background:rgba(255,255,255,.98)}
+.buddy[data-open="true"] .bpanel{opacity:1;visibility:visible;transform:none}
+.bpanel .bh{display:flex;align-items:center;gap:8px;font:600 10px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+.bpanel .bh i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.bpanel .ask2{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:13px;border:1px solid var(--line);background:var(--surface);margin-bottom:9px}
+.bpanel .ask2 .ph{flex:1;font:500 12.5px/1.3 Inter,sans-serif;color:var(--dim);text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bpanel .row{display:flex;gap:8px}
+.bpanel .iconb{flex:1;height:38px}
+.bpanel .note2{margin-top:9px;font:500 10.5px/1.45 Inter,sans-serif;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .borb::after,.exlab i{animation:none}
+  .cta:hover,.lp:hover,.lab:hover,.a-start:hover,.borb:hover{transform:none}
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+
+<div class="atmos" aria-hidden="true"><i></i><i></i></div>
+<div class="bigstar" aria-hidden="true"></div>
+
+<!-- ================= header ================= -->
+<header class="hdr" id="hdr">
+  <div class="h1r">
+    <a class="brand" href="index.html" aria-label="EXZELLENT"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
+    <div class="petalwrap" id="pw">
+      <button class="petalbtn" id="pb" aria-expanded="false" aria-haspopup="true">
+        <span data-i18n="petal">Learning Ecosystem</span><small data-i18n="petalOf">1 / 12 petals</small><span class="car">&#9660;</span>
+      </button>
+      <div class="pmenu" role="menu" aria-label="The twelve petals" id="pmenu"></div>
+    </div>
+    <div class="hright">
+      <span class="rolet" aria-label="Role">
+        <a class="on" href="students.html"><i></i><span data-i18n="rStudent">Student</span></a>
+        <a href="learning-ecosystem.html"><i></i><span data-i18n="rTeacher">Teacher</span></a>
+      </span>
+      <button class="u-btn" id="uTheme" aria-label="Switch to light mode">&#9789;<span class="lbl" data-i18n="theme">Light</span></button>
+      <button class="u-btn" id="uLang" aria-label="Sprache: Deutsch"><span>EN</span></button>
+      <a class="a-in" href="learning-ecosystem.html" data-i18n="login">Log in</a>
+      <a class="a-start" href="learning-ecosystem.html" data-i18n="start">Start free</a>
+      <button class="burger" id="burger" aria-label="Menu">&#9776;</button>
+    </div>
+  </div>
+  <nav class="h2r" aria-label="Sections">
+    <div class="in2">
+      <a class="on" href="students.html" data-i18n="nDash">Dashboard</a>
+      <a href="language.html" data-i18n="nLabs">Labs</a>
+      <a href="language.html" data-i18n="nTutors">Tutors</a>
+      <a href="learning-ecosystem.html" data-i18n="nTeachers">Teachers</a>
+      <a href="students.html" data-i18n="nStudents">Students</a>
+      <a href="business.html" data-i18n="nPartners">Partners</a>
+      <a href="expats.html" data-i18n="nJobs">Jobs</a>
+      <a href="community.html" data-i18n="nEvents">Events</a>
+      <a href="petals.html" data-i18n="nMore">More</a>
+    </div>
+  </nav>
+</header>
+
+<!-- mobile sheet -->
+<div class="msheet" id="msheet">
+  <div class="pane">
+    <button class="close" id="msClose" aria-label="Close">&#10005;</button>
+    <div id="msBody"></div>
+  </div>
+</div>
+
+<!-- ================= hero ================= -->
+<section class="hero wrap">
+  <h1><span data-i18n="h1a">for</span> <em data-i18n="h1b">excellence.</em></h1>
+
+  <div class="explore">
+    <span class="e" data-i18n="explore">Explore</span>
+    <a class="lp" style="--lc:103,232,249" href="language.html">Language Lab <span class="ar">&#8594;</span></a>
+    <a class="lp" style="--lc:249,115,22" href="skill-lab.html">Skill Lab <span class="ar">&#8594;</span></a>
+    <a class="lp" style="--lc:16,185,129" href="growth-lab.html">Growth Lab <span class="ar">&#8594;</span></a>
+  </div>
+
+  <div class="exziblock">
+    <span class="exlab"><i></i><span data-i18n="exziOn">Exzi online &middot; your AI companion</span></span>
+    <a class="askbar" href="exzi.html" aria-label="Ask Exzi">
+      <span class="face" aria-hidden="true"><b></b></span>
+      <span class="ph" data-i18n="ask">Ask Exzi &mdash; or go hands-free with voice &amp; video</span>
+      <span class="iconb" title="Voice" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+      <span class="iconb" title="Call" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
+      <span class="iconb" title="Video" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3"/></svg></span>
+      <span class="iconb send" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <span class="exnote">&#10022; <b data-i18n="exNote1">Tap the mic for hands-free voice</b> <span data-i18n="exNote2">&mdash; or call and video chat with Exzi, right here.</span></span>
+  </div>
+
+  <div class="ctarow">
+    <a class="cta" href="language.html"><span data-i18n="cta1">Meet your tutors</span><span class="ar">&#8594;</span></a>
+    <a class="ghostb" href="learning-ecosystem.html" data-i18n="cta2">Start free</a>
+  </div>
+
+  <div class="liveline" title="Live from the dashboard at launch">
+    <span class="g"></span><b>&mdash;</b><span data-i18n="live1">learning right now</span>
+    <b>&mdash;</b><span data-i18n="live2">members and growing</span>
+  </div>
+</section>
+
+<!-- ================= labs (one strip, nothing more) ================= -->
+<section class="labsec wrap">
+  <div class="labs">
+    <a class="lab" style="--lc:103,232,249" href="language.html">
+      <span class="e">Language Lab</span><h3 data-i18n="l1">German that survives contact with Germany</h3>
+      <span class="m" data-i18n="lm1">Enter &#8594;</span>
+    </a>
+    <a class="lab" style="--lc:249,115,22" href="skill-lab.html">
+      <span class="e">Skill Lab</span><h3 data-i18n="l2">Skills the job market actually asks for</h3>
+      <span class="m" data-i18n="lm2">Enter &#8594;</span>
+    </a>
+    <a class="lab" style="--lc:16,185,129" href="growth-lab.html">
+      <span class="e">Growth Lab</span><h3 data-i18n="l3">From learning to actually growing</h3>
+      <span class="m" data-i18n="lm3">Enter &#8594;</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <span>&copy; 2026 Exzellent &middot; Cottbus, Germany</span>
+    <a href="petals.html" data-i18n="fPetals">All twelve petals &#8594;</a>
+  </div>
+</footer>
+
+<!-- ================= Exzi buddy — always on the side ================= -->
+<div class="buddy" id="buddy">
+  <div class="bpanel" role="dialog" aria-label="Exzi">
+    <div class="bh"><i></i><span data-i18n="exziOn2">Exzi online &middot; your AI companion</span></div>
+    <a class="ask2" href="exzi.html"><span class="face" style="width:30px;height:30px;border-radius:9px;background:rgba(138,75,245,.16);display:grid;place-items:center"><b style="width:18px;height:13px;background-image:var(--logo-url);background-size:contain;background-position:center;background-repeat:no-repeat"></b></span><span class="ph" data-i18n="ask2">Ask Exzi anything&hellip;</span></a>
+    <div class="row">
+      <a class="iconb" href="exzi.html" title="Voice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></a>
+      <a class="iconb" href="exzi.html" title="Call"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
+      <a class="iconb" href="exzi.html" title="Video"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3"/></svg></a>
+    </div>
+    <div class="note2" data-i18n="bNote">Hands-free by design &mdash; voice, call or video. Exzi opens every petal for you, no typing needed.</div>
+  </div>
+  <button class="borb" id="borb" aria-expanded="false" aria-label="Open Exzi"><b aria-hidden="true"></b><i aria-hidden="true"></i></button>
+</div>
+
+<p class="sr" role="status" aria-live="polite" id="live"></p>
+
+<script>
+/* ============ the twelve petals ============ */
+const PETALS=[
+ {n:{en:"Learning Ecosystem",de:"Learning Ecosystem"},c:"138,75,245",href:"index.html",here:true},
+ {n:{en:"Expats",de:"Expats"},c:"61,240,160",href:"petals.html#p02"},
+ {n:{en:"Career",de:"Karriere"},c:"240,196,66",href:"petals.html#p03"},
+ {n:{en:"AI Studio",de:"AI Studio"},c:"255,122,41",href:"petals.html#p04"},
+ {n:{en:"AI Companion \u2014 Exzi",de:"KI-Begleiter \u2014 Exzi"},c:"167,139,250",href:"petals.html#p05"},
+ {n:{en:"Community",de:"Community"},c:"255,122,41",href:"petals.html#p06"},
+ {n:{en:"Marketing",de:"Marketing"},c:"201,170,255",href:"petals.html#p07"},
+ {n:{en:"Business",de:"Business"},c:"240,196,66",href:"petals.html#p08"},
+ {n:{en:"Funding",de:"Funding"},c:"61,240,160",href:"petals.html#p09"},
+ {n:{en:"Entrepreneurship",de:"Entrepreneurship"},c:"240,196,66",href:"petals.html#p10"},
+ {n:{en:"Tools",de:"Tools"},c:"61,240,160",href:"petals.html#p11"},
+ {n:{en:"Services",de:"Services"},c:"255,122,41",href:"petals.html#p12"}
+];
+const I18N={
+ en:{theme:"Light",login:"Log in",start:"Start free",petal:"Learning Ecosystem",petalOf:"1 / 12 petals",
+  rStudent:"Student",rTeacher:"Teacher",
+  nDash:"Dashboard",nLabs:"Labs",nTutors:"Tutors",nTeachers:"Teachers",nStudents:"Students",nPartners:"Partners",nJobs:"Jobs",nEvents:"Events",nMore:"More",
+  h1a:"for",h1b:"excellence.",explore:"Explore",
+  exziOn:"Exzi online \u00b7 your AI companion",exziOn2:"Exzi online \u00b7 your AI companion",
+  ask:"Ask Exzi \u2014 or go hands-free with voice & video",ask2:"Ask Exzi anything\u2026",
+  exNote1:"Tap the mic for hands-free voice",exNote2:"\u2014 or call and video chat with Exzi, right here.",
+  cta1:"Meet your tutors",cta2:"Start free",live1:"learning right now",live2:"members and growing",
+  l1:"German that survives contact with Germany",l2:"Skills the job market actually asks for",l3:"From learning to actually growing",
+  lm1:"Enter \u2192",lm2:"Enter \u2192",lm3:"Enter \u2192",
+  fPetals:"All twelve petals \u2192",mhPetals:"The twelve petals of Exzellent",
+  bNote:"Hands-free by design \u2014 voice, call or video. Exzi opens every petal for you, no typing needed."},
+ de:{theme:"Hell",login:"Anmelden",start:"Kostenlos starten",petal:"Learning Ecosystem",petalOf:"1 / 12 Bl\u00fctenbl\u00e4tter",
+  rStudent:"Student",rTeacher:"Lehrkraft",
+  nDash:"Dashboard",nLabs:"Labs",nTutors:"Tutoren",nTeachers:"Lehrkr\u00e4fte",nStudents:"Studierende",nPartners:"Partner",nJobs:"Jobs",nEvents:"Events",nMore:"Mehr",
+  h1a:"for",h1b:"excellence.",explore:"Entdecken",
+  exziOn:"Exzi online \u00b7 dein KI-Begleiter",exziOn2:"Exzi online \u00b7 dein KI-Begleiter",
+  ask:"Frag Exzi \u2014 oder freih\u00e4ndig per Stimme & Video",ask2:"Frag Exzi alles\u2026",
+  exNote1:"Tippe aufs Mikro f\u00fcr freih\u00e4ndige Stimme",exNote2:"\u2014 oder ruf Exzi an, mit Video, direkt hier.",
+  cta1:"Lerne deine Tutoren kennen",cta2:"Kostenlos starten",live1:"lernen gerade",live2:"Mitglieder und wachsend",
+  l1:"Deutsch, das den Alltag \u00fcbersteht",l2:"F\u00e4higkeiten, die der Arbeitsmarkt verlangt",l3:"Vom Lernen zum Wachsen",
+  lm1:"\u00d6ffnen \u2192",lm2:"\u00d6ffnen \u2192",lm3:"\u00d6ffnen \u2192",
+  fPetals:"Alle zw\u00f6lf Bl\u00fctenbl\u00e4tter \u2192",mhPetals:"Die zw\u00f6lf Bl\u00fctenbl\u00e4tter von Exzellent",
+  bNote:"Freih\u00e4ndig gebaut \u2014 Stimme, Anruf oder Video. Exzi \u00f6ffnet jedes Bl\u00fctenblatt f\u00fcr dich, ganz ohne Tippen."}
+};
+let lang="en",theme="dark";
+const T=()=>I18N[lang];
+
+/* petal dropdown */
+function buildPetals(){
+  document.getElementById("pmenu").innerHTML=
+    `<div class="mh">${T().mhPetals}</div>`+
+    PETALS.map((p,i)=>`<a class="mi" role="menuitem" style="--mc:${p.c}" href="${p.href}">
+      <i>${String(i+1).padStart(2,"0")}</i><b aria-hidden="true"></b>${p.n[lang]}${p.here?`<small>\u2726 ${lang==="de"?"du bist hier":"you are here"}</small>`:""}</a>`).join("");
+}
+const pw=document.getElementById("pw"),pb=document.getElementById("pb");
+pb.addEventListener("click",e=>{e.stopPropagation();
+  const open=pw.dataset.open==="true";
+  pw.dataset.open=String(!open);pb.setAttribute("aria-expanded",String(!open));});
+document.addEventListener("click",e=>{if(!e.target.closest(".petalwrap")){pw.dataset.open="false";pb.setAttribute("aria-expanded","false");}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){pw.dataset.open="false";pb.setAttribute("aria-expanded","false");msheet.dataset.open="false";buddy.dataset.open="false";}});
+
+/* mobile sheet */
+const msheet=document.getElementById("msheet");
+function buildSheet(){
+  document.getElementById("msBody").innerHTML=
+    `<div class="mh">${T().mhPetals}</div>`+
+    PETALS.map((p,i)=>`<a class="mi" style="--mc:${p.c}" href="${p.href}"><i>${String(i+1).padStart(2,"0")}</i><b></b>${p.n[lang]}</a>`).join("")+
+    `<div class="mh">Menu</div>
+     <a class="mi" style="--mc:138,75,245" href="students.html"><b></b>${T().nDash}</a>
+     <a class="mi" style="--mc:103,232,249" href="language.html"><b></b>${T().nLabs}</a>
+     <a class="mi" style="--mc:240,196,66" href="language.html"><b></b>${T().nTutors}</a>
+     <a class="mi" style="--mc:61,240,160" href="community.html"><b></b>${T().nEvents}</a>
+     <a class="mi" style="--mc:255,122,41" href="expats.html"><b></b>${T().nJobs}</a>`;
+}
+document.getElementById("burger").addEventListener("click",()=>{buildSheet();msheet.dataset.open="true";});
+document.getElementById("msClose").addEventListener("click",()=>msheet.dataset.open="false");
+msheet.addEventListener("click",e=>{if(e.target===msheet)msheet.dataset.open="false";});
+
+/* buddy */
+const buddy=document.getElementById("buddy"),borb=document.getElementById("borb");
+borb.addEventListener("click",()=>{
+  const open=buddy.dataset.open==="true";
+  buddy.dataset.open=String(!open);borb.setAttribute("aria-expanded",String(!open));});
+
+/* header scroll */
+const hdr=document.getElementById("hdr");
+addEventListener("scroll",()=>hdr.classList.toggle("scrolled",scrollY>10),{passive:true});
+
+/* theme + language */
+const uTheme=document.getElementById("uTheme");
+function applyTheme(){
+  document.documentElement.dataset.theme=theme;
+  uTheme.innerHTML=(theme==="dark"?"\u263D":"\u2600")+`<span class="lbl">${theme==="dark"?(lang==="de"?"Hell":"Light"):(lang==="de"?"Dunkel":"Dark")}</span>`;
+  uTheme.setAttribute("aria-label",theme==="dark"?"Switch to light mode":"Switch to dark mode");
+}
+uTheme.addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";applyTheme();});
+if(matchMedia("(prefers-color-scheme: light)").matches){theme="light";}
+applyTheme();
+
+const uLang=document.getElementById("uLang");
+function applyLang(){
+  document.documentElement.lang=lang;
+  uLang.innerHTML=`<span>${lang.toUpperCase()}</span>`;
+  uLang.setAttribute("aria-label",lang==="en"?"Sprache: Deutsch":"Language: English");
+  document.querySelectorAll("[data-i18n]").forEach(n=>{const k=n.dataset.i18n;if(T()[k]!==undefined)n.textContent=T()[k];});
+  buildPetals();
+  if(msheet.dataset.open==="true")buildSheet();
+  applyTheme();
+}
+uLang.addEventListener("click",()=>{lang=lang==="en"?"de":"en";applyLang();});
+
+buildPetals();
+</script>
+</body>
+</html>
