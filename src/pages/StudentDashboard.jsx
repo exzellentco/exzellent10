@@ -25,6 +25,7 @@ import {
 import Swal from "sweetalert2";
 import axios from "../utils/axios";
 import DashboardShell from "../components/DashboardShell";
+import ExziCompanion from "../components/Exzi/ExziCompanion";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
 import StudentTools from "../components/Tools/StudentTools";
@@ -662,6 +663,9 @@ const StudentDashboard = () => {
           }}
         />
       )}
+
+      {/* Exzi companion - authenticated, so no prompt cap applies here. */}
+      <ExziCompanion role="student" name={studentData?.name} userId={studentData?._id} />
     </DashboardShell>
   );
 };

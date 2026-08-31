@@ -1,7 +1,9 @@
 // AI tool generators — all call Groq-backed mock endpoints and return structured
 // JSON. Used by the AI Tools hub in the student & teacher dashboards.
+import { apiUrl } from "./apiBase";
+
 async function postJSON(path, body) {
-  const res = await fetch(path, {
+  const res = await fetch(apiUrl(path), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

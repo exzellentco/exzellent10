@@ -1,0 +1,164 @@
+/* Exzi companion — the docked AI assistant on the student and teacher dashboards.
+   Tokens come from .ex-dash; fallbacks are given so the dock still renders
+   correctly if it is ever mounted outside the dashboard shell. */
+
+.exzi-orb,
+.exzi-dock {
+  --exzi-line: var(--ex-line, rgba(148, 163, 215, 0.14));
+  --exzi-surface: var(--ex-surface, #0f1220);
+  --exzi-bg2: var(--ex-bg2, #0a0c14);
+  --exzi-text: var(--ex-text, #eef1fb);
+  --exzi-muted: var(--ex-muted, #9aa3c2);
+  --exzi-ease: var(--ex-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+/* ---------- launcher ---------- */
+/* --exzi-lift is measured at runtime from the .spl-fab pill stack in this
+   corner ("Speaking practice" / "AI Tools" / "Messages"), because how many are
+   present varies by role and by which panels are open. z-index must clear
+   theirs (3500) or the orb renders underneath and its clicks are swallowed. */
+.exzi-orb {
+  position: fixed;
+  right: calc(22px + env(safe-area-inset-right));
+  bottom: calc(var(--exzi-lift, 22px) + env(safe-area-inset-bottom));
+  z-index: 3600;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  border: 1px solid rgba(var(--exzi-accent), 0.55);
+  background: radial-gradient(120% 120% at 30% 20%, rgba(var(--exzi-accent), 0.45), var(--exzi-surface) 74%);
+  box-shadow: 0 14px 38px rgba(var(--exzi-accent), 0.32);
+  transition: transform 0.25s var(--exzi-ease), box-shadow 0.25s var(--exzi-ease);
+}
+.exzi-orb:hover { transform: translateY(-2px); box-shadow: 0 18px 46px rgba(var(--exzi-accent), 0.42); }
+.exzi-orb:focus-visible { outline: 2px solid rgba(var(--exzi-accent), 0.9); outline-offset: 3px; }
+
+/* online pip */
+.exzi-orb i {
+  position: absolute; right: 4px; top: 4px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #10b981; box-shadow: 0 0 9px #10b981;
+  border: 2px solid var(--exzi-bg2);
+}
+
+/* ---------- dock ---------- */
+.exzi-dock {
+  position: fixed;
+  right: calc(22px + env(safe-area-inset-right));
+  bottom: calc(var(--exzi-lift, 22px) + 68px + env(safe-area-inset-bottom));
+  z-index: 3601;
+  width: min(390px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 210px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  color: var(--exzi-text);
+  border: 1px solid rgba(var(--exzi-accent), 0.32);
+  background: var(--exzi-bg2);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  animation: exziIn 0.28s var(--exzi-ease) both;
+}
+@keyframes exziIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+
+.exzi-dock-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--exzi-line);
+  background: linear-gradient(180deg, rgba(var(--exzi-accent), 0.12), transparent);
+}
+.exzi-dock-head > div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.exzi-dock-head b { font: 600 14px/1.2 var(--ex-font, system-ui), sans-serif; }
+.exzi-dock-head small { font-size: 11.5px; color: var(--exzi-muted); }
+.exzi-dock-head button {
+  display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 8px;
+  color: var(--exzi-muted); background: transparent;
+  border: 1px solid var(--exzi-line); cursor: pointer;
+}
+.exzi-dock-head button:hover { color: var(--exzi-text); }
+.exzi-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+/* ---------- thread ---------- */
+.exzi-thread { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.exzi-welcome p { font-size: 13.5px; color: var(--exzi-muted); margin-bottom: 12px; }
+.exzi-chips { display: flex; flex-direction: column; gap: 7px; }
+.exzi-chips button {
+  text-align: left; font-size: 12.5px; cursor: pointer;
+  padding: 9px 11px; border-radius: 11px;
+  color: var(--exzi-text);
+  border: 1px solid var(--exzi-line);
+  background: var(--exzi-surface);
+  transition: border-color 0.2s var(--exzi-ease);
+}
+.exzi-chips button:hover { border-color: rgba(var(--exzi-accent), 0.55); }
+
+.exzi-msg { display: flex; }
+.exzi-msg.user { justify-content: flex-end; }
+.exzi-bubble {
+  max-width: 86%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;   /* replies arrive as plain text with real newlines */
+  overflow-wrap: anywhere; /* long URLs must not widen the dock */
+}
+.exzi-msg.user .exzi-bubble {
+  background: rgba(var(--exzi-accent), 0.18);
+  border: 1px solid rgba(var(--exzi-accent), 0.35);
+  border-bottom-right-radius: 5px;
+}
+.exzi-msg.assistant .exzi-bubble {
+  background: var(--exzi-surface);
+  border: 1px solid var(--exzi-line);
+  border-bottom-left-radius: 5px;
+}
+
+.exzi-typing { display: inline-flex; gap: 4px; padding: 2px 0; }
+.exzi-typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--exzi-muted); animation: exziBlink 1.2s infinite; }
+.exzi-typing i:nth-child(2) { animation-delay: 0.18s; }
+.exzi-typing i:nth-child(3) { animation-delay: 0.36s; }
+@keyframes exziBlink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+
+.exzi-error { font-size: 12.5px; color: #fca5a5; padding: 2px 2px 0; }
+
+/* ---------- composer ---------- */
+.exzi-composer {
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--exzi-line);
+  background: var(--exzi-bg2);
+}
+.exzi-composer textarea {
+  flex: 1; resize: none; max-height: 120px;
+  padding: 9px 11px; border-radius: 11px;
+  font: 400 13.5px/1.45 inherit;
+  color: var(--exzi-text);
+  border: 1px solid var(--exzi-line);
+  background: var(--exzi-surface);
+}
+.exzi-composer textarea:focus { outline: none; border-color: rgba(var(--exzi-accent), 0.6); }
+.exzi-composer button {
+  display: grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 11px;
+  color: #fff; cursor: pointer; border: 0;
+  background: rgba(var(--exzi-accent), 0.9);
+}
+.exzi-composer button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* On phones the dock takes the full width and sits above the launcher. */
+@media (max-width: 520px) {
+  .exzi-dock { right: 12px; left: 12px; width: auto; }
+  .exzi-orb { right: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exzi-dock { animation: none; }
+  .exzi-orb { transition: none; }
+  .exzi-typing i { animation: none; opacity: 0.6; }
+}

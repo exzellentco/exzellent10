@@ -1,6 +1,8 @@
 // Messaging API. Relative /api paths so Vite's dev proxy routes them to the mock.
+import { apiUrl } from "./apiBase";
+
 const req = async (method, path, body) => {
-  const res = await fetch(path, {
+  const res = await fetch(apiUrl(path), {
     method,
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,

@@ -2050,6 +2050,9 @@ const routes = [
 
 /* ------------------------------------------------------------------- server */
 
+// Rolling per-session chat history for /api/chat/message (Redis upstream).
+const CHAT_SESSIONS = {};
+
 const send = (res, status, payload) => {
   res.writeHead(status, { "Content-Type": "application/json" });
   res.end(JSON.stringify(payload));
@@ -2195,6 +2198,70 @@ const server = http.createServer((req, res) => {
       MY_CREDITS[sid] = have - cost;
       const st = studentById(sid); if (st) st.credits = MY_CREDITS[sid];
       saveData();
+    }
+
+    // ─── AUTHENTICATED EXZI COMPANION (dashboards) ──────────────────────────
+    // Mirrors the real backend's POST /api/chat/message: same request shape and
+    // the same SSE wire format (data: {"text":...} chunks then data: [DONE]),
+    // so the dashboard component can be built and tested locally instead of
+    // pointing dev at production.
+    //   body: { sessionId, userMessage, profile:{ name, mode, ... } }
+    if (req.method === "POST" && path === "/api/chat/message") {
+      const sessionId = String(body.sessionId || "");
+      const userMessage = String(body.userMessage || "").trim();
+      const profile = body.profile || {};
+      if (!sessionId || !userMessage || !profile.name) {
+        send(res, 400, { success: false, message: "sessionId, userMessage, and profile are required" });
+        return;
+      }
+      const mode = profile.mode || "generic";
+      if (mode === "tutor" && (!profile.nativeLanguage || !profile.targetLanguage || !profile.level)) {
+        send(res, 400, { success: false, message: "Tutor mode requires profile.nativeLanguage, targetLanguage, and level" });
+        return;
+      }
+
+      // Short rolling history per session, like Redis holds upstream.
+      CHAT_SESSIONS[sessionId] = (CHAT_SESSIONS[sessionId] || []).slice(-38);
+      CHAT_SESSIONS[sessionId].push({ role: "user", content: userMessage });
+
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      });
+
+      const system = mode === "tutor"
+        ? "You are Exzi, an expert " + (profile.targetLanguage || "German") + " tutor for " + profile.name + ". "
+          + "Their native language is " + profile.nativeLanguage + " and their level is " + profile.level + ". "
+          + "Adapt to that level, correct gently, and keep replies short."
+        : "You are Exzi, the EXZELLENT AI companion, talking with " + profile.name + ". "
+          + "Help with learning, studying in Germany, careers and the platform itself. Be concise and practical.";
+
+      // Emit the reply in small chunks so the UI renders progressively, the same
+      // way the real streaming endpoint does.
+      const streamOut = (text) => {
+        const words = String(text).split(/(\s+)/);
+        let i = 0;
+        const tick = () => {
+          if (i >= words.length) {
+            CHAT_SESSIONS[sessionId].push({ role: "assistant", content: text });
+            saveData();
+            res.write("data: [DONE]\n\n");
+            res.end();
+            return;
+          }
+          res.write("data: " + JSON.stringify({ text: words.slice(i, i + 3).join("") }) + "\n\n");
+          i += 3;
+          setTimeout(tick, 28);
+        };
+        tick();
+      };
+
+      groqChat({ system, user: userMessage, maxTokens: 700 }, (err, out) => {
+        if (err) { streamOut("I can't reach my AI service right now. (" + err.message + ")"); return; }
+        streamOut(typeof out === "string" ? out : JSON.stringify(out));
+      });
+      return;
     }
 
     if (req.method === "POST" && path === "/api/ai/chat") {

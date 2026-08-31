@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ExziCompanion from "../components/Exzi/ExziCompanion";
 import { ArrowLeft, Plus, CheckCircle, Clock, Wallet, BookOpen, Users, Sparkles } from "lucide-react";
 import {
   getMyTeacherProfile,
@@ -663,6 +664,12 @@ const TeacherDashboard = () => {
           }}
         />
       )}
+      {/* Exzi companion - authenticated, so no prompt cap applies here. */}
+      <ExziCompanion
+        role="teacher"
+        name={[teacherData?.firstName, teacherData?.lastName].filter(Boolean).join(" ") || teacherData?.name}
+        userId={teacherData?._id}
+      />
     </Frame>
   );
 };

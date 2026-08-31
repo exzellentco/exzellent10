@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>EXZELLENT — Learning Ecosystem</title>
-<meta name="description" content="The Learning Ecosystem — one of the twelve petals of Exzellent. Three labs, real tutors, and Exzi, your hands-free AI companion.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/logo.png">
+<meta property="og:title" content="Learning Ecosystem — Exzellent">
+<meta property="og:description" content="Browse tutors before you sign up, see the three labs, and meet the teachers. Live 1-to-1 German lessons, exam prep and AI practice with Exzi.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://res.cloudinary.com/dsgxyezcm/image/upload/v1773748661/Exzellent-Black_txkmpd.png">
+<meta name="description" content="Browse tutors before you sign up, see the three labs, and meet the teachers. Live 1-to-1 German lessons, exam prep and AI practice with Exzi.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1755,10 +1762,45 @@ const EXZI_TRANSCRIBE_URL = EXZI_API + '/api/ai/transcribe';
   }
   if (exziCanvas) loopExzi();
 
+  // ─── markdown -> plain text ────────────────────────────────────────────────
+  // The model is asked for plain text, but LLMs still emit markdown. Bubbles
+  // are rendered with textContent, so "**Hallo**" would show its asterisks,
+  // and speech synthesis reads every symbol out loud ("star star Hallo").
+  // Strip it for display, and strip a little more for speech.
+  function plainText(s) {
+    return String(s == null ? "" : s)
+      .replace(/```[a-zA-Z]*\r?\n?([\s\S]*?)```/g, "$1")   // fenced code
+      .replace(/`([^`\n]+)`/g, "$1")                        // inline code
+      .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")             // images
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")              // links -> label
+      .replace(/^\s{0,3}#{1,6}\s+/gm, "")                   // headings
+      .replace(/^\s{0,3}>\s?/gm, "")                        // blockquotes
+      .replace(/^\s*([-*_]\s*){3,}$/gm, "")                 // horizontal rules
+      .replace(/^\s*[-*+]\s+/gm, "\u2022 ")                 // bullets -> •
+      .replace(/\*\*\*([^*]+)\*\*\*/g, "$1")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/(^|[^\w*])\*([^*\n]+)\*(?![\w*])/g, "$1$2") // *italic*
+      .replace(/(^|[^\w_])__([^_\n]+)__(?![\w_])/g, "$1$2")
+      .replace(/(^|[^\w_])_([^_\n]+)_(?![\w_])/g, "$1$2")   // _italic_
+      .replace(/[ \t]*\|[ \t]*/g, "  ")                      // table pipes
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  }
+
+  // Speech reads symbols and emoji aloud, so take those out too.
+  function speechText(s) {
+    return plainText(s)
+      .replace(/https?:\/\/\S+/g, "")
+      .replace(/[\u2022\u2013\u2014]/g, " ")
+      .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2190}-\u{21FF}]/gu, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
+
   function speakExzi(text) {
     if (!('speechSynthesis' in window)) return;
     if (exziSpeakingUtterance) speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(speechText(text));
     u.rate = 1;
     u.pitch = 1;
     exziSpeakingUtterance = u;
@@ -1782,7 +1824,7 @@ const EXZI_TRANSCRIBE_URL = EXZI_API + '/api/ai/transcribe';
       });
       const data = await res.json();
       const reply = data?.reply || data?.message || 'I couldn’t generate a reply just now. Please try again.';
-      if (replyBox) replyBox.textContent = reply;
+      if (replyBox) replyBox.textContent = plainText(reply);
       speakExzi(reply);
       setExziMood('happy');
       setTimeout(() => { if (exziMood === 'happy') setExziMood('idle'); }, 1200);

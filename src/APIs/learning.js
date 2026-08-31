@@ -4,6 +4,8 @@
 // Unlike those, these endpoints identify the student from the auth token, so we
 // attach the Authorization header explicitly.
 
+import { apiUrl } from "./apiBase";
+
 const authToken = () => {
   const ls = localStorage.getItem("token");
   if (ls) return ls;
@@ -16,7 +18,7 @@ const req = async (method, path, body) => {
   if (body) headers["Content-Type"] = "application/json";
   const t = authToken();
   if (t) headers["Authorization"] = `Bearer ${t}`;
-  const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const res = await fetch(apiUrl(path), { method, headers, body: body ? JSON.stringify(body) : undefined });
   const data = await res.json().catch(() => ({}));
   if (!res.ok && data.success === false) throw new Error(data.message || "Request failed");
   return data;
