@@ -66,9 +66,13 @@ export const applyPageMeta = (pathname = "/") => {
     setMeta("description", DEFAULT_DESC);
   }
 
-  // Keep private areas out of the index regardless of what they are titled.
+  // Robots is only set for paths we recognise. An unrecognised path may be a
+  // route that does not exist, and the not-found page marks itself noindex from
+  // its own effect - React runs a parent's effect AFTER its children's, so
+  // setting "index, follow" here unconditionally would overwrite it.
   const isPrivate = PRIVATE.some((p) => path.startsWith(p));
-  setMeta("robots", isPrivate ? "noindex, nofollow" : "index, follow");
+  if (isPrivate) setMeta("robots", "noindex, nofollow");
+  else if (match || path === "/") setMeta("robots", "index, follow");
 };
 
 export default applyPageMeta;
