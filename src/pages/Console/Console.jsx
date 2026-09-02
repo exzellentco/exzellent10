@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { RefreshCw, LogOut, Plus, ExternalLink, Video, Flame, Coins } from "lucide-react";
 import axios from "../../utils/axios";
 import Calendar from "./Calendar";
@@ -61,6 +61,9 @@ const Bar = ({ pct }) => (
 
 const Empty = ({ what }) => <p className="alh-muted">{what}</p>;
 
+/** "an Admin", "a Teacher" — the roles are shown to users, so read properly. */
+const article = (word) => (/^[aeiou]/i.test(String(word)) ? "an" : "a");
+
 /** A section that is really an existing page: send them there rather than fake it. */
 const GoTo = ({ label, to, nav }) => (
   <li>
@@ -71,6 +74,10 @@ const GoTo = ({ label, to, nav }) => (
 
 const Console = ({ role = "student" }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Set by the route guard when someone opens an area belonging to another
+  // role. Saying so beats silently landing them somewhere they did not ask for.
+  const wrongRole = location.state?.wrongRole;
   const [view, setView] = useState("dashboard");
   const [d, setD] = useState({});
   const [side, setSide] = useState({});          // extra per-section data
@@ -106,6 +113,7 @@ const Console = ({ role = "student" }) => {
     const want = {
       courses: "/api/courses", webinars: "/api/webinars",
       reports: "/api/reports", leaderboard: "/api/leaderboard",
+      accounts: "/api/users/admin/accounts",
     };
     const url = want[view];
     if (!url || side[view] !== undefined) return;
@@ -366,6 +374,39 @@ const Console = ({ role = "student" }) => {
     }
 
     /* ── admin ── */
+    if (view === "accounts") {
+      const list = side.accounts || [];
+      const byRole = (r) => list.filter((u) => u.role === r).length;
+      return (
+        <Card title="Logins" tag={list.length}>
+          <p className="alh-muted" style={{ marginBottom: 14 }}>
+            {byRole("Admin")} admin · {byRole("Teacher")} teacher · {byRole("Student")} student.
+            A password cannot be shown here: they are stored hashed, which is the point.
+            To change one, use Forgot password on the login page.
+          </p>
+          {!list.length && <Empty what="No accounts found." />}
+          {!!list.length && (
+            <table className="alh-table">
+              <thead><tr><th>Email</th><th>Role</th><th>Status</th><th>Created</th></tr></thead>
+              <tbody>{list.map((u) => (
+                <tr key={u._id}>
+                  <td><b>{u.email}</b></td>
+                  <td>{u.role}</td>
+                  <td>
+                    <span className="alh-pill" data-status={u.approved ? "confirmed" : "pending"}>
+                      {u.approved ? "active" : "pending"}
+                    </span>
+                    {!u.verified && <span className="alh-pill" data-status="open">unverified</span>}
+                  </td>
+                  <td>{u.created ? new Date(u.created).toLocaleDateString() : "—"}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          )}
+        </Card>
+      );
+    }
+
     if (view === "staff") {
       const list = d.staff || [];
       return (
@@ -641,6 +682,9 @@ const Console = ({ role = "student" }) => {
               : blurb && <p>{blurb}</p>}
           </div>
           <div className="alh-top-actions">
+            <span className="alh-pill" data-status="open" title="The role this account signs in as">
+              {role}
+            </span>
             {role === "student" && (
               <span className="alh-who"><Coins size={15} /> {me.credits ?? 0}</span>
             )}
@@ -650,6 +694,12 @@ const Console = ({ role = "student" }) => {
         </header>
 
         <div className="alh-body">
+          {wrongRole && (
+            <p className="alh-error" style={{ marginBottom: 16 }}>
+              That page is for {article(wrongRole.need)} {wrongRole.need} account. You are
+              signed in as {article(wrongRole.have)} {wrongRole.have}, so this is your dashboard.
+            </p>
+          )}
           {loading && <p className="alh-muted">Loading…</p>}
           {!loading && error && <p className="alh-error">{error}</p>}
           {!loading && !error && d.notice && <p className="alh-muted">{d.notice}</p>}

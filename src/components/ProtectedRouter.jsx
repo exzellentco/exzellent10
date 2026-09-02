@@ -23,6 +23,13 @@ import { Outlet, Navigate } from "react-router-dom";
 
 const WAIT_MS = 8000;
 
+/** Where each role belongs. */
+const HOME = {
+  Student: "/student-dashboard",
+  Teacher: "/teacher-dashboard",
+  Admin: "/admin-dashboard",
+};
+
 const hasToken = () =>
   document.cookie.split("; ").some((row) => row.startsWith("token="));
 
@@ -55,8 +62,15 @@ const ProtectedRouter = ({ userRole, allowedRoles }) => {
     return <Spinner />;
   }
 
+  // Signed in, but this area belongs to another role. Sending them to /404 says
+  // "this page does not exist", which is both untrue and baffling: the page is
+  // real, it is just not theirs. Send them to their OWN dashboard instead — and
+  // say why, so "I get a 404 then end up on the student dashboard" becomes a
+  // sentence naming the actual reason.
   if (allowedRoles && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/404" replace />;
+    const home = HOME[userRole];
+    if (!home) return <Navigate to="/404" replace />;
+    return <Navigate to={home} replace state={{ wrongRole: { need: allowedRoles[0], have: userRole } }} />;
   }
 
   return <Outlet />;

@@ -69,7 +69,7 @@ const Login = () => {
         }; path=/; secure; samesite=strict`;
         const userRole = result.data.userType;
         if (userRole === "Admin") {
-          navigate("/get-student");
+          navigate("/admin-dashboard");
         } else if (userRole === "Student") {
           // Check if student is paid
           const userId = result.data._id;
@@ -128,7 +128,7 @@ const Login = () => {
 
         const userRole = response.data.userType;
         if (userRole === "Admin") {
-          navigate("/get-student");
+          navigate("/admin-dashboard");
         } else if (userRole === "Student") {
           // Check if student is paid
           const userId = response.data._id;

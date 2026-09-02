@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, CalendarDays, CalendarCheck, Presentation,
   Video, ClipboardList, MessageSquare, FileBarChart, AlertTriangle, Wallet,
   BookOpen, Settings, Sparkles, Coins, GraduationCap, PenLine, Clock,
-  ShieldCheck, Mic, Award, Trophy, Gift, UserPlus, Briefcase, Repeat,
+  ShieldCheck, Mic, Award, Trophy, Gift, UserPlus, Briefcase, Repeat, KeyRound,
 } from "lucide-react";
 
 /**
@@ -19,6 +19,7 @@ export const NAV = {
     { head: "Academy" },
     { k: "students", label: "Students", icon: Users, to: "/get-student" },
     { k: "staff", label: "Teachers", icon: ShieldCheck },
+    { k: "accounts", label: "Logins", icon: KeyRound },
     { k: "calendar", label: "Calendar", icon: CalendarDays },
     { k: "attendance", label: "Attendance", icon: CalendarCheck },
     { k: "courses", label: "Courses", icon: BookOpen },
@@ -81,6 +82,7 @@ export const COPY = {
   dashboard: ["Dashboard", ""],
   students: ["Students", "Everyone enrolled."],
   staff: ["Teachers", "Approved teachers on the platform."],
+  accounts: ["Logins", "Every account that can sign in. Passwords are never shown — they cannot be."],
   calendar: ["Calendar", "Every lesson, by date. Pick a day to see what is on."],
   attendance: ["Attendance", "Who turned up."],
   courses: ["Courses", "What is being taught."],

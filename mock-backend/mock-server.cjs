@@ -2453,6 +2453,27 @@ const server = http.createServer((req, res) => {
       }
     }
 
+    // Mirrors the real /api/users/admin/accounts: admin-only, and never returns
+    // a password. The mock's accounts carry plaintext demo passwords, so this
+    // must strip them deliberately rather than by luck.
+    if (req.method === "GET" && path.split("?")[0] === "/api/users/admin/accounts") {
+      if (role !== "Admin") {
+        send(res, 403, { success: false, message: "Admins only." });
+        return;
+      }
+      const q = (new URL(path, "http://x").searchParams.get("q") || "").toLowerCase();
+      const rows = [
+        { _id: "admin-001", email: ADMIN_ACCOUNT.email, role: "Admin", approved: true, verified: true, created: "2026-08-01T09:00:00Z" },
+        { _id: TEACHER._id, email: TEACHER.email, role: "Teacher", approved: true, verified: true, created: "2026-08-02T09:00:00Z" },
+        ...STUDENTS.map((s, i) => ({
+          _id: s._id, email: s.email, role: "Student", approved: true, verified: true,
+          created: new Date(Date.parse("2026-08-05T09:00:00Z") + i * 86400000).toISOString(),
+        })),
+      ].filter((u) => !q || String(u.email).toLowerCase().includes(q));
+      send(res, 200, { success: true, data: rows });
+      return;
+    }
+
     // ─── leaderboard and reports ───────────────────────────────────────────
     // Same wire shapes as the real backend, so the console's table and its CSV
     // export can actually be exercised locally instead of hitting the generic
