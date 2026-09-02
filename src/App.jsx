@@ -122,12 +122,18 @@ const App = () => {
     checkAuth();
   }, [checkAuth]);
 
-  // Optional: re-check auth if token exists but userRole is null
+  // Re-check auth if a token exists but no role was resolved. Bounded: if the
+  // profile call keeps returning without a userType, this effect's own result
+  // re-triggers it, and an unbounded version spins the app and hammers the
+  // backend for as long as the tab is open.
+  const recheckedRef = useRef(0);
   useEffect(() => {
     const tokenExists = getToken();
-    if (tokenExists && userRole === null && !loading) {
+    if (tokenExists && userRole === null && !loading && recheckedRef.current < 2) {
+      recheckedRef.current += 1;
       checkAuth();
     }
+    if (userRole) recheckedRef.current = 0;
   }, [location.pathname, userRole, loading, checkAuth]);
 
   if (loading) {
