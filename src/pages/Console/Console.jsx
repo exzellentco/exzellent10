@@ -103,7 +103,10 @@ const Console = ({ role = "student" }) => {
   /* Section-specific data, fetched the first time a section is opened. Each is
      optional: a failure leaves that one section empty, not the whole page. */
   useEffect(() => {
-    const want = { courses: "/api/courses", webinars: "/api/webinars", reports: "/api/reports" };
+    const want = {
+      courses: "/api/courses", webinars: "/api/webinars",
+      reports: "/api/reports", leaderboard: "/api/leaderboard",
+    };
     const url = want[view];
     if (!url || side[view] !== undefined) return;
     let alive = true;
@@ -129,6 +132,40 @@ const Console = ({ role = "student" }) => {
     try { await axios.post("/api/users/logout"); } catch { /* the cookie is cleared regardless */ }
     localStorage.removeItem("user");
     navigate("/login");
+  };
+
+  /* Write actions. Each reloads rather than patching local state: the summary
+     figures at the top are derived server-side, so a local edit would leave the
+     row correct and the count above it stale. */
+  const act = async (path, body) => {
+    setError("");
+    try { await axios.post(path, body || {}); await load(); }
+    catch (e) { setError(e?.response?.data?.message || "That did not work."); }
+  };
+  const resolveComplaint = (id) => act(`/api/complaints/${id}/resolve`);
+  const toggleTask = (id) => act(`/api/tasks/${id}/toggle`);
+  const payStaff = (id) => act(`/api/payroll/${id}/pay`);
+
+  /** Download a report as CSV. */
+  const runReport = async (r) => {
+    setError("");
+    try {
+      const res = await axios.get(r.path);
+      const rows = res.data?.data ?? res.data ?? [];
+      if (!Array.isArray(rows) || !rows.length) { setError(`${r.name}: nothing to export.`); return; }
+      const cols = [...new Set(rows.flatMap((x) => Object.keys(x)))];
+      const esc = (v) => {
+        const t = v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
+        return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+      };
+      const csv = [cols.join(","), ...rows.map((x) => cols.map((c) => esc(x[c])).join(","))].join("\n");
+      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${r._id}-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) { setError(e?.response?.data?.message || `Could not build ${r.name}.`); }
   };
 
   const joinLesson = (b) => {
@@ -230,9 +267,21 @@ const Console = ({ role = "student" }) => {
     }
 
     if (view === "leaderboard") {
+      const list = side.leaderboard || [];
       return (
-        <Card title="Leaderboard">
-          <Empty what="Your ranking appears once you finish a course module." />
+        <Card title="Leaderboard" tag={list.length}>
+          {!list.length && <Empty what="No rankings yet." />}
+          {!!list.length && (
+            <table className="alh-table">
+              <thead><tr><th>#</th><th>Name</th><th>Attended</th><th>Streak</th><th>Points</th></tr></thead>
+              <tbody>{list.map((r) => (
+                <tr key={`${r.rank}-${r.name}`} data-me={r.name === me.name || undefined}>
+                  <td>{r.rank}</td><td><b>{r.name}</b></td>
+                  <td>{r.attended}/{r.booked}</td><td>{r.streak}</td><td><b>{r.points}</b></td>
+                </tr>
+              ))}</tbody>
+            </table>
+          )}
         </Card>
       );
     }
@@ -296,9 +345,22 @@ const Console = ({ role = "student" }) => {
     }
 
     if (view === "online") {
+      const today = new Date().toISOString().slice(0, 10);
+      const rooms = bookings.filter((b) => b.date === today);
       return (
-        <Card title="Online class">
-          <Empty what="Open a lesson from Today's classes or the Calendar to start its room." />
+        <Card title="Online class" tag={rooms.length}>
+          {!rooms.length && <Empty what="No classes today. A room opens on the day of each lesson." />}
+          <ul className="alh-list">
+            {rooms.map((b) => (
+              <li key={b._id}>
+                <span className="alh-grow"><b>{b.title}</b><i>{b.start} · {b.who}</i></span>
+                <span className="alh-pill" data-status={b.status}>{b.status}</span>
+                <button className="alh-mini" onClick={() => joinLesson(b)}>
+                  <Video size={13} /> {role === "teacher" ? "Start" : "Join"}
+                </button>
+              </li>
+            ))}
+          </ul>
         </Card>
       );
     }
@@ -350,6 +412,9 @@ const Console = ({ role = "student" }) => {
               <li key={t._id}>
                 <span className="alh-grow"><b>{t.title}</b><i>{t.owner} · due {t.due || "—"}</i></span>
                 <span className="alh-pill" data-status={t.status}>{t.status}</span>
+                <button className="alh-mini" onClick={() => toggleTask(t._id)}>
+                  {t.status === "done" ? "Reopen" : "Done"}
+                </button>
               </li>
             ))}
           </ul>
@@ -367,6 +432,9 @@ const Console = ({ role = "student" }) => {
               <li key={c._id}>
                 <span className="alh-grow"><b>{c.title}</b><i>{c.by} · {c.role}</i></span>
                 <span className="alh-pill" data-status={c.status}>{c.status}</span>
+                {c.status !== "resolved" && (
+                  <button className="alh-mini" onClick={() => resolveComplaint(c._id)}>Resolve</button>
+                )}
               </li>
             ))}
           </ul>
@@ -380,12 +448,15 @@ const Console = ({ role = "student" }) => {
         <Card title="Payroll this month" tag={list.length}>
           {!list.length && <Empty what="Nothing recorded for this month." />}
           <table className="alh-table">
-            <thead><tr><th>Name</th><th>Role</th><th>Base</th><th>Bonus</th><th>Net</th><th>Status</th></tr></thead>
+            <thead><tr><th>Name</th><th>Role</th><th>Base</th><th>Bonus</th><th>Net</th><th>Status</th><th /></tr></thead>
             <tbody>{list.map((p) => (
               <tr key={p._id}>
                 <td><b>{p.name}</b></td><td>{p.role}</td><td>{money(p.base)}</td>
                 <td>{money(p.bonus)}</td><td><b>{money(p.net)}</b></td>
                 <td><span className="alh-pill" data-status={p.status}>{p.status}</span></td>
+                <td>{p.status !== "paid" && (
+                  <button className="alh-mini" onClick={() => payStaff(p._id)}>Mark paid</button>
+                )}</td>
               </tr>
             ))}</tbody>
           </table>
@@ -400,7 +471,10 @@ const Console = ({ role = "student" }) => {
           {!list.length && <Empty what="No reports available." />}
           <ul className="alh-list">
             {list.map((r) => (
-              <li key={r._id}><span className="alh-grow"><b>{r.name}</b><i>{r.period}</i></span></li>
+              <li key={r._id}>
+                <span className="alh-grow"><b>{r.name}</b><i>{r.period}</i></span>
+                <button className="alh-mini" onClick={() => runReport(r)}>Export CSV</button>
+              </li>
             ))}
           </ul>
         </Card>
@@ -455,6 +529,7 @@ const Console = ({ role = "student" }) => {
                 <li key={c._id}>
                   <span className="alh-grow"><b>{c.title}</b><i>{c.by} · {c.role}</i></span>
                   <span className="alh-pill" data-status={c.priority}>{c.priority}</span>
+                  <button className="alh-mini" onClick={() => resolveComplaint(c._id)}>Resolve</button>
                 </li>
               ))}
             </ul>

@@ -2404,6 +2404,109 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    // ─── operations reads and writes ───────────────────────────────────────
+    // These mirror the real backend's /api/complaints, /api/tasks and
+    // /api/payroll. Without them every write fell through to the generic
+    // "OK (mock)" fallback: the console showed success and nothing changed,
+    // which is worse than an error because it looks like it worked.
+    {
+      const clean = path.split("?")[0];
+      const seg = clean.split("/");           // ["", "api", "<what>", "<id>", "<action>"]
+      const what = seg[2];
+      const id = seg[3];
+      const action = seg[4];
+
+      if (["complaints", "tasks", "payroll"].includes(what)) {
+        const table = what === "complaints" ? OPS.complaints
+          : what === "tasks" ? OPS.tasks : OPS.payroll;
+
+        const wire = (row) => {
+          if (what === "complaints") {
+            return { _id: row._id, title: row.subject, by: row.from, role: row.role,
+                     priority: row.priority, status: row.status };
+          }
+          if (what === "payroll") {
+            return { _id: row._id, name: row.staffName, role: row.role, month: row.month,
+                     base: row.base, bonus: row.bonus, deductions: row.deductions,
+                     net: row.net, status: row.status };
+          }
+          return row;
+        };
+
+        if (req.method === "GET" && !id) {
+          send(res, 200, { success: true, data: table.map(wire) });
+          return;
+        }
+
+        if (req.method === "POST" && id && action) {
+          const row = table.find((r) => r._id === id);
+          if (!row) { send(res, 404, { success: false, message: "Not found." }); return; }
+
+          if (action === "resolve") row.status = "resolved";
+          else if (action === "pay") { row.status = "paid"; row.paidAt = new Date().toISOString(); }
+          else if (action === "toggle") row.status = row.status === "done" ? "todo" : "done";
+          else { send(res, 400, { success: false, message: "Unknown action." }); return; }
+
+          send(res, 200, { success: true, data: wire(row) });
+          return;
+        }
+      }
+    }
+
+    // ─── leaderboard and reports ───────────────────────────────────────────
+    // Same wire shapes as the real backend, so the console's table and its CSV
+    // export can actually be exercised locally instead of hitting the generic
+    // empty-array fallback.
+    if (req.method === "GET" && path.split("?")[0] === "/api/leaderboard") {
+      const rows = [
+        { name: "Yuki Tanaka",  attended: 28, booked: 30, streak: 21 },
+        { name: "Anna Muller",  attended: 18, booked: 20, streak: 12 },
+        { name: "Ben Okafor",   attended: 11, booked: 14, streak: 4 },
+        { name: "Chloe Martin", attended: 9,  booked: 15, streak: 0 },
+        { name: "Diego Souza",  attended: 6,  booked: 8,  streak: 2 },
+      ].map((r) => ({ ...r, points: r.attended * 10 + r.streak * 5 + r.booked * 2 }))
+        .sort((a, b) => b.points - a.points)
+        .map((r, i) => ({ rank: i + 1, ...r }));
+      send(res, 200, { success: true, data: rows, scoring: { attended: 10, streakDay: 5, booked: 2 } });
+      return;
+    }
+
+    if (req.method === "GET" && path.split("?")[0] === "/api/reports") {
+      send(res, 200, { success: true, data: [
+        { _id: "attendance", name: "Attendance", period: "all bookings", path: "/api/reports/attendance" },
+        { _id: "payroll", name: "Payroll by department", period: "this month", path: "/api/reports/payroll" },
+        { _id: "complaints", name: "Complaints", period: "all time", path: "/api/reports/complaints" },
+        { _id: "lectures", name: "Teacher utilisation", period: "all lectures", path: "/api/reports/lectures" },
+      ]});
+      return;
+    }
+
+    if (req.method === "GET" && path.split("?")[0] === "/api/reports/attendance") {
+      send(res, 200, { success: true, data: OPS.attendance.map((a) => ({
+        student: a.student, lesson: a.cls, time: a.time, teacher: a.teacher, status: a.status,
+      }))});
+      return;
+    }
+    if (req.method === "GET" && path.split("?")[0] === "/api/reports/payroll") {
+      send(res, 200, { success: true, data: OPS.payroll.map((p) => ({
+        name: p.staffName, role: p.role, department: p.dept, month: p.month,
+        base: p.base, bonus: p.bonus, deductions: p.deductions, net: p.net, status: p.status,
+      }))});
+      return;
+    }
+    if (req.method === "GET" && path.split("?")[0] === "/api/reports/complaints") {
+      send(res, 200, { success: true, data: OPS.complaints.map((c) => ({
+        subject: c.subject, from: c.from, role: c.role, priority: c.priority, status: c.status,
+      }))});
+      return;
+    }
+    if (req.method === "GET" && path.split("?")[0] === "/api/reports/lectures") {
+      send(res, 200, { success: true, data: OPS.staff
+        .filter((s) => s.role === "Teacher")
+        .map((s) => ({ teacher: s.name, department: s.dept, lessons: 34, hours: 34 }))});
+      return;
+    }
+
     // ─── /api/dashboard ────────────────────────────────────────────────────
     // Mirrors the real backend's single dashboard endpoint, including its rule
     // that the ROLE COMES FROM THE TOKEN and never from the request, so the
