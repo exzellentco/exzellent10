@@ -8,6 +8,7 @@ import './styles/auth.css'
 import './styles/teacher-dash.css'
 import './styles/speech.css'
 import './styles/exzi.css'
+import './styles/console.css'
 
 const noiseUrl = `url("data:image/svg+xml,${encodeURIComponent(`<svg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(#noise)'/></svg>`)}")`;
 

@@ -52,6 +52,8 @@ import Ambassadors from "./pages/Ambassadors";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import WaitlistAdmin from "./pages/Admin/WaitlistAdmin";
 import ClassRoom from "./pages/ClassRoom";
+import MergedDashboard from "./pages/Lab/MergedDashboard"; // LOCAL PROTOTYPE
+import Console from "./pages/Console/Console";
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
@@ -138,7 +140,7 @@ const App = () => {
 
   const HomeRedirect = () => {
     if (userRole === "Student") return <Navigate to="/student-dashboard" replace />;
-    if (userRole === "Admin") return <Navigate to="/get-student" replace />;
+    if (userRole === "Admin") return <Navigate to="/admin-dashboard" replace />;
     if (userRole === "Teacher") return <Navigate to="/teacher-dashboard" replace />;
     window.location.replace("/exzellent-index.html");
     return null;
@@ -146,7 +148,7 @@ const App = () => {
 
   return (
     <div className="app-container" ref={appContainerRef} style={{ overflowY: "auto", overflowX: "hidden" }}>
-      {!["/login", "/signup", "/forgot-password", "/waitlist", "/teacher-dashboard", "/calendar"].includes(location.pathname) && <Navigation userRole={userRole} />}
+      {!["/login", "/signup", "/forgot-password", "/waitlist", "/student-dashboard", "/teacher-dashboard", "/admin-dashboard", "/calendar", "/lab/dashboard"].includes(location.pathname) && <Navigation userRole={userRole} />}
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login checkAuth={checkAuth} />} />
@@ -155,6 +157,8 @@ const App = () => {
         <Route path="/community" element={<Community />} />
         <Route path="/book" element={<BookClass />} />
         <Route path="/class/:bookingId" element={<ClassRoom />} />
+        {/* LOCAL PROTOTYPE — dev builds only; see note in Lab/MergedDashboard. */}
+        {import.meta.env.DEV && <Route path="/lab/dashboard" element={<MergedDashboard />} />}
         <Route path="/affiliates" element={<Affiliates />} />
         <Route path="/ambassadors" element={<Ambassadors />} />
         <Route path="/partner" element={<PartnerDashboard />} />
@@ -185,18 +189,22 @@ const App = () => {
 
         {/* Student-only protected routes */}
         <Route element={<ProtectedRouter userRole={userRole} allowedRoles={["Student"]} />}>
-          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/student-dashboard" element={<Console role="student" />} />
+          {/* The previous dashboard, kept reachable while the console beds in. */}
+          <Route path="/student-dashboard/classic" element={<StudentDashboard />} />
           <Route path="/course/:courseNameAndLevel" element={<CourseWrapper />} />
         </Route>
 
         {/* Teacher-only protected routes */}
         <Route element={<ProtectedRouter userRole={userRole} allowedRoles={["Teacher"]} />}>
-          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher-dashboard" element={<Console role="teacher" />} />
+          <Route path="/teacher-dashboard/classic" element={<TeacherDashboard />} />
           <Route path="/course/:courseNameAndLevel" element={<CourseWrapper />} />
         </Route>
 
         {/* Admin-only protected routes */}
         <Route element={<ProtectedRouter userRole={userRole} allowedRoles={["Admin"]} />}>
+          <Route path="/admin-dashboard" element={<Console role="admin" />} />
           <Route path="/get-student" element={<GetStudent />} />
           <Route path="/add-course" element={<AdminCourses />} />
           <Route path="/add-referral" element={<Referrals />} />

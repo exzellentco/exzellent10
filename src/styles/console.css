@@ -1,0 +1,475 @@
+/* Exzellent console — LOCAL PROTOTYPE, not part of the shipped app.
+   ---------------------------------------------------------------------------
+   A blend, on purpose:
+
+   From Exzellent   the dark ground and the violet/cyan identity — but lifted to
+                    a warm charcoal rather than the near-black #05060b, which
+                    read as a cave, with panels raised off it so the page has
+                    depth instead of being one flat sheet.
+   From LettsLocal  the craft: pill shapes, big tight numerals in a bordered
+                    figures panel with dividers, tinted status rather than
+                    saturated fills, warm neutrals, and real air between things.
+                    Mint joins the palette as the positive colour.
+   The "AI"         one dotted texture behind the figures and a soft accent
+                    wash top-left. Nothing that announces itself.
+
+   Kept because it is what stops a dashboard looking generated: figures lead and
+   never sit beside icon tiles, rows are divided by hairlines rather than each
+   being boxed, and the overview is asymmetric. */
+
+.alh {
+  /* Warm charcoal, not blue-black — closer to LettsLocal's warm ink inverted. */
+  --bg: #12131a;
+  --bg-2: #171822;
+  --panel: #1b1d29;
+  --panel-2: #202235;
+  --line: rgba(190, 195, 225, .12);
+  --line-soft: rgba(190, 195, 225, .07);
+
+  --text: #f1f2f7;
+  --dim: #adb3c8;
+  --faint: #7c839d;
+
+  --violet: 138, 75, 245;
+  --lilac: 199, 184, 234;
+  --mint: 90, 226, 135;
+  --amber: 240, 178, 60;
+  --rose: 232, 117, 111;
+
+  --accent: var(--violet);
+
+  --display: Inter, system-ui, sans-serif;
+  --ui: Inter, system-ui, -apple-system, sans-serif;
+
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; overflow: hidden;
+  background:
+    radial-gradient(900px 520px at 6% -10%, rgba(var(--accent), .11), transparent 62%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--ui);
+  -webkit-font-smoothing: antialiased;
+}
+.alh[data-role="student"] { --accent: var(--mint); }
+.alh[data-role="teacher"] { --accent: var(--amber); }
+.alh[data-role="admin"]   { --accent: var(--violet); }
+
+/* ─────────────────────────── sidebar ─────────────────────────── */
+.alh-side {
+  width: 238px; flex: none; display: flex; flex-direction: column;
+  padding: 22px 14px 16px; overflow-y: auto;
+  border-right: 1px solid var(--line-soft); background: rgba(0, 0, 0, .16);
+}
+.alh-brand { display: flex; align-items: center; gap: 11px; padding: 0 8px 24px; }
+.alh-brand span {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 11px;
+  background: rgba(var(--accent), .9); color: #14151d;
+}
+.alh-brand div { font: 600 15.5px/1.1 var(--display); letter-spacing: -.025em; }
+.alh-brand small { display: block; margin-top: 3px; font: 400 11px/1 var(--ui); color: var(--faint); }
+
+.alh-nav { display: flex; flex-direction: column; gap: 1px; }
+.alh-nav button {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  padding: 9px 11px; cursor: pointer; text-align: left; border: 0; border-radius: 10px;
+  font: 400 13px/1 var(--ui); color: var(--dim); background: transparent;
+  transition: background .15s ease, color .15s ease;
+}
+.alh-nav button svg { opacity: .55; transition: opacity .15s ease; }
+.alh-nav button:hover { background: rgba(255, 255, 255, .04); color: var(--text); }
+.alh-nav button:hover svg { opacity: .85; }
+.alh-nav button.on { color: var(--text); font-weight: 550; background: rgba(var(--accent), .17); }
+.alh-nav button.on svg { opacity: 1; color: rgb(var(--accent)); }
+.alh-nav button em {
+  margin-left: auto; font-style: normal; font: 600 10px/1 var(--ui);
+  padding: 3px 7px; border-radius: 999px; background: rgba(var(--rose), .9); color: #1a1016;
+}
+.alh-navhead {
+  padding: 20px 11px 7px; font: 600 10px/1 var(--ui);
+  letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
+}
+
+.alh-side-foot { margin-top: auto; padding: 16px 4px 0; border-top: 1px solid var(--line-soft); }
+.alh-role { display: flex; gap: 3px; padding: 3px; border-radius: 999px; background: rgba(255, 255, 255, .05); }
+.alh-role button {
+  flex: 1; padding: 7px 4px; border: 0; border-radius: 999px; cursor: pointer;
+  font: 550 11.5px/1 var(--ui); color: var(--faint); background: transparent;
+  transition: background .15s ease, color .15s ease;
+}
+.alh-role button:hover { color: var(--dim); }
+.alh-role button.on { color: #14151d; background: rgb(var(--accent)); }
+
+/* ─────────────────────────── header ─────────────────────────── */
+.alh-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.alh-top {
+  display: flex; align-items: flex-end; gap: 20px;
+  padding: 30px 40px 24px; border-bottom: 1px solid var(--line-soft);
+}
+.alh-eyebrow {
+  display: block; margin-bottom: 10px;
+  font: 600 10.5px/1 var(--ui); letter-spacing: .2em; text-transform: uppercase;
+  color: rgb(var(--accent));
+}
+.alh-top h1 { margin: 0; font: 600 30px/1.08 var(--display); letter-spacing: -.042em; }
+.alh-top p { margin: 9px 0 0; font-size: 13.5px; color: var(--dim); max-width: 56ch; line-height: 1.5; }
+.alh-top-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; padding-bottom: 4px; }
+.alh-btn {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 999px;
+  cursor: pointer; font: 550 12.5px/1 var(--ui); border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .03); color: var(--text);
+  transition: border-color .15s, background .15s;
+}
+.alh-btn:hover { border-color: rgba(var(--accent), .55); background: rgba(var(--accent), .1); }
+.alh-who { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--dim); }
+.alh-who i {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(var(--accent), .2); color: rgb(var(--accent));
+  font: 600 11px/1 var(--ui); font-style: normal;
+}
+.alh-body { flex: 1; overflow-y: auto; padding: 28px 40px 60px; }
+
+/* ─────────────────────────── figures ─────────────────────────── */
+/* LettsLocal's hero pattern: one bordered panel, vertical dividers, big tight
+   numerals, label beneath. Raised off the page so it reads as an object. */
+.alh-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 34px; padding: 6px;
+  border: 1px solid var(--line); border-radius: 22px;
+  background:
+    radial-gradient(rgba(255,255,255,.055) .6px, transparent .6px) 0 0 / 14px 14px,
+    linear-gradient(180deg, var(--panel-2), var(--panel));
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 18px 44px rgba(0,0,0,.28);
+}
+@media (max-width: 1150px) { .alh-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px)  { .alh-stats { grid-template-columns: 1fr; } }
+.alh-stat { padding: 22px 26px; border-right: 1px solid var(--line-soft); }
+.alh-stats .alh-stat:nth-child(3n), .alh-stats .alh-stat:last-child { border-right: 0; }
+@media (max-width: 1150px) {
+  .alh-stats .alh-stat:nth-child(3n) { border-right: 1px solid var(--line-soft); }
+  .alh-stats .alh-stat:nth-child(2n) { border-right: 0; }
+}
+.alh-stat-ico { display: none; }
+.alh-stat b {
+  display: block; font: 600 36px/1 var(--display); letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums; color: var(--text);
+}
+.alh-stat > div > span { display: block; margin-top: 9px; font: 400 13px/1.35 var(--ui); color: var(--dim); }
+.alh-stat > div > i { display: block; margin-top: 5px; font-style: normal;
+                      font: 400 11.5px/1.35 var(--ui); color: var(--faint); }
+.alh-stat:first-child b { font-size: 44px; color: rgb(var(--accent)); }
+
+/* ─────────────────────────── panels ─────────────────────────── */
+.alh-grid2 { display: grid; gap: 22px; grid-template-columns: 1.45fr 1fr; align-items: start; }
+@media (max-width: 1060px) { .alh-grid2 { grid-template-columns: 1fr; } }
+
+/* Panels are raised surfaces, not outlines on a flat page. */
+.alh-card {
+  margin-bottom: 22px; padding: 20px 22px; overflow-x: auto;
+  border: 1px solid var(--line-soft); border-radius: 20px;
+  background: var(--panel);
+}
+.alh-card > header {
+  display: flex; align-items: baseline; gap: 10px;
+  padding-bottom: 13px; border-bottom: 1px solid var(--line-soft);
+}
+.alh-card h3 { margin: 0; font: 600 15.5px/1.2 var(--display); letter-spacing: -.025em; }
+.alh-tag {
+  font: 550 11px/1 var(--ui); padding: 4px 9px; border-radius: 999px;
+  background: rgba(255, 255, 255, .06); color: var(--dim); font-variant-numeric: tabular-nums;
+}
+.alh-from { display: none; }
+
+/* ─────────────────────────── rows ─────────────────────────── */
+.alh-list { list-style: none; margin: 0; padding: 0; }
+.alh-list li {
+  display: flex; align-items: center; gap: 14px; font-size: 13.5px;
+  padding: 14px 0; border-bottom: 1px solid var(--line-soft);
+}
+.alh-list li:last-child { border-bottom: 0; padding-bottom: 2px; }
+.alh-grow { flex: 1; min-width: 0; line-height: 1.35; }
+.alh-grow i { display: block; font-style: normal; font-size: 11.5px; color: var(--faint); margin-top: 4px; }
+.alh-done { color: var(--faint); text-decoration: line-through; }
+.alh-time { flex: none; width: 48px; font: 400 12.5px/1 var(--ui); color: var(--faint);
+            font-variant-numeric: tabular-nums; }
+.alh-time svg { display: none; }
+
+/* Tinted pills, LettsLocal-style — readable on dark without shouting. */
+.alh-pill {
+  flex: none; font: 550 11px/1 var(--ui); padding: 5px 11px; border-radius: 999px;
+  text-transform: capitalize;
+}
+.alh-present, .alh-done-p, .alh-paid, .alh-resolved, .alh-confirmed, .alh-connected,
+.alh-delivered, .alh-invited { background: rgba(var(--mint), .16); color: #7fe6a6; }
+.alh-absent, .alh-live { background: rgba(var(--rose), .16); color: #f0a09b; }
+.alh-pending, .alh-doing, .alh-scheduled { background: rgba(var(--amber), .16); color: #f3c775; }
+.alh-open, .alh-todo { background: rgba(255, 255, 255, .06); color: var(--dim); }
+
+.alh-pri {
+  flex: none; width: 64px; padding-left: 10px; border-left: 2px solid currentColor;
+  font: 600 10px/1 var(--ui); letter-spacing: .1em; text-transform: uppercase;
+}
+.alh-pri-urgent { color: #f0a09b; }
+.alh-pri-high   { color: #f3c775; }
+.alh-pri-medium { color: #7fe6a6; }
+.alh-pri-low    { color: var(--faint); }
+
+.alh-mini {
+  flex: none; display: inline-flex; align-items: center; gap: 6px;
+  font: 550 12px/1 var(--ui); padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--text);
+  transition: background .15s ease, border-color .15s ease;
+}
+.alh-mini:hover { background: rgba(var(--accent), .16); border-color: transparent; }
+.alh-check { width: 16px; height: 16px; accent-color: rgb(var(--mint)); cursor: pointer; flex: none; }
+.alh-seg { display: flex; gap: 3px; flex: none; padding: 3px; border-radius: 999px;
+           background: rgba(255, 255, 255, .05); }
+.alh-seg button {
+  font: 500 11.5px/1 var(--ui); padding: 6px 12px; cursor: pointer; border: 0;
+  border-radius: 999px; background: transparent; color: var(--faint);
+}
+.alh-seg button.on { background: rgba(var(--accent), .9); color: #14151d; }
+
+/* ─────────────────────────── tables ─────────────────────────── */
+.alh-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.alh-table th {
+  text-align: left; padding: 0 16px 12px 0; color: var(--faint);
+  font: 600 10.5px/1 var(--ui); letter-spacing: .12em; text-transform: uppercase;
+  border-bottom: 1px solid var(--line-soft);
+}
+.alh-table td {
+  padding: 15px 16px 15px 0; border-bottom: 1px solid var(--line-soft);
+  vertical-align: top; font-variant-numeric: tabular-nums;
+}
+.alh-table tr:last-child td { border-bottom: 0; }
+.alh-table b { font-weight: 600; }
+.alh-chip {
+  font: 500 11.5px/1 var(--ui); padding: 4px 10px; border-radius: 999px;
+  background: rgba(255, 255, 255, .06); color: var(--dim);
+}
+.alh-sub { display: block; font-style: normal; font-size: 11.5px; color: var(--faint); margin-top: 4px; }
+.alh-pos { color: #7fe6a6; }
+.alh-neg { color: #f0a09b; }
+
+/* ─────────────────────────── progress ─────────────────────────── */
+.alh-block { display: block; }
+.alh-rowtop { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 10px; }
+.alh-rowtop b { font-weight: 600; }
+.alh-bar { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, .07); overflow: hidden; }
+.alh-bar span { display: block; height: 100%; border-radius: 999px; background: rgb(var(--accent)); }
+
+/* ─────────────────────────── timetable ─────────────────────────── */
+.alh-week { display: grid; gap: 12px; grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 900px) { .alh-week { grid-template-columns: repeat(2, 1fr); } }
+.alh-day { padding: 16px; border: 1px solid var(--line-soft); border-radius: 16px;
+           background: rgba(255, 255, 255, .022); }
+.alh-day h4 {
+  margin: 0 0 12px; font: 600 10.5px/1 var(--ui); letter-spacing: .14em;
+  text-transform: uppercase; color: var(--faint);
+}
+.alh-slot { padding: 10px 12px; margin-bottom: 8px; border-radius: 12px;
+            background: rgba(var(--accent), .13); }
+.alh-slot b { display: block; font: 600 11.5px/1 var(--ui); color: rgb(var(--accent));
+              font-variant-numeric: tabular-nums; }
+.alh-slot span { display: block; font-size: 13px; margin-top: 5px; }
+.alh-slot i { display: block; font-style: normal; font-size: 11.5px; color: var(--faint); margin-top: 3px; }
+
+.alh-muted { color: var(--faint); font-size: 13px; }
+.alh-error {
+  border: 1px solid rgba(var(--rose), .35); background: rgba(var(--rose), .1);
+  color: #f0a09b; padding: 12px 16px; border-radius: 14px; margin-bottom: 20px; font-size: 13.5px;
+}
+.alh-foot { display: none; }
+
+@media (max-width: 940px) {
+  .alh-side { width: 60px; padding: 18px 7px 12px; }
+  .alh-brand div, .alh-nav button span, .alh-navhead, .alh-role { display: none; }
+  .alh-nav button { justify-content: center; }
+  .alh-body, .alh-top { padding-left: 20px; padding-right: 20px; }
+}
+
+/* ─── live / demo switch ───────────────────────────────────────────────────
+   Live mode reads and writes production, so the state must be visible at all
+   times, not tucked away in a settings pane. */
+.alh-live-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  font: 600 12px/1 var(--ui); border: 1px solid var(--line);
+  background: rgba(255,255,255,.03); color: var(--dim);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.alh-live-toggle:hover { color: var(--text); border-color: rgba(var(--accent), .5); }
+.alh-live-toggle.on { background: rgba(var(--rose), .16); border-color: rgba(var(--rose), .5); color: #f0a09b; }
+.alh-live-warn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font: 600 10.5px/1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
+  color: #f0a09b;
+}
+.alh-livenote {
+  margin: 0 0 18px; padding: 10px 15px; border-radius: 12px; font-size: 12.5px;
+  background: rgba(var(--mint), .1); color: #7fe6a6; border: 1px solid rgba(var(--mint), .2);
+}
+.alh-livenote.demo { background: rgba(var(--amber), .1); color: #f3c775; border-color: rgba(var(--amber), .22); }
+
+/* sign-in dialog */
+.alh-modal {
+  position: fixed; inset: 0; z-index: 90; display: grid; place-items: center;
+  background: rgba(8, 9, 14, .72); backdrop-filter: blur(4px);
+}
+.alh-modal-box {
+  width: min(420px, calc(100vw - 40px)); padding: 26px;
+  border: 1px solid var(--line); border-radius: 20px; background: var(--panel);
+  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+}
+.alh-modal-box h3 { margin: 0 0 12px; font: 600 18px/1.2 var(--display); letter-spacing: -.03em; }
+.alh-modal-warn {
+  display: flex; gap: 9px; margin: 0 0 18px; padding: 11px 13px; border-radius: 12px;
+  font-size: 12.5px; line-height: 1.45;
+  background: rgba(var(--rose), .1); color: #f0a09b; border: 1px solid rgba(var(--rose), .22);
+}
+.alh-modal-box label { display: block; margin-bottom: 13px; font: 550 12px/1 var(--ui); color: var(--dim); }
+.alh-modal-box input {
+  width: 100%; margin-top: 7px; padding: 11px 13px; border-radius: 11px;
+  border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text);
+  font: 400 13.5px/1 var(--ui);
+}
+.alh-modal-box input:focus { outline: none; border-color: rgba(var(--accent), .6); }
+.alh-modal-error { margin: 0 0 12px; font-size: 12.5px; color: #f0a09b; }
+.alh-modal-row { display: flex; gap: 9px; justify-content: flex-end; margin-top: 6px; }
+.alh-btn.primary { background: rgb(var(--accent)); color: #14151d; border-color: transparent; }
+.alh-modal-box small { display: block; margin-top: 14px; font-size: 11.5px; color: var(--faint); }
+
+/* inline write box */
+.alh-composer { display: flex; gap: 9px; margin-bottom: 6px; padding-bottom: 14px; }
+.alh-composer input {
+  flex: 1; padding: 10px 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text);
+  font: 400 13px/1 var(--ui);
+}
+.alh-composer input:focus { outline: none; border-color: rgba(var(--accent), .55); }
+.alh-composer button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ─────────────────────────── calendar ─────────────────────────── */
+/* A month grid beside the chosen day. The grid stays quiet — numerals and small
+   status dots only — so the eye goes to the day panel, which is where the
+   actual answer is. Same hairline-and-tint language as the rest of the console;
+   no boxed cells, which is what makes a calendar look like a spreadsheet. */
+
+.alh-cal header { flex-wrap: wrap; }
+.alh-cal-nav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.alh-cal-nav strong {
+  min-width: 132px; text-align: center;
+  font: 550 13px/1 var(--ui); color: var(--text); font-variant-numeric: tabular-nums;
+}
+.alh-cal-nav > button:not(.alh-mini) {
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px;
+  cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--dim);
+  transition: background .15s ease, color .15s ease;
+}
+.alh-cal-nav > button:not(.alh-mini):hover { background: rgba(var(--accent), .14); color: var(--text); }
+.alh-cal-nav .alh-mini { padding: 6px 12px; font-size: 11.5px; }
+
+.alh-cal-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 26px; }
+@media (max-width: 1080px) { .alh-cal-body { grid-template-columns: 1fr; gap: 20px; } }
+
+.alh-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+.alh-cal-dow {
+  padding: 0 0 10px; text-align: center;
+  font: 600 10px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--faint);
+}
+
+.alh-cal-day {
+  position: relative; min-height: 62px; padding: 8px 6px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; border: 1px solid transparent; border-radius: 12px;
+  background: transparent; color: var(--dim);
+  font: 400 13px/1 var(--ui); font-variant-numeric: tabular-nums;
+  transition: background .13s ease, border-color .13s ease, color .13s ease;
+}
+.alh-cal-day b { font-weight: 500; }
+.alh-cal-day:hover { background: rgba(255, 255, 255, .05); color: var(--text); }
+.alh-cal-day[data-outside] { color: var(--faint); opacity: .45; }
+.alh-cal-day[data-today] b {
+  display: grid; place-items: center; width: 24px; height: 24px; margin-top: -3px;
+  border-radius: 50%; background: rgba(var(--accent), .9); color: #14151d; font-weight: 600;
+}
+.alh-cal-day[data-on] { border-color: rgba(var(--accent), .5); background: rgba(var(--accent), .1); color: var(--text); }
+
+/* Dots, not text: at this size a lesson title is unreadable anyway, and the
+   count in the corner carries the density. */
+.alh-cal-pips { display: flex; gap: 3px; min-height: 5px; }
+.alh-cal-pips i { width: 5px; height: 5px; border-radius: 50%; background: rgb(var(--accent)); }
+.alh-cal-pips i[data-status="completed"] { background: var(--faint); }
+.alh-cal-pips i[data-status="pending"] { background: rgb(var(--amber)); }
+.alh-cal-pips i[data-status="cancelled"] { background: rgb(var(--rose)); }
+.alh-cal-day em {
+  font-style: normal; font: 600 9.5px/1 var(--ui); color: var(--faint); letter-spacing: .02em;
+}
+.alh-cal-day[data-today] em, .alh-cal-day[data-on] em { color: var(--dim); }
+
+/* the chosen day */
+.alh-cal-day-panel { border-left: 1px solid var(--line-soft); padding-left: 24px; }
+@media (max-width: 1080px) {
+  .alh-cal-day-panel { border-left: 0; border-top: 1px solid var(--line-soft); padding: 18px 0 0; }
+}
+.alh-cal-day-panel h4 {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  font: 600 15px/1.1 var(--display); letter-spacing: -.02em; color: var(--text);
+}
+.alh-cal-istoday {
+  font: 600 9.5px/1 var(--ui); letter-spacing: .12em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: 999px;
+  background: rgba(var(--accent), .18); color: rgb(var(--accent));
+}
+
+.alh-cal-list { list-style: none; margin: 0; padding: 0; }
+.alh-cal-list li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--line-soft);
+}
+.alh-cal-list li:last-child { border-bottom: 0; }
+.alh-cal-time { flex: none; width: 46px; font-variant-numeric: tabular-nums; }
+.alh-cal-time b { display: block; font: 550 13px/1 var(--ui); color: var(--text); }
+.alh-cal-time i { display: block; margin-top: 4px; font-style: normal; font: 400 11px/1 var(--ui); color: var(--faint); }
+.alh-cal-list .alh-grow b { display: block; font: 500 13.5px/1.3 var(--ui); color: var(--text); }
+.alh-cal-list .alh-grow i {
+  display: inline-flex; align-items: center; gap: 4px; margin: 5px 10px 0 0;
+  font-style: normal; font-size: 11.5px; color: var(--faint);
+}
+.alh-cal-list .alh-grow i svg { opacity: .7; }
+.alh-cal-list .alh-pill[data-status="confirmed"] { background: rgba(var(--mint), .16); color: #7fe6a6; }
+.alh-cal-list .alh-pill[data-status="pending"] { background: rgba(var(--amber), .16); color: #f3c775; }
+.alh-cal-list .alh-pill[data-status="completed"] { background: rgba(255, 255, 255, .06); color: var(--dim); }
+.alh-cal-list .alh-pill[data-status="cancelled"] { background: rgba(var(--rose), .16); color: #f0a09b; }
+
+/* ─────────────────────────── console additions ─────────────────────────── */
+/* A mounted feature panel — Speech Lab, AI Tools, Messages and the rest were
+   built as overlays with their own chrome. Inside the console they sit in the
+   page instead, so this gives them a surface to sit on and stops a panel that
+   expects to be centred on a dark backdrop from floating in mid-air. */
+.alh-mount { min-height: 200px; }
+
+.alh-error {
+  padding: 14px 18px; border-radius: 14px;
+  border: 1px solid rgba(var(--rose), .35); background: rgba(var(--rose), .1);
+  color: #f0a09b; font-size: 13.5px;
+}
+
+/* Status and priority tints for the console, which marks pills with a
+   data-status attribute rather than a class per state. Same palette as the
+   class-based pills above so the two never disagree on screen. */
+.alh-pill[data-status="present"], .alh-pill[data-status="paid"],
+.alh-pill[data-status="resolved"], .alh-pill[data-status="confirmed"],
+.alh-pill[data-status="done"], .alh-pill[data-status="delivered"],
+.alh-pill[data-status="low"] { background: rgba(var(--mint), .16); color: #7fe6a6; }
+
+.alh-pill[data-status="absent"], .alh-pill[data-status="cancelled"],
+.alh-pill[data-status="urgent"] { background: rgba(var(--rose), .16); color: #f0a09b; }
+
+.alh-pill[data-status="pending"], .alh-pill[data-status="doing"],
+.alh-pill[data-status="in_progress"], .alh-pill[data-status="scheduled"],
+.alh-pill[data-status="high"] { background: rgba(var(--amber), .16); color: #f3c775; }
+
+.alh-pill[data-status="open"], .alh-pill[data-status="todo"],
+.alh-pill[data-status="completed"], .alh-pill[data-status="medium"] {
+  background: rgba(255, 255, 255, .06); color: var(--dim);
+}

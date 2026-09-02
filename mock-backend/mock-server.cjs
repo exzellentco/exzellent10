@@ -2050,6 +2050,115 @@ const routes = [
 
 /* ------------------------------------------------------------------- server */
 
+// ─── MERGED-DASHBOARD PROTOTYPE DATA (local only) ─────────────────────────
+// Operations-side demo data, modelled on the Al Huda LMS feature set. Kept in
+// memory only - deliberately not persisted to data.json, so the prototype
+// never pollutes the mock's saved state.
+const OPS = (() => {
+  const day = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+  const staff = [
+    { _id: "st-1", name: "Lena Hoffmann",  role: "Teacher",     dept: "Languages", email: "lena@exzellent.co" },
+    { _id: "st-2", name: "Marco Rossi",    role: "Teacher",     dept: "Languages", email: "marco@exzellent.co" },
+    { _id: "st-3", name: "Aisha Rahman",   role: "Supervisor",  dept: "Academics", email: "aisha@exzellent.co" },
+    { _id: "st-4", name: "Tomasz Nowak",   role: "Tech",        dept: "Platform",  email: "tomasz@exzellent.co" },
+    { _id: "st-5", name: "Sofia Garcia",   role: "Marketing",   dept: "Growth",    email: "sofia@exzellent.co" },
+    { _id: "st-6", name: "Daniel Fischer", role: "Finance",     dept: "Operations", email: "daniel@exzellent.co" },
+  ];
+  const month = new Date().toISOString().slice(0, 7);
+  const payroll = staff.map((s, i) => {
+    const base = [2400, 2200, 2800, 3100, 2500, 2900][i];
+    const bonus = [200, 0, 150, 300, 100, 0][i];
+    const deductions = [0, 50, 0, 0, 0, 120][i];
+    return { _id: "pay-" + (i + 1), staffId: s._id, staffName: s.name, role: s.role, dept: s.dept,
+             month, base, bonus, deductions, net: base + bonus - deductions,
+             status: i % 3 === 0 ? "paid" : "pending" };
+  });
+  const complaints = [
+    { _id: "cp-1", from: "Anna Muller",  role: "Student", subject: "Lesson started late twice this week",
+      priority: "high",   status: "open",     createdAt: day(-2) },
+    { _id: "cp-2", from: "Ben Okafor",   role: "Student", subject: "Cannot download the A2 worksheet",
+      priority: "medium", status: "open",     createdAt: day(-4) },
+    { _id: "cp-3", from: "Marco Rossi",  role: "Teacher", subject: "Timetable clash on Wednesdays",
+      priority: "high",   status: "doing",    createdAt: day(-1) },
+    { _id: "cp-4", from: "Chloe Martin", role: "Student", subject: "Billed twice for the same month",
+      priority: "urgent", status: "open",     createdAt: day(0) },
+    { _id: "cp-5", from: "Diego Souza",  role: "Student", subject: "Audio quality in the online class",
+      priority: "low",    status: "resolved", createdAt: day(-9) },
+  ];
+  const tasks = [
+    { _id: "tk-1", title: "Approve 3 pending teacher applications", owner: "Aisha Rahman", due: day(1),  status: "doing", comments: 2 },
+    { _id: "tk-2", title: "Publish the B1 course outline",          owner: "Lena Hoffmann", due: day(3), status: "todo",  comments: 0 },
+    { _id: "tk-3", title: "Reconcile October payroll",              owner: "Daniel Fischer", due: day(-1), status: "doing", comments: 4 },
+    { _id: "tk-4", title: "Fix the mobile booking overlay",         owner: "Tomasz Nowak",  due: day(2),  status: "done",  comments: 1 },
+    { _id: "tk-5", title: "Launch the referral campaign",           owner: "Sofia Garcia",  due: day(6),  status: "todo",  comments: 0 },
+  ];
+  const attendance = [
+    { _id: "at-1", student: "Anna Muller",  cls: "German A1 - speaking", time: "10:00", teacher: "Lena Hoffmann", status: "present" },
+    { _id: "at-2", student: "Ben Okafor",   cls: "German A1 - speaking", time: "10:00", teacher: "Lena Hoffmann", status: "present" },
+    { _id: "at-3", student: "Chloe Martin", cls: "English B2 - interview", time: "14:00", teacher: "Marco Rossi", status: "absent" },
+    { _id: "at-4", student: "Diego Souza",  cls: "English B2 - interview", time: "14:00", teacher: "Marco Rossi", status: "present" },
+    { _id: "at-5", student: "Yuki Tanaka",  cls: "German A2 - grammar",  time: "16:30", teacher: "Lena Hoffmann", status: "present" },
+  ];
+  const timetable = [
+    { day: "Mon", slots: [{ t: "10:00", cls: "German A1", who: "Lena" }, { t: "14:00", cls: "English B2", who: "Marco" }] },
+    { day: "Tue", slots: [{ t: "09:00", cls: "German A2", who: "Lena" }] },
+    { day: "Wed", slots: [{ t: "11:00", cls: "Skill Lab", who: "Tomasz" }, { t: "16:30", cls: "German A2", who: "Lena" }] },
+    { day: "Thu", slots: [{ t: "10:00", cls: "German A1", who: "Lena" }] },
+    { day: "Fri", slots: [{ t: "13:00", cls: "Growth Lab", who: "Aisha" }] },
+  ];
+  // Dated lessons for the calendar. Generated relative to today so the grid is
+  // always populated whenever the prototype is opened, and shaped exactly like
+  // the live /api/calendar/bookings rows, so the calendar reads one shape
+  // whether it is on the mock or on production.
+  const calendar = (() => {
+    const teachers = ["Lena Hoffmann", "Marco Rossi", "Aisha Rahman", "Tomasz Nowak"];
+    const students = ["Anna Muller", "Ben Okafor", "Yuki Tanaka", "Chloe Martin", "Diego Souza"];
+    const titles = ["German A1 - speaking", "German A2 - grammar", "English B2 - interview",
+                    "Exam prep", "Speaking Lab", "Business German"];
+    const times = ["09:00", "10:00", "11:30", "14:00", "16:30", "18:00"];
+    const pad = (n) => String(n).padStart(2, "0");
+    const rows = [];
+    let n = 0;
+    // Six weeks either side of today, so paging a month back or forward still
+    // lands on lessons rather than an empty grid.
+    for (let off = -42; off <= 42; off += 1) {
+      const dt = new Date();
+      dt.setDate(dt.getDate() + off);
+      if (dt.getDay() === 0) continue;               // no Sunday lessons
+      const seed = off + 42;                         // keep every index positive
+      const many = dt.getDay() === 6 ? 1 : (seed % 2) + 2;   // 2-3 on a weekday
+      for (let i = 0; i < many; i += 1) {
+        const k = seed + i;
+        const start = times[k % times.length];
+        const dur = k % 3 === 0 ? 90 : 60;
+        const endMin = Number(start.slice(0, 2)) * 60 + Number(start.slice(3)) + dur;
+        n += 1;
+        rows.push({
+          _id: `bk-${n}`,
+          date: `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`,
+          start,
+          end: `${pad(Math.floor(endMin / 60))}:${pad(endMin % 60)}`,
+          durationMin: dur,
+          title: titles[k % titles.length],
+          // The first lesson of each day belongs to the two identities the
+          // per-role demo views use, so a teacher or student opening the
+          // calendar sees their own day rather than an empty one. The rest
+          // rotate, which is what keeps the admin view looking like a school.
+          teacherName: i === 0 ? "Lena Hoffmann" : teachers[k % teachers.length],
+          studentName: i === 0 ? "Anna Muller" : students[k % students.length],
+          // Anything in the past has already happened; today and later are
+          // still upcoming, with the odd one awaiting the teacher's confirmation.
+          status: off < 0 ? "completed" : (k % 7 === 0 ? "pending" : "confirmed"),
+          meetingUrl: off >= 0 ? `https://meet.exzellent.co/room/${n}` : "",
+        });
+      }
+    }
+    return rows;
+  })();
+
+  return { staff, payroll, complaints, tasks, attendance, timetable, calendar };
+})();
+
 // Rolling per-session chat history for /api/chat/message (Redis upstream).
 const CHAT_SESSIONS = {};
 
@@ -2206,6 +2315,275 @@ const server = http.createServer((req, res) => {
     // so the dashboard component can be built and tested locally instead of
     // pointing dev at production.
     //   body: { sessionId, userMessage, profile:{ name, mode, ... } }
+    // ─── MERGED-DASHBOARD PROTOTYPE (local only) ───────────────────────────
+    // Operations data borrowed from the Al Huda LMS concept (payroll,
+    // complaints, tasks, attendance, timetable) so the Exzellent dashboard can
+    // be evaluated with an academy-operations side attached. Demo data only.
+    // Role-scoped views for the merged-dashboard prototype. A student sees only
+    // their own learning; a teacher sees their classes and their own pay; an
+    // admin sees the whole operation. Demo data only.
+    // Everything the merged prototype shows beyond the core ops set: the rest of
+    // the Al Huda LMS surface plus the Exzellent learning and growth features.
+    if (req.method === "GET" && path.split("?")[0] === "/api/ops/extra") {
+      send(res, 200, { success: true, data: {
+        timetable: OPS.timetable,
+        calendar: OPS.calendar,
+        supervisors: [
+          { _id: "sv1", name: "Aisha Rahman", dept: "Academics", teachers: 4, students: 22, reports: 12 },
+          { _id: "sv2", name: "Omar Haddad",  dept: "Quality",   teachers: 2, students: 9,  reports: 5 },
+        ],
+        lectures: [
+          { _id: "lc1", title: "Dativ in everyday speech", teacher: "Lena Hoffmann", date: "Mon", mins: 60, rate: 26, status: "delivered" },
+          { _id: "lc2", title: "Interview small talk",     teacher: "Marco Rossi",   date: "Tue", mins: 45, rate: 24, status: "delivered" },
+          { _id: "lc3", title: "Perfekt vs Prateritum",    teacher: "Lena Hoffmann", date: "Thu", mins: 60, rate: 26, status: "scheduled" },
+        ],
+        online: [
+          { _id: "on1", cls: "German A2 - speaking", host: "Lena Hoffmann", when: "Today 10:00", joined: 2, capacity: 6, live: true },
+          { _id: "on2", cls: "English B2 - interview", host: "Marco Rossi", when: "Today 14:00", joined: 0, capacity: 4, live: false },
+        ],
+        platforms: [
+          { _id: "pf1", name: "Zoom Meeting SDK", use: "in-site classroom", status: "needs keys" },
+          { _id: "pf2", name: "Stripe",           use: "payments",          status: "connected" },
+          { _id: "pf3", name: "Groq",             use: "Exzi + AI tools",   status: "connected" },
+          { _id: "pf4", name: "Cloudinary",       use: "media",             status: "connected" },
+        ],
+        reports: [
+          { _id: "rp1", name: "Attendance by class",  period: "this month", rows: 148 },
+          { _id: "rp2", name: "Payroll by department", period: "this month", rows: 6 },
+          { _id: "rp3", name: "Revenue and credits",   period: "this month", rows: 91 },
+          { _id: "rp4", name: "Teacher utilisation",   period: "last 30 days", rows: 12 },
+        ],
+        courses: [
+          { _id: "c1", title: "German A1 - Foundations", level: "A1", students: 34, lessons: 12, published: true },
+          { _id: "c2", title: "German A2 - Everyday",    level: "A2", students: 21, lessons: 13, published: true },
+          { _id: "c3", title: "Business German B1",      level: "B1", students: 0,  lessons: 10, published: false },
+        ],
+        webinars: [
+          { _id: "w1", title: "Studying in Germany: the visa", when: "Thu 18:00", signups: 64, free: true },
+          { _id: "w2", title: "TestDaF in 6 weeks",            when: "Next Tue",  signups: 41, free: true },
+        ],
+        community: [
+          { _id: "p1", author: "Anna Muller", space: "lounge", text: "Passed my A2 mock today!", likes: 7, comments: 3 },
+          { _id: "p2", author: "Ben Okafor",  space: "study",  text: "Anyone got Dativ tips?",   likes: 2, comments: 5 },
+        ],
+        aiTools: [
+          { _id: "ai1", name: "Exam generator",  desc: "Make a practice test from any topic", runs: 128 },
+          { _id: "ai2", name: "Course builder",  desc: "Draft an outline and study plan",     runs: 46 },
+          { _id: "ai3", name: "Progress report", desc: "Summarise a learner's month",         runs: 73 },
+          { _id: "ai4", name: "Study kit",       desc: "Flashcards, quiz and summary",        runs: 91 },
+        ],
+        speech: { sessions: 212, avgScore: 78, topError: "word order", lastScore: 84 },
+        review:  { due: 14, learned: 268, streak: 12, retention: 86 },
+        certificates: [
+          { _id: "ct1", student: "Anna Muller", course: "German A1", issued: "12 Aug 2026" },
+          { _id: "ct2", student: "Yuki Tanaka", course: "German A1", issued: "3 Aug 2026" },
+        ],
+        leaderboard: [
+          { rank: 1, name: "Yuki Tanaka", points: 1420 },
+          { rank: 2, name: "Anna Muller", points: 1180 },
+          { rank: 3, name: "Ben Okafor",  points: 940 },
+        ],
+        referrals: { invited: 18, joined: 7, earned: 140, code: "ANNA-7K2" },
+        affiliates: [
+          { _id: "af1", partner: "GermanyGuide", clicks: 640, signups: 22, due: 220 },
+          { _id: "af2", partner: "StudyAbroad",  clicks: 310, signups: 9,  due: 90 },
+        ],
+        waitlist: [
+          { _id: "wl1", email: "maria@example.com", requested: "2 days ago", status: "pending" },
+          { _id: "wl2", email: "jonas@example.com", requested: "5 days ago", status: "invited" },
+        ],
+        jobs: [
+          { _id: "jb1", role: "German tutor (C1+)", applicants: 12, status: "open" },
+          { _id: "jb2", role: "Content designer",   applicants: 5,  status: "open" },
+        ],
+        messages: [
+          { _id: "m1", who: "Anna Muller", role: "Student", text: "Could we move Thursday?", when: "2h ago", unread: true },
+          { _id: "m2", who: "Aisha Rahman", role: "Supervisor", text: "Payroll approved.", when: "yesterday", unread: false },
+        ],
+      }});
+      return;
+    }
+
+    // ─── /api/dashboard ────────────────────────────────────────────────────
+    // Mirrors the real backend's single dashboard endpoint, including its rule
+    // that the ROLE COMES FROM THE TOKEN and never from the request, so the
+    // console behaves the same locally as it does live.
+    if (req.method === "GET" && path.split("?")[0] === "/api/dashboard") {
+      const today = new Date().toISOString().slice(0, 10);
+      const bookings = OPS.calendar;
+
+      if (role === "Admin") {
+        send(res, 200, { success: true, role: "admin", data: {
+          summary: {
+            students: STUDENTS.length,
+            teachers: 4,
+            courses: (typeof COURSES !== "undefined" ? COURSES.length : 6),
+            complaintsOpen: OPS.complaints.filter((c) => c.status !== "resolved").length,
+            lessonsBooked: bookings.length,
+            attendanceRate: Math.round(
+              (OPS.attendance.filter((a) => a.status === "present").length / OPS.attendance.length) * 100
+            ),
+            payrollMonth: OPS.payroll.reduce((n, p) => n + (p.net || 0), 0),
+          },
+          staff: OPS.staff,
+          payroll: OPS.payroll.map((p) => ({
+            _id: p._id, name: p.staffName, role: p.role, month: p.month,
+            base: p.base, bonus: p.bonus, deductions: p.deductions, net: p.net, status: p.status,
+          })),
+          complaints: OPS.complaints.map((c) => ({
+            _id: c._id, title: c.subject, by: c.from, role: c.role,
+            priority: c.priority, status: c.status,
+          })),
+          tasks: OPS.tasks,
+          attendance: OPS.attendance,
+          bookings,
+        }});
+        return;
+      }
+
+      if (role === "Teacher") {
+        const mine = bookings.filter((b) => b.teacherName === "Lena Hoffmann");
+        send(res, 200, { success: true, role: "teacher", data: {
+          me: {
+            name: "Lena Hoffmann", dept: "Languages", rate: 26, currency: "EUR", unread: 1,
+            classesToday: mine.filter((b) => b.date === today).map((b) => ({
+              _id: b._id, title: b.title, start: b.start, student: b.studentName,
+              status: b.status === "completed" ? "present" : "absent", meetingUrl: b.meetingUrl,
+            })),
+            roster: [
+              { _id: "r1", student: "Anna Muller", level: "A2", attended: "18/20" },
+              { _id: "r2", student: "Ben Okafor",  level: "A1", attended: "11/14" },
+              { _id: "r3", student: "Yuki Tanaka", level: "A2", attended: "9/9" },
+            ],
+            earnings: { thisMonth: 2600, lastMonth: 2450, lessons: mine.length, rate: 26 },
+            toGrade: [],
+          },
+          payroll: OPS.payroll.filter((p) => p.staffName === "Lena Hoffmann").map((p) => ({
+            _id: p._id, name: p.staffName, role: p.role, month: p.month,
+            base: p.base, bonus: p.bonus, deductions: p.deductions, net: p.net, status: p.status,
+          })),
+          bookings: mine,
+        }});
+        return;
+      }
+
+      const mine = bookings.filter((b) => b.studentName === "Anna Muller");
+      const attended = mine.filter((b) => b.status === "completed").length;
+      send(res, 200, { success: true, role: "student", data: {
+        me: {
+          name: "Anna Muller", level: "A2", credits: 340, streak: 12, unread: 1,
+          goal: "Pass telc B2", targetLanguage: "German",
+          progress: [
+            { _id: "p1", course: "German A1 - Foundations", level: "A1", pct: 100, lessons: "12/12" },
+            { _id: "p2", course: "German A2 - Everyday",    level: "A2", pct: 62,  lessons: "8/13" },
+            { _id: "p3", course: "Speaking Lab",            level: "A2", pct: 35,  lessons: "5/14" },
+          ],
+          lessons: mine.filter((b) => b.date >= today).slice(0, 20).map((b) => ({
+            _id: b._id, title: b.title, date: b.date, start: b.start,
+            who: b.teacherName, status: b.status, meetingUrl: b.meetingUrl,
+          })),
+          attendance: { attended, booked: mine.length, missed: Math.max(0, mine.length - attended) },
+        },
+        bookings: mine,
+      }});
+      return;
+    }
+
+    if (req.method === "GET" && path.split("?")[0] === "/api/ops/me/student") {
+      send(res, 200, { success: true, data: {
+        name: "Anna Muller", level: "A2", streak: 12, credits: 340,
+        progress: [
+          { course: "German A1 - Foundations", pct: 100, lessons: "12/12" },
+          { course: "German A2 - Everyday",    pct: 62,  lessons: "8/13" },
+          { course: "Speaking Lab",            pct: 35,  lessons: "5/14" },
+        ],
+        lessons: [
+          { _id: "l1", when: "Today 10:00",    cls: "German A2 - speaking", teacher: "Lena Hoffmann", status: "confirmed" },
+          { _id: "l2", when: "Thu 16:30",      cls: "German A2 - grammar",  teacher: "Lena Hoffmann", status: "confirmed" },
+          { _id: "l3", when: "Next Mon 10:00", cls: "Exam prep",            teacher: "Marco Rossi",   status: "pending" },
+        ],
+        homework: [
+          { _id: "h1", title: "Dativ worksheet 3",       due: "tomorrow", status: "todo" },
+          { _id: "h2", title: "Record 2 min: my weekend", due: "Friday",   status: "todo" },
+          { _id: "h3", title: "Vocabulary set 12",        due: "done",     status: "done" },
+        ],
+        attendance: { attended: 18, booked: 20, missed: 2 },
+      }});
+      return;
+    }
+    if (req.method === "GET" && path.split("?")[0] === "/api/ops/me/teacher") {
+      send(res, 200, { success: true, data: {
+        name: "Lena Hoffmann", dept: "Languages",
+        earnings: { thisMonth: 2600, lastMonth: 2450, lectures: 34, rate: 26 },
+        classesToday: OPS.attendance.filter((a) => a.teacher === "Lena Hoffmann"),
+        roster: [
+          { _id: "r1", student: "Anna Muller",  level: "A2", attended: "18/20", note: "strong speaking" },
+          { _id: "r2", student: "Ben Okafor",   level: "A1", attended: "11/14", note: "needs grammar drills" },
+          { _id: "r3", student: "Yuki Tanaka",  level: "A2", attended: "9/9",   note: "ready for B1" },
+        ],
+        toGrade: [
+          { _id: "g1", student: "Anna Muller", item: "Dativ worksheet 3", submitted: "2h ago" },
+          { _id: "g2", student: "Ben Okafor",  item: "Speaking clip",     submitted: "yesterday" },
+        ],
+        availability: [
+          { day: "Mon", hours: "09:00 - 12:00" }, { day: "Wed", hours: "14:00 - 18:00" },
+          { day: "Thu", hours: "09:00 - 12:00" },
+        ],
+      }});
+      return;
+    }
+
+    if (req.method === "GET" && path.startsWith("/api/ops/")) {
+      const what = path.split("?")[0].split("/")[3];
+
+      if (what === "summary") {
+        const openC = OPS.complaints.filter((c) => c.status !== "resolved").length;
+        const doneT = OPS.tasks.filter((t) => t.status === "done").length;
+        const present = OPS.attendance.filter((a) => a.status === "present").length;
+        send(res, 200, { success: true, data: {
+          staff: OPS.staff.length,
+          students: STUDENTS.length,
+          teachers: TEACHERS.length,
+          payrollThisMonth: OPS.payroll.reduce((s, p) => s + p.net, 0),
+          openComplaints: openC,
+          tasksDone: doneT,
+          tasksTotal: OPS.tasks.length,
+          attendanceRate: OPS.attendance.length ? Math.round((present / OPS.attendance.length) * 100) : 0,
+          creditsIssued: Object.values(MY_CREDITS).reduce((a, b) => a + b, 0),
+          lessonsBooked: BOOKINGS.filter((b) => b.status !== "cancelled").length,
+        }});
+        return;
+      }
+      if (what === "payroll")     { send(res, 200, { success: true, data: OPS.payroll }); return; }
+      if (what === "complaints")  { send(res, 200, { success: true, data: OPS.complaints }); return; }
+      if (what === "tasks")       { send(res, 200, { success: true, data: OPS.tasks }); return; }
+      if (what === "attendance")  { send(res, 200, { success: true, data: OPS.attendance }); return; }
+      if (what === "timetable")   { send(res, 200, { success: true, data: OPS.timetable }); return; }
+      if (what === "staff")       { send(res, 200, { success: true, data: OPS.staff }); return; }
+      send(res, 404, { success: false, message: "Unknown ops resource: " + what });
+      return;
+    }
+
+    // Mutations so the prototype is clickable, not just a static read-out.
+    if (req.method === "POST" && path === "/api/ops/complaints/resolve") {
+      const c = OPS.complaints.find((x) => x._id === body.id);
+      if (c) { c.status = "resolved"; c.resolvedAt = new Date().toISOString(); }
+      send(res, 200, { success: !!c, data: c || null });
+      return;
+    }
+    if (req.method === "POST" && path === "/api/ops/tasks/toggle") {
+      const t = OPS.tasks.find((x) => x._id === body.id);
+      if (t) t.status = t.status === "done" ? "doing" : "done";
+      send(res, 200, { success: !!t, data: t || null });
+      return;
+    }
+    if (req.method === "POST" && path === "/api/ops/attendance/mark") {
+      const a = OPS.attendance.find((x) => x._id === body.id);
+      if (a) a.status = body.status === "absent" ? "absent" : "present";
+      send(res, 200, { success: !!a, data: a || null });
+      return;
+    }
+
     if (req.method === "POST" && path === "/api/chat/message") {
       const sessionId = String(body.sessionId || "");
       const userMessage = String(body.userMessage || "").trim();

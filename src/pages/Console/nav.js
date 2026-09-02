@@ -1,0 +1,107 @@
+import {
+  LayoutDashboard, Users, CalendarDays, CalendarCheck, Presentation,
+  Video, ClipboardList, MessageSquare, FileBarChart, AlertTriangle, Wallet,
+  BookOpen, Settings, Sparkles, Coins, GraduationCap, PenLine, Clock,
+  ShieldCheck, Mic, Award, Trophy, Gift, UserPlus, Briefcase, Repeat,
+} from "lucide-react";
+
+/**
+ * The console's sidebar, per role.
+ *
+ * `to` marks an item that navigates to an existing page rather than rendering a
+ * section inside the console. The admin tools that already exist and work —
+ * adding a teacher, a course, a webinar, a job, reviewing invite requests — are
+ * linked rather than reimplemented, so nothing that worked before stops working.
+ */
+export const NAV = {
+  admin: [
+    { k: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { head: "Academy" },
+    { k: "students", label: "Students", icon: Users, to: "/get-student" },
+    { k: "staff", label: "Teachers", icon: ShieldCheck },
+    { k: "calendar", label: "Calendar", icon: CalendarDays },
+    { k: "attendance", label: "Attendance", icon: CalendarCheck },
+    { k: "courses", label: "Courses", icon: BookOpen },
+    { k: "webinars", label: "Webinars", icon: Presentation },
+    { head: "Operations" },
+    { k: "tasks", label: "Tasks", icon: ClipboardList },
+    { k: "complaints", label: "Complaints", icon: AlertTriangle },
+    { k: "payroll", label: "Payroll", icon: Wallet },
+    { k: "reports", label: "Reports", icon: FileBarChart },
+    { head: "Growth" },
+    { k: "referrals", label: "Referrals", icon: Gift, to: "/add-referral" },
+    { k: "waitlist", label: "Invite requests", icon: UserPlus, to: "/invite-requests" },
+    { k: "jobs", label: "Jobs", icon: Briefcase, to: "/add-job" },
+    { head: "System" },
+    { k: "messages", label: "Messages", icon: MessageSquare },
+    { k: "manage", label: "Add & manage", icon: Settings },
+  ],
+  teacher: [
+    { k: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { head: "Teaching" },
+    { k: "classes", label: "Today's classes", icon: CalendarCheck },
+    { k: "calendar", label: "Calendar", icon: CalendarDays },
+    { k: "roster", label: "My students", icon: Users },
+    { k: "courses", label: "My courses", icon: BookOpen },
+    { k: "online", label: "Online class", icon: Video },
+    { head: "Tools" },
+    { k: "aitools", label: "AI Tools", icon: Sparkles },
+    { k: "speech", label: "Speech Lab", icon: Mic },
+    { head: "Mine" },
+    { k: "earnings", label: "Earnings", icon: Wallet },
+    { k: "messages", label: "Messages", icon: MessageSquare },
+    { k: "settings", label: "Settings", icon: Settings },
+  ],
+  student: [
+    { k: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { head: "Learning" },
+    { k: "courses", label: "My courses", icon: BookOpen },
+    { k: "calendar", label: "Calendar", icon: CalendarDays },
+    { k: "lessons", label: "My lessons", icon: GraduationCap },
+    { k: "homework", label: "Homework", icon: PenLine },
+    { k: "attendance", label: "My attendance", icon: CalendarCheck },
+    { head: "Practice" },
+    { k: "speech", label: "Speech Lab", icon: Mic },
+    { k: "review", label: "Daily review", icon: Repeat },
+    { k: "aitools", label: "AI Tools", icon: Sparkles },
+    { k: "webinars", label: "Webinars", icon: Presentation },
+    { k: "community", label: "Community", icon: MessageSquare, to: "/community" },
+    { head: "Progress" },
+    { k: "leaderboard", label: "Leaderboard", icon: Trophy },
+    { k: "credits", label: "Credits", icon: Coins },
+    { k: "referrals", label: "Refer a friend", icon: Gift },
+    { head: "System" },
+    { k: "messages", label: "Messages", icon: MessageSquare },
+    { k: "settings", label: "Settings", icon: Settings },
+  ],
+};
+
+/** Title and one-line subtitle for each section. */
+export const COPY = {
+  dashboard: ["Dashboard", ""],
+  students: ["Students", "Everyone enrolled."],
+  staff: ["Teachers", "Approved teachers on the platform."],
+  calendar: ["Calendar", "Every lesson, by date. Pick a day to see what is on."],
+  attendance: ["Attendance", "Who turned up."],
+  courses: ["Courses", "What is being taught."],
+  webinars: ["Webinars", "Live sessions and sign-ups."],
+  tasks: ["Tasks", "Work in progress across the team."],
+  complaints: ["Complaints", "Raised by students and teachers."],
+  payroll: ["Payroll", "This month, by person."],
+  reports: ["Reports", "Export what you need."],
+  messages: ["Messages", "Your inbox."],
+  manage: ["Add & manage", "The rest of the admin tools."],
+  classes: ["Today's classes", "What you are teaching today."],
+  roster: ["My students", "Everyone you teach."],
+  online: ["Online class", "Join or start a room."],
+  aitools: ["AI Tools", "Writing, grammar and practice helpers."],
+  speech: ["Speech Lab", "Record, and get pronunciation feedback."],
+  earnings: ["Earnings", "What you have been paid."],
+  settings: ["Settings", "Your profile and preferences."],
+  lessons: ["My lessons", "Booked one-to-one classes."],
+  homework: ["Homework", "What is due."],
+  review: ["Daily review", "Today's flashcards."],
+  leaderboard: ["Leaderboard", "How you compare."],
+  credits: ["Credits", "Your balance and what it buys."],
+  referrals: ["Refer a friend", "Invite someone, you both gain."],
+};
