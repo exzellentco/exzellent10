@@ -111,7 +111,22 @@ const TEACHER = {
 };
 
 // The admin "teachers" database. Starts with Lena; admins can add/approve/delete.
-const TEACHERS = [TEACHER];
+// A second teacher so the free and paid teacher dashboards can both be opened
+// at once, in two browsers, instead of toggling one flag back and forth.
+const FREE_TEACHER = {
+  ...TEACHER,
+  _id: "mock-teacher-free",
+  userId: "mock-teacher-free",
+  name: "Marco Rossi",
+  firstName: "Marco",
+  lastName: "Rossi",
+  email: "free.teacher@test.com",
+  password: "Teacher123",
+  paid: false,
+};
+TEACHER.paid = true;
+
+const TEACHERS = [TEACHER, FREE_TEACHER];
 
 // The instructor shown on a course's "Meet your Teacher" — the real teacher, not a placeholder.
 const INSTRUCTOR_DETAILS = [{
@@ -262,8 +277,18 @@ const SEED_STUDYKITS = Object.fromEntries(COURSES.filter((c) => c.studyKit).map(
 // it appears in the admin students list like any other student.
 const PRIMARY_STUDENT = { _id: "stu-kos", name: "Kos", firstName: "Kos", lastName: "", email: "koszoz99@gmail.com", password: "Kos12345", paid: true, country: "Germany", credits: 5000, phone: "", gender: "", dateOfBirth: null, referral: "Direct" };
 
+// Deliberately unpaid, so the FREE student dashboard has a login of its own and
+// both tiers can be open side by side rather than one flag being toggled.
+const FREE_STUDENT = {
+  _id: "stu-free", name: "Nora Weber", firstName: "Nora", lastName: "Weber",
+  email: "free.student@test.com", password: "Student123", paid: false,
+  country: "Germany", credits: 120, phone: "+49 151 0000000", gender: "Female",
+  dateOfBirth: "2001-03-08", referral: "Direct",
+};
+
 const STUDENTS = [
   PRIMARY_STUDENT,
+  FREE_STUDENT,
   { _id: "stu-1", name: "Anna Müller", firstName: "Anna", lastName: "Müller", email: "anna@test.com", paid: true, country: "Germany", credits: 1200, phone: "+49 151 2345678", gender: "Female", dateOfBirth: "1998-04-12", referral: "Instagram" },
   { _id: "stu-2", name: "Ben Okafor", firstName: "Ben", lastName: "Okafor", email: "ben@test.com", paid: true, country: "Nigeria", credits: 300, phone: "+234 803 1122334", gender: "Male", dateOfBirth: "2000-09-03", referral: "Friend" },
   { _id: "stu-3", name: "Chloé Martin", firstName: "Chloé", lastName: "Martin", email: "chloe@test.com", paid: true, country: "France", credits: 800, phone: "+33 6 12 34 56 78", gender: "Female", dateOfBirth: "1997-01-22", referral: "Google" },
@@ -994,6 +1019,12 @@ function loadData() {
       STUDENTS.push(...d.STUDENTS);
       // Make sure the primary demo student exists even in an older save.
       if (!STUDENTS.some((s) => (s.email || "").toLowerCase() === PRIMARY_STUDENT.email)) STUDENTS.unshift(PRIMARY_STUDENT);
+      // Same for the free-plan student.
+      if (!STUDENTS.some((s) => (s.email || "").toLowerCase() === "free.student@test.com")) {
+        STUDENTS.push(FREE_STUDENT);
+      }
+      const fs_ = STUDENTS.find((s) => (s.email || "").toLowerCase() === "free.student@test.com");
+      if (fs_) fs_.paid = false;
       // Backfill demo passwords for accounts saved before passwords existed.
       STUDENTS.forEach((s) => {
         if (!s.password) s.password = (s.email || "").toLowerCase() === PRIMARY_STUDENT.email ? "Kos12345" : "Student123";
@@ -1036,6 +1067,12 @@ function loadData() {
         if (t._id === TEACHER_ID) { Object.assign(TEACHER, t); TEACHERS.push(TEACHER); }
         else TEACHERS.push(t);
       });
+      // The demo accounts must survive a restore, or they vanish the first time
+      // anything is saved and the free/paid logins simply stop working.
+      if (!TEACHERS.some((t) => t._id === FREE_TEACHER._id)) TEACHERS.push(FREE_TEACHER);
+      TEACHER.paid = true;
+      const ft = TEACHERS.find((t) => t._id === FREE_TEACHER._id);
+      if (ft) { ft.paid = false; ft.password = ft.password || "Teacher123"; }
     }
     if (typeof d.SECTION_SEQ === "number") SECTION_SEQ = d.SECTION_SEQ;
     return true;
@@ -1322,7 +1359,7 @@ const routes = [
   ["GET", /^\/api\/users\/getprofile\/[^/]+$/, (_b, path, role) => {
     const id = path.split("?")[0].split("/").pop();
     if ((role || "Student") !== "Student") { const u = userFor(role || "Student"); u._id = id; return { success: true, data: u }; }
-    return { success: true, data: studentProfile(id, role) };
+    return { success: true, data: { ...studentProfile(id, role), paid: paidForAccount(id) } };
   }],
   ["PUT", /^\/api\/users\/updateprofile\/[^/]+$/, (body, path, role) => {
     const id = path.split("?")[0].split("/").pop();
@@ -2159,6 +2196,18 @@ const OPS = (() => {
   return { staff, payroll, complaints, tasks, attendance, timetable, calendar };
 })();
 
+// Which dashboard someone gets is a property of THEIR ACCOUNT, exactly as it is
+// in production (Student.paid / Teacher.paid). It was briefly a single global
+// flag here, and that immediately produced a free dashboard wearing a "Full
+// Access" badge, because two places disagreed about one fact.
+const paidForAccount = (id) => {
+  const t = TEACHERS.find((x) => x._id === id || x.userId === id);
+  if (t) return !!t.paid;
+  const st = STUDENTS.find((x) => x._id === id);
+  if (st) return !!st.paid;
+  return false;
+};
+
 // Rolling per-session chat history for /api/chat/message (Redis upstream).
 const CHAT_SESSIONS = {};
 
@@ -2534,6 +2583,8 @@ const server = http.createServer((req, res) => {
     // console behaves the same locally as it does live.
     if (req.method === "GET" && path.split("?")[0] === "/api/dashboard") {
       const today = new Date().toISOString().slice(0, 10);
+      const MOCK_PAID = paidForAccount(userIdFromToken(bearer));
+
       const bookings = OPS.calendar;
 
       if (role === "Admin") {
@@ -2566,10 +2617,14 @@ const server = http.createServer((req, res) => {
       }
 
       if (role === "Teacher") {
-        const mine = bookings.filter((b) => b.teacherName === "Lena Hoffmann");
+        // Whoever is signed in, not a hardcoded name — otherwise the free
+        // teacher would open their dashboard and be greeted as someone else.
+        const who = TEACHERS.find((t) => t._id === userIdFromToken(bearer)) || TEACHER;
+        const mine = bookings.filter((b) => b.teacherName === who.name);
         send(res, 200, { success: true, role: "teacher", data: {
           me: {
-            name: "Lena Hoffmann", dept: "Languages", rate: 26, currency: "EUR", unread: 1,
+            name: who.name, dept: "Languages", rate: 26, currency: "EUR", unread: 1,
+            paid: MOCK_PAID,
             classesToday: mine.filter((b) => b.date === today).map((b) => ({
               _id: b._id, title: b.title, start: b.start, student: b.studentName,
               status: b.status === "completed" ? "present" : "absent", meetingUrl: b.meetingUrl,
@@ -2582,7 +2637,7 @@ const server = http.createServer((req, res) => {
             earnings: { thisMonth: 2600, lastMonth: 2450, lessons: mine.length, rate: 26 },
             toGrade: [],
           },
-          payroll: OPS.payroll.filter((p) => p.staffName === "Lena Hoffmann").map((p) => ({
+          payroll: OPS.payroll.filter((p) => p.staffName === who.name).map((p) => ({
             _id: p._id, name: p.staffName, role: p.role, month: p.month,
             base: p.base, bonus: p.bonus, deductions: p.deductions, net: p.net, status: p.status,
           })),
@@ -2591,11 +2646,15 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      const mine = bookings.filter((b) => b.studentName === "Anna Muller");
+      const meStudent = STUDENTS.find((x) => x._id === userIdFromToken(bearer));
+      const myName = (meStudent?.name || "Anna Muller").replace("ü", "u");
+      const mine = bookings.filter((b) => b.studentName === myName);
       const attended = mine.filter((b) => b.status === "completed").length;
       send(res, 200, { success: true, role: "student", data: {
         me: {
-          name: "Anna Muller", level: "A2", credits: 340, streak: 12, unread: 1,
+          name: meStudent?.name || "Anna Muller",
+          level: "A2", credits: meStudent?.credits ?? 340, streak: 12, unread: 1,
+          paid: MOCK_PAID,
           goal: "Pass telc B2", targetLanguage: "German",
           progress: [
             { _id: "p1", course: "German A1 - Foundations", level: "A1", pct: 100, lessons: "12/12" },

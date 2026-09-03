@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { RefreshCw, LogOut, Plus, ExternalLink, Video, Flame, Coins } from "lucide-react";
 import axios from "../../utils/axios";
@@ -72,16 +72,18 @@ const GoTo = ({ label, to, nav }) => (
   </li>
 );
 
-const Console = ({ role = "student" }) => {
+const Console = ({ role = "student", initialData = null }) => {
   const navigate = useNavigate();
   const location = useLocation();
   // Set by the route guard when someone opens an area belonging to another
   // role. Saying so beats silently landing them somewhere they did not ask for.
   const wrongRole = location.state?.wrongRole;
   const [view, setView] = useState("dashboard");
-  const [d, setD] = useState({});
+  // The gate above already fetched this to decide free vs paid; reusing it
+  // saves a second round trip and the flash of an empty page that comes with it.
+  const [d, setD] = useState(initialData || {});
   const [side, setSide] = useState({});          // extra per-section data
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState("");
   const [booking, setBooking] = useState(false);
   // Speech Lab, AI Tools, Messages, Daily Review and Assignments were all built
@@ -105,7 +107,12 @@ const Console = ({ role = "student" }) => {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  // Only fetch if nothing was handed down. A refresh still calls load().
+  const seeded = useRef(!!initialData);
+  useEffect(() => {
+    if (seeded.current) { seeded.current = false; return; }
+    load();
+  }, [load]);
 
   /* Section-specific data, fetched the first time a section is opened. Each is
      optional: a failure leaves that one section empty, not the whole page. */

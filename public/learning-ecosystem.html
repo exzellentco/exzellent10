@@ -743,6 +743,46 @@ footer{ position:relative; z-index:2; }
 .buddy .borb,
 .buddy .bpanel{ pointer-events:auto; }
 
+/* ---------- Exzellent Points (ported from the petals page) ---------- */
+:root{--goldT:var(--gold)}
+.ptsbtn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;
+  border:1px solid rgba(var(--acc),.45);background:rgba(var(--acc),.10);color:var(--goldT);
+  font:700 12.5px/1 "Space Grotesk",sans-serif;letter-spacing:.04em;transition:transform .25s var(--ease),border-color .25s}
+.ptsbtn:hover{border-color:rgb(var(--acc));transform:translateY(-1px)}
+.ptsbtn.pop{animation:ptpop .6s var(--ease)}
+@keyframes ptpop{40%{transform:scale(1.18) translateY(-2px)}}
+.ptoast{position:fixed;left:18px;bottom:18px;z-index:90;display:flex;align-items:center;gap:12px;
+  padding:13px 17px;border-radius:16px;border:1px solid rgba(var(--acc),.45);
+  background:rgba(10,12,22,.97);box-shadow:0 22px 55px rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+[data-theme="light"] .ptoast{background:rgba(255,255,255,.98);box-shadow:0 22px 50px rgba(30,35,80,.18)}
+.ptoast.on{opacity:1;transform:none}
+.ptoast b{font:700 17px/1 "Space Grotesk",sans-serif;color:var(--goldT);white-space:nowrap}
+.ptoast span{font:500 12.5px/1.35 Inter,sans-serif;color:var(--muted);max-width:34ch}
+.ptmodal{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:20px;
+  background:rgba(4,5,10,.62);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.ptmodal[data-open="true"]{opacity:1;visibility:visible;transition:opacity .3s}
+.ptcard{width:min(560px,94vw);max-height:86svh;overflow-y:auto;border-radius:22px;border:1px solid rgba(var(--acc),.4);
+  background:var(--solid);padding:clamp(22px,3vw,34px);box-shadow:0 30px 80px rgba(0,0,0,.5);
+  transform:translateY(14px);transition:transform .35s var(--ease)}
+.ptmodal[data-open="true"] .ptcard{transform:none}
+.ptcard h3{font:700 clamp(21px,2.6vw,28px)/1.15 "Space Grotesk",sans-serif;color:var(--goldT);margin-bottom:8px}
+.ptcard p{color:var(--muted);font-size:14px;margin-bottom:14px}
+.ptrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.ptrow b{font:700 14px/1 "Space Grotesk",sans-serif;color:var(--goldT);min-width:44px}
+.ptnote{margin-top:16px;padding:13px 15px;border-radius:14px;border:1px solid var(--line);
+  font:500 12px/1.5 Inter,sans-serif;color:var(--dim)}
+.ptactions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.ptx{position:absolute;right:14px;top:14px}
+@media(max-width:560px){.ptoast{left:12px;right:12px;bottom:92px}.ptoast span{max-width:none}}
+
+
+/* Anchors used to land under the fixed header (60px, plus a 46px nav row on
+   desktop). scroll-margin-top is the browser-native fix: the target is scrolled
+   into view already offset by the header, for clicks, deep links and keyboard. */
+section[id]{scroll-margin-top:76px}
+@media(min-width:961px){section[id]{scroll-margin-top:122px}}
 </style>
 </head>
 <body>
@@ -754,14 +794,9 @@ footer{ position:relative; z-index:2; }
 <!-- ================= header ================= -->
 <header class="hdr" id="hdr">
   <div class="h1r">
-    <a class="brand" href="/exzellent-index.html" aria-label="EXZELLENT — home"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
-    <div class="petalwrap" id="pw">
-      <button class="petalbtn" id="pb" aria-expanded="false" aria-haspopup="true">
-        <span data-i18n="petal">Learning Ecosystem</span><small data-i18n="petalOf">1 / 12 petals</small><span class="car">&#9660;</span>
-      </button>
-      <div class="pmenu" role="menu" aria-label="The twelve petals" id="pmenu"></div>
-    </div>
+    <a class="brand" href="/learning-ecosystem.html" aria-label="EXZELLENT — home"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
     <div class="hright">
+      <button class="ptsbtn" id="ptsBtn" aria-label="Exzellent Points">&#10022; <b>0</b></button>
       <span class="rolet" aria-label="Role">
         <a class="on" href="#top" data-role="student"><i></i><span data-i18n="rStudent">Student</span></a>
         <a href="#top" data-role="teacher"><i></i><span data-i18n="rTeacher">Teacher</span></a>
@@ -779,12 +814,7 @@ footer{ position:relative; z-index:2; }
       <a href="#dashboard" data-i18n="nDash">Dashboard</a>
       <a href="#labs" data-i18n="nLabs">Labs</a>
       <a href="#tutors" data-i18n="nTutors">Tutors</a>
-      <a href="#teachers" data-i18n="nTeachers">Teachers</a>
-      <a href="#students" data-i18n="nStudents">Students</a>
-      <a href="#partners" data-i18n="nPartners">Partners</a>
-      <a href="/careers" data-i18n="nJobs">Jobs</a>
       <a href="/community" data-i18n="nEvents">Events</a>
-      <a href="#join" data-i18n="nMore">Join</a>
     </div>
   </nav>
 </header>
@@ -965,108 +995,6 @@ footer{ position:relative; z-index:2; }
     <div><div class="tr-lb-name" id="trLbName"></div><div class="tr-lb-sub" id="trLbSub"></div></div>
   </div>
 
-  <section id="teachers">
-    <div class="wrap" style="text-align:center">
-      <span class="eyebrow" style="justify-content:center">Real voices</span>
-      <h2 class="h2">Hear from <span class="g">our teachers</span></h2>
-      <p class="lead" style="margin-inline:auto">A minute with the humans behind the platform — unscripted. Click a clip on the side to bring it centre stage.</p>
-    </div>
-    <div class="tc-track" id="teachTrack">
-      <div class="tvcard">
-        <video src="https://res.cloudinary.com/dsgxyezcm/video/upload/v1772471035/Pascale_Video_i4cb5l.mp4" playsinline preload="metadata" muted loop></video>
-        <button class="tc-mute" aria-label="Toggle sound">🔇</button>
-        <div class="tc-play" aria-hidden="true"><span>▶</span></div>
-        <div class="tc-scrim"><div class="tc-name">Pascale Wagen</div><span class="tc-course">German class</span></div>
-        <div class="tc-prog"><i></i></div>
-      </div>
-      <div class="tvcard">
-        <video src="https://res.cloudinary.com/dsgxyezcm/video/upload/v1772027108/Ivonna_Romaniuk_video_1_pr62pi.mp4" playsinline preload="metadata" muted loop></video>
-        <button class="tc-mute" aria-label="Toggle sound">🔇</button>
-        <div class="tc-play" aria-hidden="true"><span>▶</span></div>
-        <div class="tc-scrim"><div class="tc-name">Ivonna Romaniuk</div><span class="tc-course">English class</span></div>
-        <div class="tc-prog"><i></i></div>
-      </div>
-      <div class="tvcard">
-        <video src="https://res.cloudinary.com/dsgxyezcm/video/upload/v1772027127/Ivonna_Romaniuk_video_2_z4wgcv.mp4" playsinline preload="metadata" muted loop></video>
-        <button class="tc-mute" aria-label="Toggle sound">🔇</button>
-        <div class="tc-play" aria-hidden="true"><span>▶</span></div>
-        <div class="tc-scrim"><div class="tc-name">Ivonna Romaniuk</div><span class="tc-course">Meditation class</span></div>
-        <div class="tc-prog"><i></i></div>
-      </div>
-    </div>
-  </section>
-  <section id="students">
-    <div class="wrap" style="text-align:center">
-      <span class="eyebrow" style="justify-content:center">Real results</span>
-      <h2 class="h2">Hear from <span class="g">our students</span></h2>
-      <div class="rev-grid">
-        <div class="rev-card reveal">
-          <div class="rev-stars">★★★★★</div>
-          <p class="rev-quote">"The instructors provided personalized guidance throughout the course. I now speak German confidently!"</p>
-          <div class="rev-who">
-            <div class="rev-av"><img src="https://res.cloudinary.com/domli7sla/image/upload/w_400,c_fill,ar_1:1,g_auto,r_max/v1752777791/Review-3_g8ufyi.jpg" alt="Komal Thakur" loading="lazy"></div>
-            <div><div class="rev-name">Komal Thakur</div><div class="rev-role">Language learner</div></div>
-          </div>
-        </div>
-        <div class="rev-card reveal" style="transition-delay:.08s">
-          <div class="rev-stars">★★★★★</div>
-          <p class="rev-quote">"Their curriculum is structured, interactive, and aligned with CEFR standards. Exceptional experience."</p>
-          <div class="rev-who">
-            <div class="rev-av"><img src="https://res.cloudinary.com/domli7sla/image/upload/w_400,c_fill,ar_1:1,g_auto,r_max/v1752777791/Review-1_nned4o.jpg" alt="Mina Kosari" loading="lazy"></div>
-            <div><div class="rev-name">Mina Kosari</div><div class="rev-role">Language learner</div></div>
-          </div>
-        </div>
-        <div class="rev-card reveal" style="transition-delay:.16s">
-          <div class="rev-stars">★★★★★</div>
-          <p class="rev-quote">"I managed to learn at my own pace and passed my A2 certification with ease thanks to their teaching approach."</p>
-          <div class="rev-who">
-            <div class="rev-av"><img src="https://res.cloudinary.com/domli7sla/image/upload/w_400,c_fill,ar_1:1,g_auto,r_max/v1752777791/Review-2_zwga08.webp" alt="Madhulekha Bhattacahriya" loading="lazy"></div>
-            <div><div class="rev-name">Madhulekha Bhattacahriya</div><div class="rev-role">Language learner</div></div>
-          </div>
-        </div>
-      </div>
-      <a class="trustpilot" href="https://www.trustpilot.com/review/www.exzellent.co" target="_blank" rel="noopener">★ Review us on Trustpilot</a>
-    </div>
-  </section>
-  <section id="partners">
-    <div class="wrap" style="text-align:center">
-      <span class="eyebrow" style="justify-content:center">Our Partners</span>
-      <h2 class="h2">Partnered with <span class="g">industry leaders</span></h2>
-      <p class="lead" style="margin-inline:auto">Join professionals from top institutions who trust Exzellent for their language learning journey.</p>
-      <div class="partner-marquee">
-        <div class="partner-track">
-          <a class="partner-logo" href="https://www.boomtown.de/" target="_blank" rel="noopener"><img src="/partners/boomtown.svg" alt="Boomtown Cottbus" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.b-tu.de/en/" target="_blank" rel="noopener"><img src="/partners/btu.svg" alt="BTU" loading="lazy"></a>
-          <a class="partner-logo" href="https://erasmus-plus.ec.europa.eu/" target="_blank" rel="noopener"><img src="/partners/erasmus.svg" alt="Erasmus+" loading="lazy"></a>
-          <a class="partner-logo" href="https://european-union.europa.eu/" target="_blank" rel="noopener"><img src="/partners/eu.svg" alt="European Union" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.ihk.de/cottbus/" target="_blank" rel="noopener"><img src="/partners/ihk.svg" alt="IHK Cottbus" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.exzellent.co" target="_blank" rel="noopener"><img src="/partners/rrr.svg" alt="RRR" loading="lazy"></a>
-          <a class="partner-logo" href="https://startuplausitz.de/" target="_blank" rel="noopener"><img src="/partners/startup-lausitz.webp" alt="Startup Lausitz" loading="lazy"></a>
-          <a class="partner-logo" href="https://tu-freiberg.de/en" target="_blank" rel="noopener"><img src="/partners/tu-friedberg.svg" alt="TU Bergakademie Freiberg" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.boomtown.de/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/boomtown.svg" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.b-tu.de/en/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/btu.svg" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://erasmus-plus.ec.europa.eu/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/erasmus.svg" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://european-union.europa.eu/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/eu.svg" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.ihk.de/cottbus/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/ihk.svg" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://www.exzellent.co" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/rrr.svg" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://startuplausitz.de/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/startup-lausitz.webp" alt="" loading="lazy"></a>
-          <a class="partner-logo" href="https://tu-freiberg.de/en" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/tu-friedberg.svg" alt="" loading="lazy"></a>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section id="join">
-    <div class="wrap">
-      <div class="band reveal">
-        <h2>Your first session is <span class="g">one click away.</span></h2>
-        <p>Browse everything free. Book a tutor when you're ready, and let Exzi carry the rest.</p>
-        <div class="hero-ctas">
-          <a class="btn btn-primary" href="/signup">Start free <span aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="/offer">See plans</a>
-        </div>
-      </div>
-    </div>
-  </section>
 </div>
 <div class="pane" data-persona="teacher">
   <section class="hero">
@@ -1089,7 +1017,7 @@ footer{ position:relative; z-index:2; }
       <a class="btn btn-ghost" href="#earnings">See what you'd earn</a>
     </div>
   </section>
-  <section id="dashboard">
+  <section id="dashboard-teacher">
     <div class="wrap">
       <span class="eyebrow">Your dashboard</span>
       <h2 class="h2">Teach, <span class="g">without the admin.</span></h2>
@@ -1164,27 +1092,6 @@ footer{ position:relative; z-index:2; }
     </div>
     </div>
   </section>
-  <section id="join">
-    <div class="wrap">
-      <div class="band reveal">
-        <span class="eyebrow" style="justify-content:center">Get started</span>
-        <h2>Live and teaching <span class="g">this week.</span></h2>
-        <p>No cold outreach, no chasing invoices. Apply once — we handle verification, your profile and the paperwork, so you can just teach.</p>
-        <div class="join-steps">
-          <div class="join-step"><span class="js-n">1</span><b>Apply in 10 minutes</b><span>Tell us what you teach and share a short intro video.</span></div>
-          <div class="join-step"><span class="js-n">2</span><b>We verify &amp; set you up</b><span>A quick ID and skills check, then your profile goes live in the directory.</span></div>
-          <div class="join-step"><span class="js-n">3</span><b>Learners come to you</b><span>Matched by subject and level — Exzi drafts the plans, you teach.</span></div>
-        </div>
-        <div class="join-trust">
-          <span>✓ Free to join</span><span>✓ You set your rate</span><span>✓ Paid weekly</span><span>✓ No-shows covered</span>
-        </div>
-        <div class="hero-ctas">
-          <a class="btn btn-primary" href="/teacher-form">Apply to teach <span aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="#earnings">See what you'd earn</a>
-        </div>
-      </div>
-    </div>
-  </section>
 </div>
 
 <div class="exzi-pop" id="exziPop" hidden>
@@ -1198,9 +1105,54 @@ footer{ position:relative; z-index:2; }
 <footer>
   <div class="wrap foot">
     <span>&copy; 2026 Exzellent &middot; Cottbus, Germany</span>
-    <a href="/exzellent-index.html" data-i18n="fPetals">All twelve petals &#8594;</a>
   </div>
 </footer>
+
+<div class="ptoast" id="ptoast" role="status" aria-live="polite"><b id="ptoastN">+50</b><span id="ptoastT"></span></div>
+<div class="ptmodal" id="ptmodal"><div class="ptcard" style="position:relative" role="dialog" aria-label="Exzellent Points">
+  <button class="u-btn ptx" id="ptClose" aria-label="Close">&#10005;</button>
+  <div id="ptBody"></div>
+</div></div>
+
+
+<script>
+/* Two things the plain browser anchor gets wrong here:
+   - the student and teacher views are separate panes, and only one is shown.
+     "#dashboard" always resolved to the STUDENT one, so in the teacher view it
+     scrolled to a display:none element — i.e. somewhere meaningless.
+   - "#top" from the role toggle should not fight the persona script.
+   Resolve the target against what is actually visible, then let
+   scroll-margin-top do the offsetting. */
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const raw = a.getAttribute("href").slice(1);
+  if (!raw || raw === "top") return;
+  const visible = el => el && el.getClientRects().length > 0;
+  let el = document.getElementById(raw);
+  if (!visible(el)) el = document.getElementById(raw + "-teacher");
+  if (!visible(el)) return;                      // let the browser do its thing
+  e.preventDefault();
+  el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  history.replaceState(null, "", "#" + raw);
+});
+
+/* A nav link whose section is not in the current view (Tutors lives only in
+   the student pane) is hidden rather than left as a dead click. Re-evaluated
+   whenever a pane is switched on or off. */
+function syncNav(){
+  const visible = el => el && el.getClientRects().length > 0;
+  document.querySelectorAll('.in2 a[href^="#"]').forEach(a => {
+    const id = a.getAttribute("href").slice(1);
+    if (!id || id === "top") return;
+    const el = document.getElementById(id) || document.getElementById(id + "-teacher");
+    const ok = visible(el) || visible(document.getElementById(id + "-teacher"));
+    a.hidden = !ok;
+  });
+}
+syncNav();
+new MutationObserver(syncNav).observe(document.body, { attributes: true, subtree: true, attributeFilter: ["class"] });
+</script>
 
 <!-- ================= Exzi buddy — always on the side ================= -->
 <div class="buddy" id="buddy">
@@ -1246,7 +1198,14 @@ const I18N={
   cta1:"Meet your tutors",cta2:"Start free",live1:"learning right now",live2:"members and growing",
   l1:"German that survives contact with Germany",l2:"Skills the job market actually asks for",l3:"From learning to actually growing",
   lm1:"Enter \u2192",lm2:"Enter \u2192",lm3:"Enter \u2192",
-  fPetals:"All twelve petals \u2192",mhPetals:"The twelve petals of Exzellent",
+  pt:{welcome:"Welcome \u2014 your first points are on us.",checkin:"Daily check-in. Nice to see you back.",
+   read:"You read \u201c{n}\u201d.",all:"Well read \u2014 every section seen.",
+   title:"Exzellent Points",
+   lead:"Earn points just by reading. When you create an account they become credits \u2014 the same credits that pay for lessons and tools.",
+   r1:"Welcome, first visit",r2:"Daily check-in",r3:"Each section you read",r4:"Every section read",
+   use:"When you create an account, the points on this device become credits in it \u2014 usable towards lessons and tools.",
+   note:"Kept on this device until you sign up. Nothing is sent anywhere, and nothing expires while we are in launch.",
+   signup:"Sign up to bank them",have:"You have"},
   bNote:"Hands-free by design \u2014 voice, call or video. Exzi opens every petal for you, no typing needed."},
  de:{theme:"Hell",login:"Anmelden",start:"Kostenlos starten",petal:"Learning Ecosystem",petalOf:"1 / 12 Bl\u00fctenbl\u00e4tter",
   rStudent:"Student",rTeacher:"Lehrkraft",
@@ -1258,38 +1217,32 @@ const I18N={
   cta1:"Lerne deine Tutoren kennen",cta2:"Kostenlos starten",live1:"lernen gerade",live2:"Mitglieder und wachsend",
   l1:"Deutsch, das den Alltag \u00fcbersteht",l2:"F\u00e4higkeiten, die der Arbeitsmarkt verlangt",l3:"Vom Lernen zum Wachsen",
   lm1:"\u00d6ffnen \u2192",lm2:"\u00d6ffnen \u2192",lm3:"\u00d6ffnen \u2192",
-  fPetals:"Alle zw\u00f6lf Bl\u00fctenbl\u00e4tter \u2192",mhPetals:"Die zw\u00f6lf Bl\u00fctenbl\u00e4tter von Exzellent",
+  pt:{welcome:"Willkommen \u2014 die ersten Punkte gehen auf uns.",checkin:"T\u00e4glicher Check-in. Sch\u00f6n, dass du da bist.",
+   read:"Du hast \u201e{n}\u201c gelesen.",all:"Alles gelesen \u2014 jeder Abschnitt gesehen.",
+   title:"Exzellent Points",
+   lead:"Punkte f\u00fcrs Lesen. Mit einem Konto werden sie zu Guthaben \u2014 demselben Guthaben, das Unterricht und Tools bezahlt.",
+   r1:"Willkommen, erster Besuch",r2:"T\u00e4glicher Check-in",r3:"Jeder gelesene Abschnitt",r4:"Alle Abschnitte gelesen",
+   use:"Wenn du ein Konto erstellst, werden die Punkte auf diesem Ger\u00e4t zu Guthaben \u2014 einsetzbar f\u00fcr Unterricht und Tools.",
+   note:"Bleibt auf diesem Ger\u00e4t, bis du dich anmeldest. Es wird nichts \u00fcbertragen und w\u00e4hrend des Launches verf\u00e4llt nichts.",
+   signup:"Anmelden und sichern",have:"Du hast"},
   bNote:"Freih\u00e4ndig gebaut \u2014 Stimme, Anruf oder Video. Exzi \u00f6ffnet jedes Bl\u00fctenblatt f\u00fcr dich, ganz ohne Tippen."}
 };
 let lang="en",theme="dark";
 const T=()=>I18N[lang];
 
-/* petal dropdown */
-function buildPetals(){
-  document.getElementById("pmenu").innerHTML=
-    `<div class="mh">${T().mhPetals}</div>`+
-    PETALS.map((p,i)=>`<a class="mi" role="menuitem" style="--mc:${p.c}" href="${p.href}">
-      <i>${String(i+1).padStart(2,"0")}</i><b aria-hidden="true"></b>${p.n[lang]}${p.here?`<small>\u2726 ${lang==="de"?"du bist hier":"you are here"}</small>`:""}</a>`).join("");
-}
-const pw=document.getElementById("pw"),pb=document.getElementById("pb");
-pb.addEventListener("click",e=>{e.stopPropagation();
-  const open=pw.dataset.open==="true";
-  pw.dataset.open=String(!open);pb.setAttribute("aria-expanded",String(!open));});
-document.addEventListener("click",e=>{if(!e.target.closest(".petalwrap")){pw.dataset.open="false";pb.setAttribute("aria-expanded","false");}});
-addEventListener("keydown",e=>{if(e.key==="Escape"){pw.dataset.open="false";pb.setAttribute("aria-expanded","false");msheet.dataset.open="false";buddy.dataset.open="false";}});
+/* The twelve-petal switcher is parked. Escape still closes the mobile sheet
+   and the Exzi buddy, which is what it was doing for most people anyway. */
+addEventListener("keydown",e=>{if(e.key==="Escape"){msheet.dataset.open="false";buddy.dataset.open="false";}});
 
 /* mobile sheet */
 const msheet=document.getElementById("msheet");
 function buildSheet(){
   document.getElementById("msBody").innerHTML=
-    `<div class="mh">${T().mhPetals}</div>`+
-    PETALS.map((p,i)=>`<a class="mi" style="--mc:${p.c}" href="${p.href}"><i>${String(i+1).padStart(2,"0")}</i><b></b>${p.n[lang]}</a>`).join("")+
     `<div class="mh">Menu</div>
      <a class="mi" style="--mc:138,75,245" href="#dashboard"><b></b>${T().nDash}</a>
      <a class="mi" style="--mc:103,232,249" href="/labs/language.html"><b></b>${T().nLabs}</a>
      <a class="mi" style="--mc:240,196,66" href="/labs/language.html"><b></b>${T().nTutors}</a>
-     <a class="mi" style="--mc:61,240,160" href="/community"><b></b>${T().nEvents}</a>
-     <a class="mi" style="--mc:255,122,41" href="/careers"><b></b>${T().nJobs}</a>`;
+     <a class="mi" style="--mc:61,240,160" href="/community"><b></b>${T().nEvents}</a>`;
 }
 document.getElementById("burger").addEventListener("click",()=>{buildSheet();msheet.dataset.open="true";});
 document.getElementById("msClose").addEventListener("click",()=>msheet.dataset.open="false");
@@ -1322,13 +1275,96 @@ function applyLang(){
   uLang.innerHTML=`<span>${lang.toUpperCase()}</span>`;
   uLang.setAttribute("aria-label",lang==="en"?"Sprache: Deutsch":"Language: English");
   document.querySelectorAll("[data-i18n]").forEach(n=>{const k=n.dataset.i18n;if(T()[k]!==undefined)n.textContent=T()[k];});
-  buildPetals();
   if(msheet.dataset.open==="true")buildSheet();
   applyTheme();
 }
 uLang.addEventListener("click",()=>{lang=lang==="en"?"de":"en";applyLang();});
 
-buildPetals();
+</script>
+<script>
+/* ============ Exzellent Points ============
+   Ported from the parked twelve-petals page: same chip, toast and modal.
+   The earning rules changed, because there are no petals to open here. Points
+   come from READING — each section you actually stay on for a moment — plus the
+   welcome and the daily check-in. They live on this device until sign-up, when
+   they become credits: the promise the petals page already made, unchanged. */
+const PTK={n:"exz-points",log:"exz-pts-log",day:"exz-pts-day"};
+const ptmodal=document.getElementById("ptmodal");
+const PT_SECTIONS=[...new Set([...document.querySelectorAll("section[id]")].map(s=>s.id))];
+function ptGet(){try{return +(localStorage.getItem(PTK.n)||0)||0;}catch(e){return 0;}}
+function ptLog(){try{return JSON.parse(localStorage.getItem(PTK.log)||"[]");}catch(e){return [];}}
+function ptSave(n,log){try{localStorage.setItem(PTK.n,String(n));localStorage.setItem(PTK.log,JSON.stringify(log));}catch(e){}}
+function ptPaint(){const b=document.querySelector("#ptsBtn b");if(b)b.textContent=ptGet();}
+let toastT=null;
+function ptToast(n,msg){
+  const el=document.getElementById("ptoast");
+  document.getElementById("ptoastN").textContent="+"+n;
+  document.getElementById("ptoastT").textContent=msg;
+  el.classList.add("on"); clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove("on"),3800);
+  const chip=document.getElementById("ptsBtn");
+  if(chip){chip.classList.remove("pop");void chip.offsetWidth;chip.classList.add("pop");}
+}
+function ptAward(id,n,msg){
+  const log=ptLog(); if(log.indexOf(id)>-1)return false;
+  log.push(id); ptSave(ptGet()+n,log); ptPaint(); ptToast(n,msg); return true;
+}
+function ptCheckin(){
+  const today=new Date().toISOString().slice(0,10);
+  let last=null; try{last=localStorage.getItem(PTK.day);}catch(e){}
+  if(last===today)return;
+  try{localStorage.setItem(PTK.day,today);}catch(e){}
+  ptSave(ptGet()+10,ptLog()); ptPaint(); ptToast(10,T().pt.checkin);
+}
+/* Reading: a section counts once it has been on screen for 2.5 seconds — a
+   scroll straight past is not a read. One award per section, ever, per device. */
+const ptRead=()=>ptLog().filter(x=>x.indexOf("read:")===0).length;
+/* Only the sections this visitor can actually see. Three of them belong to the
+   teacher view and are display:none for a student — counting those would make
+   "every section read" unreachable for anyone who never switches role. */
+const ptVisible=()=>PT_SECTIONS.filter(id=>{const el=document.getElementById(id);return el&&el.getClientRects().length>0;});
+const dwell={};
+const ptIO=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    const id=e.target.id;
+    if(e.isIntersecting){
+      dwell[id]=setTimeout(()=>{
+        /* The labs section has no heading at all, so "labs" would show as-is.
+           Humanise the id rather than print an identifier at a reader. */
+        const h=e.target.querySelector("h2,h1,h3");
+        const nm=(h?h.textContent:id.replace(/-/g," ").replace(/^\w/,c=>c.toUpperCase())).replace(/\s+/g," ").trim();
+        if(ptAward("read:"+id,5,T().pt.read.replace("{n}",nm))){
+          if(ptRead()>=ptVisible().length)setTimeout(()=>ptAward("allread",50,T().pt.all),1400);
+        }
+      },2500);
+    } else { clearTimeout(dwell[id]); }
+  });
+},{threshold:.45});
+PT_SECTIONS.forEach(id=>{const el=document.getElementById(id);if(el)ptIO.observe(el);});
+function buildPtBody(){
+  const t=T().pt;
+  document.getElementById("ptBody").innerHTML=`
+    <h3>${t.title}</h3>
+    <p>${t.lead}</p>
+    <div class="ptrow"><b>+20</b>${t.r1}</div>
+    <div class="ptrow"><b>+10</b>${t.r2}</div>
+    <div class="ptrow"><b>+5</b>${t.r3} <span style="margin-left:auto;color:var(--dim)">${ptRead()} / ${ptVisible().length}</span></div>
+    <div class="ptrow"><b>+50</b>${t.r4}</div>
+    <p style="margin-top:16px">${t.use}</p>
+    <div class="ptnote">${t.note}</div>
+    <div class="ptactions">
+      <a class="a-start" href="/signup">${t.signup}</a>
+      <span class="u-btn" style="pointer-events:none">${t.have} <b style="color:var(--goldT);margin-left:6px">${ptGet()}</b></span>
+    </div>`;
+}
+function ptOpen(){buildPtBody();ptmodal.dataset.open="true";}
+function ptClose(){ptmodal.dataset.open="false";}
+document.getElementById("ptsBtn").addEventListener("click",ptOpen);
+document.getElementById("ptClose").addEventListener("click",ptClose);
+ptmodal.addEventListener("click",e=>{if(e.target===ptmodal)ptClose();});
+addEventListener("keydown",e=>{if(e.key==="Escape")ptClose();});
+ptPaint();
+setTimeout(()=>{ if(!ptAward("welcome",20,T().pt.welcome)) ptCheckin(); else setTimeout(ptCheckin,4200); },900);
 </script>
 <script>
 (function(){
@@ -1358,10 +1394,6 @@ const EXZI_TRANSCRIBE_URL = EXZI_API + '/api/ai/transcribe';
         {t:'Dashboard', h:'#dashboard'},
         {t:'Labs', h:'#labs', key:true},
         {t:'Tutors', h:'#tutors'},
-        {t:'Teachers', h:'#teachers'},
-        {t:'Students', h:'#students'},
-        {t:'Partners', h:'#partners'},
-        {t:'Jobs', h:'#jobs'},
         {t:'Events', h:'#events', car:true},
         {t:'More', h:'#more', car:true}
       ]

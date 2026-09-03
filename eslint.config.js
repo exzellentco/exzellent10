@@ -23,7 +23,16 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // eslint-plugin-react is not installed, so nothing here counts a JSX tag
+      // as a use of the identifier behind it. Two consequences, both false
+      // positives rather than real dead code:
+      //   <motion.div>  does not mark `motion` as used  -> allow it by name
+      //   ({ icon: Icon }) => <Icon />  is an ARG, not a var, so the existing
+      //   varsIgnorePattern never applied to it -> mirror the pattern for args
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '^([A-Z_]|motion$)',
+        argsIgnorePattern: '^([A-Z_]|_)',
+      }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

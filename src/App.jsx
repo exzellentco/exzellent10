@@ -54,6 +54,7 @@ import WaitlistAdmin from "./pages/Admin/WaitlistAdmin";
 import ClassRoom from "./pages/ClassRoom";
 import MergedDashboard from "./pages/Lab/MergedDashboard"; // LOCAL PROTOTYPE
 import Console from "./pages/Console/Console";
+import DashboardGate from "./pages/DashboardGate";
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
@@ -148,7 +149,10 @@ const App = () => {
     if (userRole === "Student") return <Navigate to="/student-dashboard" replace />;
     if (userRole === "Admin") return <Navigate to="/admin-dashboard" replace />;
     if (userRole === "Teacher") return <Navigate to="/teacher-dashboard" replace />;
-    window.location.replace("/exzellent-index.html");
+    // The twelve-petals page is parked for now, so the Learning Ecosystem page
+    // is the front door. exzellent-index.html is left in place, unlinked, so
+    // putting the petals back is a one-line change.
+    window.location.replace("/learning-ecosystem.html");
     return null;
   };
 
@@ -195,7 +199,8 @@ const App = () => {
 
         {/* Student-only protected routes */}
         <Route element={<ProtectedRouter userRole={userRole} allowedRoles={["Student"]} />}>
-          <Route path="/student-dashboard" element={<Console role="student" />} />
+          {/* Free dashboard, or the console once they are on the paid plan. */}
+          <Route path="/student-dashboard" element={<DashboardGate role="student" />} />
           {/* The previous dashboard, kept reachable while the console beds in. */}
           <Route path="/student-dashboard/classic" element={<StudentDashboard />} />
           <Route path="/course/:courseNameAndLevel" element={<CourseWrapper />} />
@@ -203,7 +208,7 @@ const App = () => {
 
         {/* Teacher-only protected routes */}
         <Route element={<ProtectedRouter userRole={userRole} allowedRoles={["Teacher"]} />}>
-          <Route path="/teacher-dashboard" element={<Console role="teacher" />} />
+          <Route path="/teacher-dashboard" element={<DashboardGate role="teacher" />} />
           <Route path="/teacher-dashboard/classic" element={<TeacherDashboard />} />
           <Route path="/course/:courseNameAndLevel" element={<CourseWrapper />} />
         </Route>

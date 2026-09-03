@@ -1,0 +1,48 @@
+import { BookOpen, Sparkles, HeartHandshake, Briefcase } from "lucide-react";
+
+export const services = [
+  {
+    title: "Tutoring services",
+    highlight: "Tutoring",
+    icon: BookOpen,
+    align: "md:justify-start",
+    flex: "sm:flex-row",
+    pic: "https://images.pexels.com/photos/6502728/pexels-photo-6502728.jpeg",
+    desc: "We will provide you with experts on any fields you require to support you throughout your career, in which you can expand and establish your knowledge in a more professional and assertive way.",
+    link: "/services/tutoring",
+    pageName: "Tutoring Services",
+  },
+  {
+    title: "AI Tutoring",
+    highlight: "AI",
+    icon: Sparkles,
+    align: "md:justify-end",
+    flex: "sm:flex-row-reverse",
+    pic: "https://images.pexels.com/photos/3862130/pexels-photo-3862130.jpeg",
+    desc: "On top of real professionals helping you, we will provide you with state-of-the-art technology to support you as well by helping you polish the edges you have in your knowledge, so you are more ready for the next tutoring session.",
+    link: "/services/ai-tutoring",
+    pageName: "AI Tutoring",
+  },
+  {
+    title: "Psychological support",
+    highlight: "Psychological",
+    icon: HeartHandshake,
+    align: "md:justify-start",
+    flex: "sm:flex-row",
+    pic: "https://images.pexels.com/photos/7176053/pexels-photo-7176053.jpeg",
+    desc: "We understand that times right now are tough, and so to support you through this journey we also provide you with top-notch psychologists who will help you have a more stress free journey.",
+    link: "/services/psychological",
+    pageName: "Psychological Support",
+  },
+  {
+    title: "Recruiting services",
+    highlight: "Recruiting",
+    icon: Briefcase,
+    align: "md:justify-end",
+    flex: "sm:flex-row-reverse",
+    pic: "https://images.pexels.com/photos/5439142/pexels-photo-5439142.jpeg",
+    desc: "Once you reach a quality standard with us by the end of our journey, our recruiter portfolio will have access to your profile and look for the best job opportunities.",
+    link: "/services/recruiting",
+    pageName: "Recruiting Services",
+  },
+];
