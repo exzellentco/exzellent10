@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react"; // <-- import icons
 import axios from "../../utils/axios";
 import { fetchStudentProfile } from "../../APIs/StudentApi/StudentDetails";
 
-const Login = () => {
+const Login = ({ checkAuth }) => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false); // <-- add state
@@ -67,6 +67,13 @@ const Login = () => {
         document.cookie = `token=${result.data.accessToken}; max-age= ${
           60 * 60 * 12
         }; path=/; secure; samesite=strict`;
+
+        // Refresh the app's auth state BEFORE navigating. Without this the
+        // `checkAuth` prop was never called: App kept the userRole from
+        // whatever was signed in before, so the route guard judged the new
+        // session by the old role and bounced a student to the teacher
+        // dashboard. Awaited, so the guard sees the new role, not a race.
+        if (typeof checkAuth === "function") { try { await checkAuth(); } catch { /* the redirect below still stands */ } }
         const userRole = result.data.userType;
         if (userRole === "Admin") {
           navigate("/admin-dashboard");
@@ -125,6 +132,13 @@ const Login = () => {
         document.cookie = `token=${response.data.accessToken}; max-age= ${
           60 * 60 * 12
         }; path=/; secure; samesite=strict`;
+
+        // Refresh the app's auth state BEFORE navigating. Without this the
+        // `checkAuth` prop was never called: App kept the userRole from
+        // whatever was signed in before, so the route guard judged the new
+        // session by the old role and bounced a student to the teacher
+        // dashboard. Awaited, so the guard sees the new role, not a race.
+        if (typeof checkAuth === "function") { try { await checkAuth(); } catch { /* the redirect below still stands */ } }
 
         const userRole = response.data.userType;
         if (userRole === "Admin") {

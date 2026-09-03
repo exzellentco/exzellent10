@@ -812,6 +812,21 @@ section[id]{scroll-margin-top:76px}
 .made i{display:inline-block;width:18px;height:18px;border-radius:2px}
 [data-theme="light"] .site-foot{background:rgba(245,246,252,.96)}
 @media(max-width:860px){.foot-grid{grid-template-columns:1fr;gap:36px;padding:40px 0 32px}}
+
+/* ===== site search (replaced the Exzi ask bar) ===== */
+.askbar{position:relative}
+.askbar input#q{flex:1;min-width:0;background:transparent;border:0;outline:none;
+  font:500 14.5px/1.3 Inter,sans-serif;color:var(--ink)}
+.askbar input#q::placeholder{color:var(--dim)}
+.askbar .send{cursor:pointer;border:0;background:transparent}
+.sugg{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:60;padding:6px;
+  border-radius:16px;border:1px solid var(--line);background:var(--solid);
+  box-shadow:0 26px 60px rgba(0,0,0,.5);text-align:left;max-height:320px;overflow:auto}
+.sugg a{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:11px;
+  text-decoration:none;color:var(--ink);font:500 14px/1.3 Inter,sans-serif}
+.sugg a small{margin-left:auto;color:var(--dim);font:500 11.5px/1 Inter,sans-serif;white-space:nowrap}
+.sugg a:hover,.sugg a[aria-selected="true"]{background:rgba(var(--acc),.16)}
+.sugg .none{padding:12px;color:var(--dim);font:500 13.5px/1.4 Inter,sans-serif}
 </style>
 </head>
 <body>
@@ -869,14 +884,15 @@ section[id]{scroll-margin-top:76px}
 
   <div class="exziblock">
     <span class="exlab"><i></i><span data-i18n="exziOn">Exzi online &middot; your AI companion</span></span>
-    <a class="askbar" href="/exzi.html" aria-label="Ask Exzi">
+    <form class="askbar" id="siteSearch" role="search" autocomplete="off">
       <span class="face" aria-hidden="true"><b></b></span>
-      <span class="ph" data-i18n="ask">Ask Exzi &mdash; or go hands-free with voice &amp; video</span>
-      <span class="iconb" title="Voice" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
-      <span class="iconb" title="Call" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
-      <span class="iconb" title="Video" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3"/></svg></span>
-      <span class="iconb send" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
-    </a>
+      <input id="q" class="ph" type="search" name="q" aria-label="Search Exzellent"
+             placeholder="Search courses, tutors, labs&hellip;" />
+      <button class="iconb send" type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <div class="sugg" id="sugg" role="listbox" aria-label="Suggestions" hidden></div>
+    </form>
     <span class="exnote">&#10022; <b data-i18n="exNote1">Tap the mic for hands-free voice</b> <span data-i18n="exNote2">&mdash; or call and video chat with Exzi, right here.</span></span>
   </div>
 
@@ -885,9 +901,12 @@ section[id]{scroll-margin-top:76px}
     <a class="ghostb" href="#top" data-i18n="cta2">Start free</a>
   </div>
 
-  <div class="liveline" title="Live from the dashboard at launch">
-    <span class="g"></span><b>&mdash;</b><span data-i18n="live1">learning right now</span>
-    <b>&mdash;</b><span data-i18n="live2">members and growing</span>
+  <!-- Both figures start as an em-dash and stay that way unless the server
+       gives a real number. A dash is an honest "not known"; a placeholder
+       number that never updates is a lie that looks like data. -->
+  <div class="liveline" id="liveLine" hidden>
+    <span class="g"></span><b id="lpOnline">&mdash;</b><span data-i18n="live1">learning right now</span>
+    <b id="lpMembers">&mdash;</b><span data-i18n="live2">members and growing</span>
   </div>
 </section>
 
@@ -1327,22 +1346,113 @@ syncNav();
 new MutationObserver(syncNav).observe(document.body, { attributes: true, subtree: true, attributeFilter: ["class"] });
 </script>
 
-<!-- ================= Exzi buddy — always on the side ================= -->
-<div class="buddy" id="buddy">
-  <div class="bpanel" role="dialog" aria-label="Exzi">
-    <div class="bh"><i></i><span data-i18n="exziOn2">Exzi online &middot; your AI companion</span></div>
-    <a class="ask2" href="/exzi.html"><span class="face" style="width:30px;height:30px;border-radius:9px;background:rgba(138,75,245,.16);display:grid;place-items:center"><b style="width:18px;height:13px;background-image:var(--logo-url);background-size:contain;background-position:center;background-repeat:no-repeat"></b></span><span class="ph" data-i18n="ask2">Ask Exzi anything&hellip;</span></a>
-    <div class="row">
-      <a class="iconb" href="/exzi.html" title="Voice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></a>
-      <a class="iconb" href="/exzi.html" title="Call"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
-      <a class="iconb" href="/exzi.html" title="Video"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3"/></svg></a>
-    </div>
-    <div class="note2" data-i18n="bNote">Hands-free by design &mdash; voice, call or video. Exzi opens every petal for you, no typing needed.</div>
-  </div>
-  <button class="borb" id="borb" aria-expanded="false" aria-label="Open Exzi"><b aria-hidden="true"></b><i aria-hidden="true"></i></button>
-</div>
-
 <p class="sr" role="status" aria-live="polite" id="live"></p>
+
+<script>
+/* ===== site search =====
+   Replaces the Exzi chat widget. It is a JUMP, not a search-results page:
+   Enter goes straight to the best-matching destination.
+
+   Course detail (/course/:x) is behind the student/teacher route guard, so a
+   signed-out visitor sent there would land on /login. For them a course match
+   goes to the public /courses page instead — the destination that actually
+   exists for who they are. */
+(function siteSearch(){
+  const form=document.getElementById("siteSearch");
+  const input=document.getElementById("q");
+  const box=document.getElementById("sugg");
+  if(!form||!input||!box) return;
+
+  const local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const api=local?"":((document.querySelector(".le")||{}).dataset||{}).api||"";
+  const signedIn=(function(){ try{ return !!localStorage.getItem("user"); }catch(e){ return false; } })();
+
+  /* Fixed destinations. `terms` are the words people actually type for each. */
+  const PAGES=[
+    {t:"All courses",       h:"/courses",              k:"Courses",  terms:"course courses class classes german english kurs kurse learn study"},
+    {t:"Find a tutor",      h:"/book",                 k:"Tutors",   terms:"tutor tutors teacher teachers book booking lesson 1-to-1 one to one lehrer"},
+    {t:"Webinars",          h:"/webinars",             k:"Events",   terms:"webinar webinars event events workshop live session"},
+    {t:"Community",         h:"/community",            k:"Community",terms:"community forum group chat members people"},
+    {t:"Jobs & careers",    h:"/careers",              k:"Careers",  terms:"job jobs career careers hiring work vacancy stelle"},
+    {t:"Language Lab",      h:"/labs/language.html",   k:"Labs",     terms:"language lab german deutsch speaking pronunciation grammar"},
+    {t:"Skill Lab",         h:"/labs/skill-lab.html",  k:"Labs",     terms:"skill skills lab it digital training"},
+    {t:"Growth Lab",        h:"/labs/growth-lab.html", k:"Labs",     terms:"growth lab career coaching mindset"},
+    {t:"Pricing & plans",   h:"/payment",              k:"Plans",    terms:"price pricing plan plans subscription cost pay credits preis"},
+    {t:"Log in",            h:"/login",                k:"Account",  terms:"login log in sign in account"},
+    {t:"Create an account", h:"/signup",               k:"Account",  terms:"signup sign up register create account join free"},
+  ];
+
+  let items=PAGES.slice();
+
+  /* Real courses, so "German course" can reach a real German course. */
+  fetch(api+"/api/courses").then(function(r){return r.ok?r.json():null;}).then(function(j){
+    const rows=(j&&(j.data||j))||[];
+    if(!Array.isArray(rows)) return;
+    items=PAGES.concat(rows.map(function(c){
+      return {
+        t:c.title, k:"Course "+(c.level||""),
+        // Signed out, the guarded course page would bounce to /login.
+        h:signedIn?("/course/"+encodeURIComponent(c.title)):"/courses",
+        terms:(c.title+" "+(c.level||"")+" "+(c.language||"")+" course class").toLowerCase()
+      };
+    }));
+  }).catch(function(){ /* the fixed destinations still work */ });
+
+  const norm=function(x){ return String(x||"").toLowerCase().replace(/[^\p{L}\p{N}\s]/gu," ").split(/\s+/).filter(Boolean); };
+
+  function score(item,words){
+    const hay=(item.t+" "+item.terms).toLowerCase();
+    let n=0;
+    words.forEach(function(w){
+      if(hay.indexOf(w)>-1) n+=1;
+      // a word that starts the title is worth more than one buried in synonyms
+      if(item.t.toLowerCase().indexOf(w)===0) n+=1.5;
+      else if(item.t.toLowerCase().indexOf(w)>-1) n+=0.75;
+    });
+    return n;
+  }
+
+  function ranked(qs){
+    const words=norm(qs);
+    if(!words.length) return [];
+    return items.map(function(it){ return {it:it,s:score(it,words)}; })
+      .filter(function(x){ return x.s>0; })
+      .sort(function(a,b){ return b.s-a.s; })
+      .map(function(x){ return x.it; });
+  }
+
+  let active=-1, current=[];
+  function render(){
+    const q=input.value.trim();
+    current=q?ranked(q).slice(0,6):[];
+    active=current.length?0:-1;
+    if(!q){ box.hidden=true; box.innerHTML=""; return; }
+    box.hidden=false;
+    box.innerHTML=current.length
+      ? current.map(function(it,i){ return '<a href="'+it.h+'" role="option" aria-selected="'+(i===0)+'">'+it.t+'<small>'+it.k+'</small></a>'; }).join("")
+      : '<div class="none">Nothing matches that. Try \u201ccourses\u201d, \u201ctutor\u201d or \u201cwebinars\u201d.</div>';
+  }
+
+  function go(){
+    const best=current[active>-1?active:0];
+    if(!best) return;
+    location.href=best.h;
+  }
+
+  input.addEventListener("input",render);
+  input.addEventListener("keydown",function(e){
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+      if(!current.length) return;
+      e.preventDefault();
+      active=(active+(e.key==="ArrowDown"?1:-1)+current.length)%current.length;
+      [].forEach.call(box.querySelectorAll("a"),function(a,i){ a.setAttribute("aria-selected",String(i===active)); });
+    } else if(e.key==="Escape"){ box.hidden=true; }
+  });
+  form.addEventListener("submit",function(e){ e.preventDefault(); if(!current.length) render(); go(); });
+  document.addEventListener("click",function(e){ if(!form.contains(e.target)) box.hidden=true; });
+})();
+</script>
+
 
 <script>
 /* ============ the twelve petals ============ */
@@ -1405,7 +1515,7 @@ const T=()=>I18N[lang];
 
 /* The twelve-petal switcher is parked. Escape still closes the mobile sheet
    and the Exzi buddy, which is what it was doing for most people anyway. */
-addEventListener("keydown",e=>{if(e.key==="Escape"){msheet.dataset.open="false";buddy.dataset.open="false";}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){msheet.dataset.open="false";}});
 
 /* mobile sheet */
 const msheet=document.getElementById("msheet");
@@ -1420,12 +1530,6 @@ function buildSheet(){
 document.getElementById("burger").addEventListener("click",()=>{buildSheet();msheet.dataset.open="true";});
 document.getElementById("msClose").addEventListener("click",()=>msheet.dataset.open="false");
 msheet.addEventListener("click",e=>{if(e.target===msheet)msheet.dataset.open="false";});
-
-/* buddy */
-const buddy=document.getElementById("buddy"),borb=document.getElementById("borb");
-borb.addEventListener("click",()=>{
-  const open=buddy.dataset.open==="true";
-  buddy.dataset.open=String(!open);borb.setAttribute("aria-expanded",String(!open));});
 
 /* header scroll */
 const hdr=document.getElementById("hdr");
@@ -2304,25 +2408,33 @@ const EXZI_TRANSCRIBE_URL = EXZI_API + '/api/ai/transcribe';
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') lb.hidden=true; });
 })();
 
-/* ---------- live social-proof (online now + members) ---------- */
+/* ---------- live social-proof (online now + members) ----------
+   Reads GET /api/stats. Three rules, because this line had three separate
+   faults: it never loaded (the elements had no ids), it had no server to load
+   from, and a timer nudged the "online" number at random every 7s so it drifted
+   whether or not anyone was there.
+     - never invent a number: no jitter, no easing, no placeholder
+     - if a figure is missing or the request fails, leave the dash
+     - if NEITHER figure is known, hide the line rather than show two dashes */
 (function liveProof(){
+  const line=document.getElementById('liveLine');
   const on=document.getElementById('lpOnline'), mem=document.getElementById('lpMembers');
-  if(!on||!mem) return;
-  let members=0;
+  if(!line||!on||!mem) return;
+  const local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const base=local?"":((document.querySelector(".le")||{}).dataset||{}).api||"";
+  const dash="—";
   function pull(){
-    fetch('/api/stats').then(r=>r.json()).then(s=>{
-      if(s&&s.online!=null) on.textContent=(s.online).toLocaleString();
-      if(s&&s.members!=null){ members=s.members; mem.textContent=members.toLocaleString()+'+'; }
-    }).catch(()=>{});
+    fetch(base+"/api/stats").then(function(r){return r.ok?r.json():null;}).then(function(s){
+      if(!s) return;
+      var any=false;
+      if(typeof s.online==="number"){ on.textContent=s.online.toLocaleString(); any=true; }
+      if(typeof s.members==="number"){ mem.textContent=s.members.toLocaleString()+"+"; any=true; }
+      // Only show the line once at least one figure is real.
+      if(any) line.hidden=false;
+    }).catch(function(){ /* leave the dashes, keep the line hidden */ });
   }
-  pull(); setInterval(pull,25000);
-  // gentle flicker of the "online" number between polls
-  setInterval(function(){
-    const cur=parseInt((on.textContent||'').replace(/\D/g,''),10);
-    if(!cur) return;
-    const j=Math.random()<0.6?0:(Math.random()<0.5?1:-1);
-    on.textContent=Math.max(1,cur+j).toLocaleString();
-  },7000);
+  pull();
+  setInterval(pull,25000);
 })();
 
 /* ---------- individual tutor cards (placeholder roster) ---------- */
