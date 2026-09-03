@@ -700,13 +700,6 @@ const StudentDashboard = () => {
       to: "/calendar",
     },
     {
-      // Was labelled "Teacher", which in a STUDENT's own sidebar reads as their
-      // role rather than a link. It goes to the tutor picker, so say that.
-      label: "Find a tutor",
-      icon: Users,
-      to: "/book", // /teachers is the ADMIN teachers list; /book is the public picker
-    },
-    {
       label: "Additional Resources",
       icon: Library,
       to: "/courses", // there is no /study-materials route; course pages carry the materials
@@ -1011,14 +1004,6 @@ const StudentDashboard = () => {
                       <Pencil className="w-3.5 h-3.5" /> Edit Profile
                     </motion.button>
 
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); signOut(); }}
-                      className="flex items-center justify-center gap-1.5 w-full mt-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
-                      style={{ border: "1px solid var(--sd-border)", color: "var(--sd-ink-muted)" }}
-                    >
-                      <LogOut className="w-3.5 h-3.5" /> Sign out
-                    </button>
                   </div>
                 )}
               </div>
@@ -1192,7 +1177,7 @@ const StudentDashboard = () => {
                     `/teachers`), since the dynamic `/teachers/:teacherId/book`
                     route requires a specific teacher to already be selected. */}
                 <motion.button
-                  onClick={() => navigate("/teachers")}
+                  onClick={() => navigate("/book")}
                   whileHover={prefersReducedMotion ? undefined : { scale: 1.02 }}
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
                   transition={{ duration: 0.2 }}
@@ -1220,6 +1205,20 @@ const StudentDashboard = () => {
                   style={{ color: "var(--sd-primary-light)" }}
                 />
                 </motion.button>
+              </div>
+
+              {/* Always visible: it used to sit inside the collapsed profile
+                  panel, which meant a student had no way out that they could
+                  see. The global navbar is hidden on this route. */}
+              <div className="mt-6 pt-6" style={{ borderTop: "1px solid var(--sd-border)" }}>
+                <button
+                  type="button"
+                  onClick={signOut}
+                  className="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl text-sm font-medium cursor-pointer"
+                  style={{ border: "1px solid var(--sd-border)", color: "var(--sd-ink-muted)" }}
+                >
+                  <LogOut className="w-4 h-4" /> Sign out
+                </button>
               </div>
             </div>
           </motion.div>
