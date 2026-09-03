@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
+import { roleFromToken } from "../utils/tokenRole";
 
 /**
  * Route guard for the signed-in areas.
@@ -41,7 +42,15 @@ const Spinner = () => (
 
 const ProtectedRouter = ({ userRole, allowedRoles }) => {
   const [waitedTooLong, setWaitedTooLong] = useState(false);
-  const stillResolving = userRole === null;
+
+  /* Prefer the role in the token over App's userRole state.
+     That state is refreshed asynchronously, so it can still describe the
+     PREVIOUS session for a moment after a new login — and when it did, a
+     student was judged as a teacher and redirected to the teacher dashboard.
+     The token was issued to whoever is signed in now, so it cannot lag. */
+  const tokenRole = roleFromToken();
+  const role = tokenRole || userRole;
+  const stillResolving = role === null;
 
   useEffect(() => {
     if (!stillResolving) { setWaitedTooLong(false); return undefined; }
@@ -67,10 +76,10 @@ const ProtectedRouter = ({ userRole, allowedRoles }) => {
   // real, it is just not theirs. Send them to their OWN dashboard instead — and
   // say why, so "I get a 404 then end up on the student dashboard" becomes a
   // sentence naming the actual reason.
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    const home = HOME[userRole];
+  if (allowedRoles && !allowedRoles.includes(role)) {
+    const home = HOME[role];
     if (!home) return <Navigate to="/404" replace />;
-    return <Navigate to={home} replace state={{ wrongRole: { need: allowedRoles[0], have: userRole } }} />;
+    return <Navigate to={home} replace state={{ wrongRole: { need: allowedRoles[0], have: role } }} />;
   }
 
   return <Outlet />;
