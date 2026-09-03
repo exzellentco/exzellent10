@@ -38,6 +38,7 @@ import { signOut as endSession } from "../utils/signOut";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
+import { useSessions } from "../context/SessionsContext";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
 import CountUp from "../components/StudentComponent/CountUp";
@@ -58,6 +59,7 @@ import axios from "../utils/axios";
 import GrowthDashboard from "../components/GrowthComponents/GrowthDashboard";
 
 const StudentDashboard = () => {
+  const { sessions: mySessions } = useSessions();
   const [studentData, setStudentData] = useState(null);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1237,6 +1239,60 @@ const StudentDashboard = () => {
             </div>
           </motion.div>
 
+          {/* ── first run ──────────────────────────────────────────────────
+              A new learner used to land on six panels all reading zero — no
+              courses, no quiz attempts, no streak, no next lesson — and nothing
+              proposing a first move. This shows only while there is genuinely
+              nothing yet, and every step here is free on this plan. */}
+          {!loading && !enrolledCourses.length && !(mySessions || []).length && (
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-8 rounded-2xl p-6"
+              style={{ background: "var(--sd-card-bg)", border: "1px solid var(--sd-gold)", boxShadow: "0 2px 24px rgba(91,33,182,0.10)" }}
+            >
+              <p className="text-xs uppercase tracking-widest m-0 mb-1" style={{ color: "var(--sd-gold)" }}>Start here</p>
+              <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>
+                Three ways to begin
+              </h2>
+              <p className="mb-5" style={{ color: "var(--sd-ink-muted)" }}>
+                All of these are free on your plan. Pick whichever suits today.
+              </p>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                {[
+                  { icon: <BookOpen className="w-5 h-5" />, title: "Pick a course",
+                    body: "Browse the German and English courses and enrol in one.",
+                    cta: "Browse courses", go: () => navigate("/courses") },
+                  { icon: <UserPlus className="w-5 h-5" />, title: "Book a first lesson",
+                    body: "Meet a tutor 1-to-1. Browsing the directory is free.",
+                    cta: "Find a tutor", go: () => navigate("/book") },
+                  { icon: <Mic className="w-5 h-5" />, title: "Say something out loud",
+                    body: "Record a sentence and get pronunciation feedback.",
+                    cta: "Open Oral Practice", go: () => setSpeechOpen(true) },
+                ].map((step, i) => (
+                  <div key={step.title} className="rounded-xl p-4 flex flex-col"
+                       style={{ border: "1px solid var(--sd-border)", background: "var(--sd-surface)" }}>
+                    <span className="inline-flex items-center gap-2 mb-2" style={{ color: "var(--sd-gold)" }}>
+                      {step.icon}
+                      <b className="text-xs tabular-nums" style={{ color: "var(--sd-ink-muted)" }}>0{i + 1}</b>
+                    </span>
+                    <b className="block mb-1" style={{ color: "var(--sd-ink)" }}>{step.title}</b>
+                    <p className="text-sm flex-1 mb-3 m-0" style={{ color: "var(--sd-ink-muted)" }}>{step.body}</p>
+                    <button
+                      type="button" onClick={step.go}
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold self-start"
+                      style={{ color: "var(--sd-primary-light)", background: "none", border: 0, cursor: "pointer" }}
+                    >
+                      {step.cta} <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {/* Enrolled Courses Section */}
           <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
@@ -1686,7 +1742,7 @@ const StudentDashboard = () => {
         </div>
       </section>
 
-      {/* My Sessions Section */}
+      {/* My lessons */}
       <section className="py-8">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -1699,7 +1755,7 @@ const StudentDashboard = () => {
           >
             <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
               <div className="text-center sm:text-left mb-4 sm:mb-0">
-                <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>My Sessions</h2>
+                <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>My lessons</h2>
                 <p style={{ color: "var(--sd-ink-muted)" }}>Your upcoming and past 1-on-1 sessions</p>
               </div>
             </div>

@@ -121,6 +121,13 @@ const FreeTeacherDashboard = () => {
     [bookings, today]
   );
 
+  // The last few you actually taught, newest first — the other half of
+  // "my lessons", and what you need when following a student up.
+  const recent = useMemo(
+    () => bookings.filter((b) => b.date < today).sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start)).slice(0, 5),
+    [bookings, today]
+  );
+
   const signOut = () => endSession(navigate);
 
   const join = (b) => {
@@ -165,7 +172,7 @@ const FreeTeacherDashboard = () => {
             style={{ border: "1px solid var(--td-border)", color: "var(--td-accent-light)" }}
             title="Credits, including any Exzellent Points you banked at signup"
           >
-            <Coins size={13} /> {me.credits ?? 0}
+            <Coins size={13} /> {me.credits ?? 0} credits
           </span>
 
           <span
@@ -286,9 +293,10 @@ const FreeTeacherDashboard = () => {
               )}
             </Section>
 
-            {/* ── what is next ── */}
-            {!!upcoming.length && (
-              <Section title="Coming up" sub="Your next lessons.">
+            {/* ── my lessons ── */}
+            <Section title="My lessons" sub="What you teach next, and what you just taught.">
+              <p className="text-xs uppercase tracking-wider m-0 mb-1" style={{ color: "var(--td-ink-muted)" }}>Upcoming</p>
+              {upcoming.length ? (
                 <ul className="list-none p-0 m-0">
                   {upcoming.map((b) => (
                     <li key={b._id} className="flex items-center gap-4 py-3" style={{ borderBottom: "1px solid var(--td-border)" }}>
@@ -303,8 +311,32 @@ const FreeTeacherDashboard = () => {
                     </li>
                   ))}
                 </ul>
-              </Section>
-            )}
+              ) : (
+                <p className="text-sm m-0 py-2" style={{ color: "var(--td-ink-muted)" }}>
+                  Nothing booked yet. Students find you through the tutor directory.
+                </p>
+              )}
+
+              {!!recent.length && (
+                <>
+                  <p className="text-xs uppercase tracking-wider m-0 mt-5 mb-1" style={{ color: "var(--td-ink-muted)" }}>Recently taught</p>
+                  <ul className="list-none p-0 m-0">
+                    {recent.map((b) => (
+                      <li key={b._id} className="flex items-center gap-4 py-3" style={{ borderBottom: "1px solid var(--td-border)", opacity: .75 }}>
+                        <span className="flex-none w-24 text-xs tabular-nums" style={{ color: "var(--td-ink-muted)" }}>
+                          {b.date}
+                        </span>
+                        <span className="flex-none w-14 text-sm tabular-nums">{b.start}</span>
+                        <span className="flex-1 min-w-0"><b className="block truncate">{b.title}</b></span>
+                        <span className="text-xs inline-flex items-center gap-1" style={{ color: "var(--td-ink-muted)" }}>
+                          <Clock size={11} /> {b.who || b.studentName || "—"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </Section>
 
             {/* ── the paid plan ── */}
             {!me.paid && (

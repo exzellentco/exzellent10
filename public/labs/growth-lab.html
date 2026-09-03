@@ -227,6 +227,11 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
 .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;
   color:var(--muted);font-size:.82rem}
 .foot a:hover{color:var(--text)}
+.foot-legal{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.foot-legal a{color:var(--muted);text-decoration:none}
+.foot-legal a:hover{color:var(--text);text-decoration:underline}
+@media(max-width:700px){.foot{justify-content:center;text-align:center}.foot-legal{justify-content:center;gap:14px}}
+
 
 @media(max-width:980px){
   .grid3,.tutors{grid-template-columns:1fr 1fr}
@@ -256,7 +261,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
 
 <header class="nav" id="nav">
   <div class="nav-in">
-    <a class="brand" href="/exzellent-index.html" aria-label="EXZELLENT — landing page">
+    <a class="brand" href="/learning-ecosystem.html" aria-label="EXZELLENT — landing page">
       <span class="brand-logo" aria-hidden="true"></span><span>EXZELLENT</span>
     </a>
     <nav class="nav-links" aria-label="Lab navigation">
@@ -398,7 +403,13 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
 
 <footer>
   <div class="wrap foot">
-    <a class="brand" href="/exzellent-index.html"><span class="brand-logo" aria-hidden="true"></span> EXZELLENT</a>
+    <a class="brand" href="/learning-ecosystem.html"><span class="brand-logo" aria-hidden="true"></span> EXZELLENT</a>
+    <nav class="foot-legal" aria-label="Legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/data-policy">Data Policy</a>
+      <a href="/terms">Terms &amp; Conditions</a>
+    </nav>
     <span>© 2026 EXZELLENT · Growth Lab</span>
   </div>
 </footer>
