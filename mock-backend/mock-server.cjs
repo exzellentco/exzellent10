@@ -115,6 +115,7 @@ const TEACHER = {
 // at once, in two browsers, instead of toggling one flag back and forth.
 const FREE_TEACHER = {
   ...TEACHER,
+  credits: 45,
   _id: "mock-teacher-free",
   userId: "mock-teacher-free",
   name: "Marco Rossi",
@@ -125,6 +126,7 @@ const FREE_TEACHER = {
   paid: false,
 };
 TEACHER.paid = true;
+TEACHER.credits = 120;
 
 const TEACHERS = [TEACHER, FREE_TEACHER];
 
@@ -1125,7 +1127,8 @@ function loadData() {
       if (!TEACHERS.some((t) => t._id === FREE_TEACHER._id)) TEACHERS.push(FREE_TEACHER);
       TEACHER.paid = true;
       const ft = TEACHERS.find((t) => t._id === FREE_TEACHER._id);
-      if (ft) { ft.paid = false; ft.password = ft.password || "Teacher123"; }
+      if (ft) { ft.paid = false; ft.password = ft.password || "Teacher123"; if (ft.credits == null) ft.credits = 45; }
+      if (TEACHER.credits == null) TEACHER.credits = 120;
     }
     if (typeof d.SECTION_SEQ === "number") SECTION_SEQ = d.SECTION_SEQ;
     return true;
@@ -2677,6 +2680,7 @@ const server = http.createServer((req, res) => {
         send(res, 200, { success: true, role: "teacher", data: {
           me: {
             name: who.name, dept: "Languages", rate: 26, currency: "EUR", unread: 1,
+            credits: who.credits ?? 0,
             paid: MOCK_PAID,
             classesToday: mine.filter((b) => b.date === today).map((b) => ({
               _id: b._id, title: b.title, start: b.start, student: b.studentName,

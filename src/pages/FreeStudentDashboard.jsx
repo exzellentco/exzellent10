@@ -25,6 +25,7 @@ import {
   ChevronDown,
   ChevronRight,
   Bell,
+  LogOut,
   Users,
   Library,
   UserPlus,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import SpacedRepetitionSession from "../components/AI/SpacedRepetitionSession";
 import EditProfileForm from "../components/StudentComponent/EditProfileForm";
+import { signOut as endSession } from "../utils/signOut";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
@@ -686,14 +688,21 @@ const StudentDashboard = () => {
   // ── Quick Links — sidebar shortcut list ─────────────────────────────
   // Routes are cross-checked against App.jsx where a matching page exists;
   // anything without a confirmed destination is clearly marked below.
+  /* Sign out. The global Navbar is hidden on /student-dashboard so the paid
+     console can draw its own chrome — which left the FREE dashboard with no way
+     out at all. Mirrors the console and the teacher page. */
+  const signOut = () => endSession(navigate);
+
   const FUNCTION_LINKS = [
     {
       label: "Calendar",
       icon: Calendar,
-      to: "/calendar", // TODO: confirm real calendar route — no matching page exists in App.jsx yet
+      to: "/calendar",
     },
     {
-      label: "Teacher",
+      // Was labelled "Teacher", which in a STUDENT's own sidebar reads as their
+      // role rather than a link. It goes to the tutor picker, so say that.
+      label: "Find a tutor",
       icon: Users,
       to: "/book", // /teachers is the ADMIN teachers list; /book is the public picker
     },
@@ -1001,6 +1010,15 @@ const StudentDashboard = () => {
                     >
                       <Pencil className="w-3.5 h-3.5" /> Edit Profile
                     </motion.button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); signOut(); }}
+                      className="flex items-center justify-center gap-1.5 w-full mt-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
+                      style={{ border: "1px solid var(--sd-border)", color: "var(--sd-ink-muted)" }}
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Sign out
+                    </button>
                   </div>
                 )}
               </div>

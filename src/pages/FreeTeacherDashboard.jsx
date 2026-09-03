@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Users, CalendarCheck, BookOpen, Video, Sparkles, Mic, MessageSquare,
-  Crown, ChevronRight, RefreshCw, LogOut, GraduationCap, Clock,
+  Crown, ChevronRight, RefreshCw, LogOut, GraduationCap, Clock, Coins,
 } from "lucide-react";
 import axios from "../utils/axios";
+import { signOut as endSession } from "../utils/signOut";
 import GlassCard from "../components/UI/GlassCard";
 import CountUp from "../components/StudentComponent/CountUp";
 import MessagesPanel from "../components/Messages/MessagesPanel";
@@ -120,11 +121,7 @@ const FreeTeacherDashboard = () => {
     [bookings, today]
   );
 
-  const signOut = async () => {
-    try { await axios.post("/api/users/logout"); } catch { /* the cookie goes regardless */ }
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+  const signOut = () => endSession(navigate);
 
   const join = (b) => {
     if (b.meetingUrl) window.open(b.meetingUrl, "_blank", "noopener");
@@ -162,6 +159,14 @@ const FreeTeacherDashboard = () => {
                 : "Nothing scheduled for today."}
             </p>
           </div>
+
+          <span
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs"
+            style={{ border: "1px solid var(--td-border)", color: "var(--td-accent-light)" }}
+            title="Credits, including any Exzellent Points you banked at signup"
+          >
+            <Coins size={13} /> {me.credits ?? 0}
+          </span>
 
           <span
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs"

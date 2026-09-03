@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { RefreshCw, LogOut, Plus, ExternalLink, Video, Flame, Coins } from "lucide-react";
 import axios from "../../utils/axios";
+import { signOut as endSession } from "../../utils/signOut";
 import Calendar from "./Calendar";
 import { NAV, COPY } from "./nav";
 
@@ -143,11 +144,7 @@ const Console = ({ role = "student", initialData = null }) => {
     setView(item.k);
   };
 
-  const signOut = async () => {
-    try { await axios.post("/api/users/logout"); } catch { /* the cookie is cleared regardless */ }
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+  const signOut = () => endSession(navigate);
 
   /* Write actions. Each reloads rather than patching local state: the summary
      figures at the top are derived server-side, so a local edit would leave the
@@ -692,8 +689,10 @@ const Console = ({ role = "student", initialData = null }) => {
             <span className="alh-pill" data-status="open" title="The role this account signs in as">
               {role}
             </span>
-            {role === "student" && (
-              <span className="alh-who"><Coins size={15} /> {me.credits ?? 0}</span>
+            {(role === "student" || role === "teacher") && (
+              <span className="alh-who" title="Credits, including any Exzellent Points banked at signup">
+                <Coins size={15} /> {me.credits ?? 0}
+              </span>
             )}
             <button className="alh-btn" onClick={load}><RefreshCw size={14} /> Refresh</button>
             <span className="alh-who"><i>{initials}</i> {me.name || (role === "admin" ? "Administrator" : "")}</span>

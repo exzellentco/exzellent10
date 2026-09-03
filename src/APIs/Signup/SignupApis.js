@@ -85,15 +85,20 @@ export const completeTeacherSignup = async (teacherData, token) => {
   try {
     const { confirmPassword: _confirmPassword, ...dataToSend } = teacherData;
 
+    // Teachers bank their pre-signup points too, same as learners.
+    const signupPoints = pendingPoints();
+
     const response = await axios.post(
       "/api/users/complete-teacher-signup",
-      dataToSend,
+      { ...dataToSend, signupPoints },
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
+
+    if (response.data?.success !== false) clearPoints();
 
     return response.data;
   } catch (error) {
