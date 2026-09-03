@@ -4,7 +4,7 @@
 // project). Returns the scoring contract:
 //   { transcript, reference, word_error_rate, pronunciation_score, per_word[],
 //     summary, syllables_spoken, language, duration_sec }
-import { apiUrl } from "./apiBase";
+import { apiUrl, authHeaders } from "./apiBase";
 
 export async function analyzeSpeech(blob, referenceText, lang = "en") {
   const params = new URLSearchParams();
@@ -12,7 +12,8 @@ export async function analyzeSpeech(blob, referenceText, lang = "en") {
   if (lang) params.set("lang", lang);
   const res = await fetch(apiUrl(`/api/ai/analyze-speech?${params.toString()}`), {
     method: "POST",
-    headers: { "Content-Type": "application/octet-stream" },
+    headers: { ...authHeaders(), "Content-Type": "application/octet-stream" },
+    credentials: "include",
     body: blob,
   });
   const data = await res.json().catch(() => ({}));

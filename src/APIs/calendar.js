@@ -2,12 +2,14 @@
 // proxy routes them to the mock backend on :5000 — the same reliable path the
 // speech/AI features use. (The axios baseURL points at the real Render backend,
 // which has no calendar endpoints, so we deliberately avoid it here.)
-import { apiUrl } from "./apiBase";
+import { apiUrl, authHeaders } from "./apiBase";
 
 const req = async (method, path, body) => {
   const res = await fetch(apiUrl(path), {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    // The backend routes are protected; without the token every call was a 401 live.
+    headers: { ...authHeaders(), ...(body ? { "Content-Type": "application/json" } : {}) },
+    credentials: "include",
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await res.json().catch(() => ({}));

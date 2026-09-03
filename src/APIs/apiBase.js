@@ -18,4 +18,22 @@ const BASE = import.meta.env.DEV ? "" : (import.meta.env.VITE_BACKEND_BASE_URL |
 /** Resolve an /api/... path against the correct host for this environment. */
 export const apiUrl = (path) => `${BASE}${path}`;
 
+/**
+ * The Authorization header the backend expects, read from the same `token`
+ * cookie utils/axios.js uses.
+ *
+ * The fetch-based modules (calendar, messages, speech, AI tools) sent NO auth
+ * at all. In dev that never showed, because the mock accepts anonymous calls;
+ * live, every protected route answered 401 and the calendar page reported
+ * "Could not load the lessons schedule". This is the one place that knows how
+ * the token is stored, so each module merges it in rather than re-deriving it.
+ */
+export const authHeaders = () => {
+  const token = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("token="))
+    ?.split("=")[1];
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export default apiUrl;
