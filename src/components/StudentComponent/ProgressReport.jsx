@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Sparkles, RefreshCw } from "lucide-react";
 import axios from "../../utils/axios";
+import { useNavigate } from "react-router-dom";
+import { LOCK_NOTE, PLAN_ROUTE } from "../../config/plan";
 
 /**
  * An AI-written progress report for the learner.
@@ -13,7 +15,8 @@ import axios from "../../utils/axios";
  * a figure is missing it is left out of the prompt rather than filled with a
  * plausible number, because the report is meant to be about this learner.
  */
-const ProgressReport = ({ studentId, courseId, studentName = "Student", proficiencyLevel = "B1" }) => {
+const ProgressReport = ({ studentId, courseId, studentName = "Student", proficiencyLevel = "B1", locked = false }) => {
+  const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -90,15 +93,21 @@ const ProgressReport = ({ studentId, courseId, studentName = "Student", proficie
         </div>
       )}
 
+      {locked && (
+        <p className="text-sm mb-3" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>
+          {LOCK_NOTE}.
+        </p>
+      )}
+
       <button
         type="button"
-        onClick={generate}
+        onClick={locked ? () => navigate(PLAN_ROUTE) : generate}
         disabled={loading}
         className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm disabled:opacity-50"
         style={{ border: "1px solid var(--sd-border, rgba(255,255,255,.15))", color: "var(--sd-ink, #fff)" }}
       >
         {loading ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
-        {loading ? "Writing…" : report ? "Write it again" : "Write my report"}
+        {locked ? "See the plans" : loading ? "Writing…" : report ? "Write it again" : "Write my report"}
       </button>
     </div>
   );

@@ -1479,10 +1479,12 @@ function ptToast(n,msg){
   if(chip){chip.classList.remove("pop");void chip.offsetWidth;chip.classList.add("pop");}
 }
 function ptAward(id,n,msg){
+  if(ptIsTeacherView())return false;   // nothing to award them into
   const log=ptLog(); if(log.indexOf(id)>-1)return false;
   log.push(id); ptSave(ptGet()+n,log); ptPaint(); ptToast(n,msg); return true;
 }
 function ptCheckin(){
+  if(ptIsTeacherView())return;
   const today=new Date().toISOString().slice(0,10);
   let last=null; try{last=localStorage.getItem(PTK.day);}catch(e){}
   if(last===today)return;
@@ -1530,7 +1532,28 @@ function buildPtBody(){
       <span class="u-btn" style="pointer-events:none">${t.have} <b style="color:var(--goldT);margin-left:6px">${ptGet()}</b></span>
     </div>`;
 }
-function ptOpen(){buildPtBody();ptmodal.dataset.open="true";}
+/* Which view is showing. The teacher pane is the tell — the header role toggle
+   and the persona switch both drive it. */
+function ptIsTeacherView(){
+  const t=document.querySelector('.pane[data-persona="teacher"]');
+  return !!(t && t.classList.contains("on"));
+}
+/* Exzellent Points become CREDITS, and only a student account has a credit
+   balance — Teacher has no wallet at all. Showing a teacher a points chip and
+   "sign up to bank them" promises something the platform cannot deliver, so
+   the whole mechanic hides in the teacher view. Points already earned stay in
+   localStorage: they are not lost, they simply do not apply to this account
+   type, and a student account on this browser can still claim them. */
+function ptSyncRole(){
+  const hide=ptIsTeacherView();
+  const chip=document.getElementById("ptsBtn");
+  if(chip) chip.hidden=hide;
+  if(hide) ptClose();
+}
+ptSyncRole();
+new MutationObserver(ptSyncRole).observe(document.body,{attributes:true,subtree:true,attributeFilter:["class"]});
+
+function ptOpen(){ if(ptIsTeacherView()) return; buildPtBody();ptmodal.dataset.open="true";}
 function ptClose(){ptmodal.dataset.open="false";}
 document.getElementById("ptsBtn").addEventListener("click",ptOpen);
 document.getElementById("ptClose").addEventListener("click",ptClose);

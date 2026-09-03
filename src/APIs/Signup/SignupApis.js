@@ -1,4 +1,5 @@
 import axios from "../../utils/axios";
+import { pendingPoints, clearPoints } from "../../utils/signupPoints";
 
 /**
  * Send OTP to user's email for verification
@@ -48,15 +49,23 @@ export const completeSignup = async (userData, token) => {
     // Remove confirmPassword before sending to backend
     const { confirmPassword: _confirmPassword, ...dataToSend } = userData;
 
+    // Exzellent Points earned on the landing page before signing up. The
+    // backend clamps this, so a tampered value cannot mint credits.
+    const signupPoints = pendingPoints();
+
     const response = await axios.post(
       "/api/users/complete-signup",
-      dataToSend,
+      { ...dataToSend, signupPoints },
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
+
+    // Only once the account exists: if signup failed, the points are still
+    // theirs to bring to the next attempt.
+    if (response.data?.success !== false) clearPoints();
 
     return response.data;
   } catch (error) {

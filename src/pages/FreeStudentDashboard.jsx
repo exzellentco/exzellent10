@@ -33,6 +33,8 @@ import {
 import SpacedRepetitionSession from "../components/AI/SpacedRepetitionSession";
 import EditProfileForm from "../components/StudentComponent/EditProfileForm";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
+import UpgradeBanner from "../components/UI/UpgradeBanner";
+import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
 import CountUp from "../components/StudentComponent/CountUp";
@@ -69,6 +71,16 @@ const StudentDashboard = () => {
   const [progressLoading, setProgressLoading] = useState(false);
   const [aiTab, setAiTab] = useState(null);          // "exam" | "course" -> AI Tools overlay
   const [speechOpen, setSpeechOpen] = useState(false);
+
+  /* This component only ever renders for a FREE account — the gate sends paid
+     learners to the console — so anything the plan config marks paid-only is
+     locked here. Routed through isLocked() rather than hard-coded so the split
+     lives in one file. */
+  const locked = (feature) => isLocked(feature, false);
+  const openOrUpgrade = (feature, open) => () => {
+    if (locked(feature)) { navigate(PLAN_ROUTE); return; }
+    open();
+  };
   const [_registeredWebinarsCount, setRegisteredWebinarsCount] = useState(0);
   const [registeredWebinars, setRegisteredWebinars] = useState([]);
   const [quizProgress, setQuizProgress] = useState(null);
@@ -1371,7 +1383,7 @@ const StudentDashboard = () => {
                 <GlassCard glowColor="#8C51F0" intensity={0}>
                   <button
                     type="button"
-                    onClick={() => setAiTab("exam")}
+                    onClick={openOrUpgrade("aiExam", () => setAiTab("exam"))}
                     className="w-full text-left flex items-center gap-5 p-5 group"
                   >
                     <div
@@ -1386,7 +1398,7 @@ const StudentDashboard = () => {
                         Test your level with our AI-powered CEFR placement exam
                       </p>
                     </div>
-                    <span className="text-lg flex-shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: "var(--sd-primary)" }}>→</span>
+                    <span className="flex-shrink-0 text-xs px-2 py-1 rounded-full" style={{ border: "1px solid var(--sd-border)", color: "var(--sd-ink-muted)" }}>{LOCK_NOTE}</span>
                   </button>
                 </GlassCard>
               </motion.div>
@@ -1399,7 +1411,7 @@ const StudentDashboard = () => {
               >
                 <GlassCard glowColor="#B392F5" intensity={0}>
                   <div
-                    onClick={() => setAiTab("course")}
+                    onClick={openOrUpgrade("aiCourse", () => setAiTab("course"))}
                     className="flex items-center gap-5 p-5 cursor-pointer group"
                   >
                     <div
@@ -1414,7 +1426,7 @@ const StudentDashboard = () => {
                         Build a study plan around your goal
                       </p>
                     </div>
-                    <span className="text-lg flex-shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: "var(--sd-primary-light)" }}>→</span>
+                    <span className="flex-shrink-0 text-xs px-2 py-1 rounded-full" style={{ border: "1px solid var(--sd-border)", color: "var(--sd-ink-muted)" }}>{LOCK_NOTE}</span>
                   </div>
                 </GlassCard>
               </motion.div>
@@ -1427,7 +1439,7 @@ const StudentDashboard = () => {
               >
                 <GlassCard glowColor="#C9A227" intensity={0}>
                   <div
-                    onClick={() => setSpeechOpen(true)}
+                    onClick={openOrUpgrade("speechLab", () => setSpeechOpen(true))}
                     className="flex items-center gap-5 p-5 cursor-pointer group"
                   >
                     <div
@@ -1623,11 +1635,22 @@ const StudentDashboard = () => {
           courseId={enrolledCourses?.[0]?.course?._id || null}
           studentName={studentData?.name || "Student"}
           proficiencyLevel={studentData?.proficiencyLevel || "B1"}
+          locked={locked("aiReport")}
         />
 
         <div className="rounded-xl p-6 mt-4" style={{ border: "1px solid var(--sd-border)" }}>
               <GrowthDashboard />
             </div>
+
+            <UpgradeBanner
+              title="More of Exzellent, when you are ready"
+              lines={[
+                "AI placement exams",
+                "AI study plans",
+                "Written progress reports",
+                "1-to-1 lessons with a tutor",
+              ]}
+            />
           </motion.div>
         </div>
       </section>

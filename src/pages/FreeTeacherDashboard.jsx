@@ -12,6 +12,8 @@ import MessagesPanel from "../components/Messages/MessagesPanel";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import AriaChatWidget from "../components/shared/AriaChatWidget";
+import UpgradeBanner from "../components/UI/UpgradeBanner";
+import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 
 /**
  * THE FREE TEACHER DASHBOARD.
@@ -129,10 +131,14 @@ const FreeTeacherDashboard = () => {
     else if (b._id) navigate(`/class/${b._id}`);
   };
 
+  // Same split as the learner side: generating costs a model call per press and
+  // is paid; practice and talking to your students are not.
+  const locked = (f) => isLocked(f, !!me.paid);
+
   const TOOLS = [
-    { key: "aitools", label: "AI Tools", note: "Build an exam, a course, a report", icon: <Sparkles size={18} />, tint: "#F0B23C" },
-    { key: "speech", label: "Speech Lab", note: "Model pronunciation for a lesson", icon: <Mic size={18} />, tint: "#B392F5" },
-    { key: "messages", label: "Messages", note: "Your students' questions", icon: <MessageSquare size={18} />, tint: "#5AE287" },
+    { key: "aitools", feature: "aiExam", label: "AI Tools", note: "Build an exam, a course, a report", icon: <Sparkles size={18} />, tint: "#F0B23C" },
+    { key: "speech", feature: "speechLab", label: "Speech Lab", note: "Model pronunciation for a lesson", icon: <Mic size={18} />, tint: "#B392F5" },
+    { key: "messages", feature: "messages", label: "Messages", note: "Your students' questions", icon: <MessageSquare size={18} />, tint: "#5AE287" },
   ];
 
   const fade = reduced ? {} : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 } };
@@ -225,13 +231,13 @@ const FreeTeacherDashboard = () => {
             </Section>
 
             {/* ── tools ── */}
-            <Section title="Your tools" sub="The same ones you had before — nothing behind a paywall here.">
+            <Section title="Your tools" sub="Practice and messaging are free. Generating exams and courses is part of the full plan.">
               <div className="grid gap-4 sm:grid-cols-3">
                 {TOOLS.map((t, i) => (
                   <motion.button
                     key={t.key}
                     type="button"
-                    onClick={() => setPanel(t.key)}
+                    onClick={() => (locked(t.feature) ? navigate(PLAN_ROUTE) : setPanel(t.key))}
                     {...fade}
                     transition={{ duration: 0.3, delay: reduced ? 0 : i * 0.06 }}
                     className="text-left"
@@ -242,6 +248,9 @@ const FreeTeacherDashboard = () => {
                       <span className="inline-flex mb-3" style={{ color: t.tint }}>{t.icon}</span>
                       <b className="block mb-1">{t.label}</b>
                       <span className="text-xs" style={{ color: "var(--td-ink-muted)" }}>{t.note}</span>
+                      {locked(t.feature) && (
+                        <span className="block mt-2 text-xs" style={{ color: "var(--td-accent-light)" }}>{LOCK_NOTE}</span>
+                      )}
                     </GlassCard>
                   </motion.button>
                 ))}
@@ -294,32 +303,21 @@ const FreeTeacherDashboard = () => {
 
             {/* ── the paid plan ── */}
             {!me.paid && (
-              <motion.div {...fade} transition={{ duration: 0.35 }}>
-                <GlassCard glowColor="#F0B23C" intensity={1.4}>
-                  <div className="flex flex-wrap items-center gap-5">
-                    <div className="flex-1 min-w-[260px]">
-                      <p className="text-xs uppercase tracking-[0.2em] mb-2" style={{ color: "var(--td-accent)" }}>
-                        Full Access
-                      </p>
-                      <h3 className="text-xl font-semibold m-0 mb-2" style={{ fontFamily: "var(--td-font-heading)" }}>
-                        The full teaching console
-                      </h3>
-                      <p className="text-sm m-0" style={{ color: "var(--td-ink-muted)" }}>
-                        A month calendar of every lesson, attendance, your earnings and payroll,
-                        your course library, and the class roster in one place.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => navigate("/payment")}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium"
-                      style={{ background: "var(--td-accent)", color: "#1a1408" }}
-                    >
-                      See the plan <ChevronRight size={15} />
-                    </button>
-                  </div>
-                </GlassCard>
-              </motion.div>
+              <UpgradeBanner
+                eyebrow="Full plan"
+                title="The full teaching console"
+                lines={[
+                  "A month calendar of every lesson",
+                  "Attendance and the class roster",
+                  "Earnings and payroll",
+                  "AI exam and course builder",
+                ]}
+                cta="See the plans"
+                accent="var(--td-accent)"
+                border="var(--td-border)"
+                ink="var(--td-ink)"
+                muted="var(--td-ink-muted)"
+              />
             )}
           </>
         )}
