@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"; // <-- import icons
 import axios from "../../utils/axios";
 import { fetchStudentProfile } from "../../APIs/StudentApi/StudentDetails";
 
 const Login = ({ checkAuth }) => {
+  // Set by signup when Exzellent Points were converted into credits.
+  const location = useLocation();
+  const creditsGranted = location.state?.creditsGranted || 0;
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false); // <-- add state
@@ -180,6 +183,20 @@ const Login = ({ checkAuth }) => {
         <h2 className="auth-title">Welcome <span className="g">back</span></h2>
         <p className="auth-sub">Sign in to continue your language learning journey.</p>
 
+        {creditsGranted > 0 && (
+          <div
+            role="status"
+            style={{
+              border: "1px solid rgba(201,162,39,.45)", background: "rgba(201,162,39,.10)",
+              color: "#e6c766", borderRadius: 14, padding: "12px 14px", marginBottom: 14,
+              fontSize: 14, lineHeight: 1.45,
+            }}
+          >
+            Your account is ready. The <b>{creditsGranted} Exzellent Point{creditsGranted === 1 ? "" : "s"}</b>{" "}
+            you earned {creditsGranted === 1 ? "is" : "are"} now{" "}
+            <b>{creditsGranted} credit{creditsGranted === 1 ? "" : "s"}</b> in your account — sign in to use them.
+          </div>
+        )}
         {loginError && <div className="auth-error">{loginError}</div>}
 
         {/* Google Login Button */}

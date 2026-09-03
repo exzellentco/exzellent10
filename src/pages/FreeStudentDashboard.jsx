@@ -26,6 +26,7 @@ import {
   ChevronRight,
   Bell,
   LogOut,
+  Coins,
   Users,
   Library,
   UserPlus,
@@ -639,13 +640,10 @@ const StudentDashboard = () => {
   // is derived from the closest real signals already on the student
   // record (paid / credits). If a real `tier` field is ever added,
   // it takes priority automatically.
-  const tierBadge =
-    studentData?.tier ||
-    (studentData?.paid
-      ? "Full Access"
-      : (studentData?.credits || 0) > 0
-        ? "Classroom"
-        : "Webinars");
+  // The plan, plainly. This used to read "Classroom" or "Webinars" for anyone
+  // holding credits, which named a tier the platform does not sell and told a
+  // free learner nothing about what they were actually on.
+  const tierBadge = studentData?.paid ? "Full Access" : "Free plan";
 
   // Measure the profile dropdown's real content height (same reliable
   // technique used for the "Your learning mix" accordion) so it expands
@@ -1018,6 +1016,22 @@ const StudentDashboard = () => {
                 Quick Stats
               </p>
               <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-xl" style={{ border: "1px solid var(--sd-border)" }}>
+                  <span className="text-sm inline-flex items-center gap-1.5" style={{ color: "var(--sd-ink)" }}>
+                    <Coins className="w-4 h-4" style={{ color: "var(--sd-gold)" }} /> Credits
+                  </span>
+                  <span className="font-semibold" style={{ color: "var(--sd-gold)" }}>
+                    <CountUp value={studentData?.credits || 0} />
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl" style={{ border: "1px solid var(--sd-border)" }}>
+                  <span className="text-sm" style={{ color: "var(--sd-ink)" }}>Plan</span>
+                  <span className="font-semibold" style={{ color: studentData?.paid ? "var(--sd-gold)" : "var(--sd-ink-muted)" }}>
+                    {tierBadge}
+                  </span>
+                </div>
+
                 <div className="flex items-center justify-between p-3 rounded-xl" style={{ border: "1px solid var(--sd-border)" }}>
                   <span className="text-sm" style={{ color: "var(--sd-ink)" }}>Courses Enrolled</span>
                   <span className="font-semibold" style={{ color: "var(--sd-primary-light)" }}>

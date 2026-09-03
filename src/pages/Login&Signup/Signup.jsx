@@ -412,7 +412,7 @@ const Signup = () => {
       if (questionnaireAnswers) {
         try { parsedAnswers = JSON.parse(questionnaireAnswers); } catch { parsedAnswers = null; }
       }
-      await authService.completeSignup(
+      const res = await authService.completeSignup(
         { name: formData.name, role: formData.role, password: formData.password, gender: formData.gender,
           phone: formData.countryCode + formData.phone, dateOfBirth: formData.dateOfBirth, referral: formData.referral,
           inviteCode: formData.inviteCode,
@@ -420,7 +420,9 @@ const Signup = () => {
           proficiencyLevel: parsedAnswers?.[3] || "", learningGoal: parsedAnswers?.[4] || "" },
         tempToken
       );
-      navigate("/login");
+      // The backend reports what it actually granted, so the number shown is
+      // the number banked — not what the browser thought it had earned.
+      navigate("/login", { state: { creditsGranted: res?.creditsGranted || 0 } });
     } catch (err) {
       setErrors({ submit: err.message });
     } finally {
