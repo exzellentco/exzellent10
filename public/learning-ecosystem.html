@@ -787,10 +787,11 @@ section[id]{scroll-margin-top:76px}
 /* ===== site footer: the same one the React pages show ===== */
 .site-foot{position:relative;z-index:2;margin-top:60px;border-top:1px solid var(--line);background:rgba(8,10,24,.92)}
 .foot-grid{width:min(1240px,94vw);margin-inline:auto;padding:52px 0 44px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
-.foot-news h3{font:700 18px/1.2 "Space Grotesk",Inter,sans-serif;color:var(--ink);margin:0 0 8px}
+.foot-news h3{font:700 18px/1.2 "Space Grotesk",Inter,sans-serif;color:var(--text);margin:0 0 8px}
 .foot-news p{color:var(--muted);font-size:14px;margin:0 0 16px}
 .foot-news form{display:flex;flex-direction:column;gap:10px;max-width:560px}
-.foot-news input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:var(--ink);font:500 14px/1 Inter,sans-serif}
+.foot-news input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:500 14px/1 Inter,sans-serif}
+.foot-news input::placeholder{color:var(--dim);opacity:1}
 .foot-news input:focus{outline:none;border-color:rgb(var(--acc))}
 .foot-news button{padding:13px 16px;border-radius:12px;border:0;cursor:pointer;color:#fff;font:600 14px/1 Inter,sans-serif;
   background:linear-gradient(90deg,#1e3a8a,rgb(var(--acc)));transition:filter .25s,transform .25s}
@@ -801,14 +802,14 @@ section[id]{scroll-margin-top:76px}
 .foot-right{display:flex;flex-direction:column;align-items:center;gap:26px;text-align:center}
 .foot-links{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}
 .foot-links a{color:var(--muted);font-size:14px;text-decoration:none;transition:color .25s}
-.foot-links a:hover{color:var(--ink)}
+.foot-links a:hover{color:var(--text)}
 .foot-copy{color:var(--muted);font-size:13.5px;margin:0}
 .foot-badges{display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap}
 .tp{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:#fff;border:1px solid #6ee7b7;text-decoration:none;transition:transform .25s}
 .tp:hover{transform:translateY(-1px)}
 .tp span{color:#000;font-size:13px}.tp i{color:#00b67a;font-style:normal;font-size:18px;line-height:1}.tp b{color:#000;font-size:15px}
 .made{display:flex;flex-direction:column;gap:2px}
-.made span{display:flex;align-items:center;gap:6px;font:700 14px/1.3 Inter,sans-serif;color:var(--ink)}
+.made span{display:flex;align-items:center;gap:6px;font:700 14px/1.3 Inter,sans-serif;color:var(--text)}
 .made i{display:inline-block;width:18px;height:18px;border-radius:2px}
 [data-theme="light"] .site-foot{background:rgba(245,246,252,.96)}
 @media(max-width:860px){.foot-grid{grid-template-columns:1fr;gap:36px;padding:40px 0 32px}}
@@ -830,7 +831,7 @@ section[id]{scroll-margin-top:76px}
   border-radius:16px;border:1px solid var(--line);background:var(--solid);
   box-shadow:0 26px 60px rgba(0,0,0,.5);text-align:left;max-height:320px;overflow:auto}
 .sugg a{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:11px;
-  text-decoration:none;color:var(--ink);font:500 14px/1.3 Inter,sans-serif}
+  text-decoration:none;color:var(--text);font:500 14px/1.3 Inter,sans-serif}
 .sugg a small{margin-left:auto;color:var(--dim);font:500 11.5px/1 Inter,sans-serif;white-space:nowrap}
 .sugg a:hover,.sugg a[aria-selected="true"]{background:rgba(var(--acc),.16)}
 .sugg .none{padding:12px;color:var(--dim);font:500 13.5px/1.4 Inter,sans-serif}
