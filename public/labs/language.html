@@ -372,37 +372,8 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
       <button class="fchip" data-f="es" type="button">Spanish</button>
       <button class="fchip" data-f="zh" type="button">Mandarin</button>
       <button class="fchip" data-f="uk" type="button">Ukrainian</button></div>
-    <div class="tutors" id="tutorGrid">      <div class="tutor reveal" data-tags="de" style="transition-delay:0.00s">
-        <div class="thead"><span class="tav">SM</span><div><div class="tname">Sofia M.</div><div class="tspec">German · native speaker</div></div></div>
-        <div class="tmeta"><span>A1–C2</span><span>TestDaF</span><span>Conversation</span></div>
-        <div class="tfoot"><span class="tprice"><b>€28</b> <small>/ hour</small></span><button class="book" data-who="Sofia M." type="button">Book</button></div>
-      </div>
-      <div class="tutor reveal" data-tags="en" style="transition-delay:0.07s">
-        <div class="thead"><span class="tav">EK</span><div><div class="tname">Elena K.</div><div class="tspec">English · exam specialist</div></div></div>
-        <div class="tmeta"><span>IELTS</span><span>TOEFL</span><span>Business</span></div>
-        <div class="tfoot"><span class="tprice"><b>€30</b> <small>/ hour</small></span><button class="book" data-who="Elena K." type="button">Book</button></div>
-      </div>
-      <div class="tutor reveal" data-tags="fr" style="transition-delay:0.14s">
-        <div class="thead"><span class="tav">MD</span><div><div class="tname">Marc D.</div><div class="tspec">French · native speaker</div></div></div>
-        <div class="tmeta"><span>A1–C1</span><span>DELF</span><span>Culture</span></div>
-        <div class="tfoot"><span class="tprice"><b>€26</b> <small>/ hour</small></span><button class="book" data-who="Marc D." type="button">Book</button></div>
-      </div>
-      <div class="tutor reveal" data-tags="es" style="transition-delay:0.00s">
-        <div class="thead"><span class="tav">RG</span><div><div class="tname">Rosa G.</div><div class="tspec">Spanish · native speaker</div></div></div>
-        <div class="tmeta"><span>A1–C1</span><span>DELE</span><span>Latin America</span></div>
-        <div class="tfoot"><span class="tprice"><b>€25</b> <small>/ hour</small></span><button class="book" data-who="Rosa G." type="button">Book</button></div>
-      </div>
-      <div class="tutor reveal" data-tags="zh" style="transition-delay:0.07s">
-        <div class="thead"><span class="tav">ML</span><div><div class="tname">Mei L.</div><div class="tspec">Mandarin · native speaker</div></div></div>
-        <div class="tmeta"><span>A1–B2</span><span>HSK</span><span>Business</span></div>
-        <div class="tfoot"><span class="tprice"><b>€27</b> <small>/ hour</small></span><button class="book" data-who="Mei L." type="button">Book</button></div>
-      </div>
-      <div class="tutor reveal" data-tags="uk" style="transition-delay:0.14s">
-        <div class="thead"><span class="tav">AP</span><div><div class="tname">Andrii P.</div><div class="tspec">Ukrainian & Polish</div></div></div>
-        <div class="tmeta"><span>A1–B2</span><span>Conversation</span><span>Relocation</span></div>
-        <div class="tfoot"><span class="tprice"><b>€22</b> <small>/ hour</small></span><button class="book" data-who="Andrii P." type="button">Book</button></div>
-      </div></div>
-    <p class="tnote">Example profiles — the live directory shows real availability, ratings and prices. Booking opens a request; no account needed to browse.</p>
+    <div class="tutors" id="tutorGrid" aria-live="polite"></div>
+    <p class="tnote">Every tutor here is approved and bookable. Browsing is free and needs no account.</p>
   </div>
 </section>
 
@@ -503,15 +474,140 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
 
   /* ---------- tutor filters + booking ---------- */
   const chips = document.querySelectorAll('.fchip');
-  const cards = document.querySelectorAll('.tutor');
+  // Cards are built from the directory now, so the list is re-read on each
+  // press rather than captured once at load.
   chips.forEach(c => c.addEventListener('click', () => {
     chips.forEach(x => x.classList.remove('on')); c.classList.add('on');
     const f = c.dataset.f;
-    cards.forEach(card => {
-      const show = (f === 'all') || card.dataset.tags.includes(f);
+    document.querySelectorAll('#tutorGrid .tutor').forEach(card => {
+      const show = (f === 'all') || (card.dataset.tags || '').includes(f);
       card.style.display = show ? '' : 'none';
     });
   }));
+  /* ── the tutor directory ───────────────────────────────────────────────────
+     This grid used to hold six invented people and a note admitting the real
+     directory lived somewhere else. /api/calendar/providers IS that directory:
+     it is the only public teacher list on the platform, it returns approved
+     teachers only, and it carries the real price and languages. When it is
+     empty or unreachable we say so — inventing tutors is what we just stopped
+     doing. */
+  (function () {
+    var grid = document.getElementById('tutorGrid');
+    if (!grid) return;
+
+    var LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    var BASES = LOCAL
+      ? ['http://localhost:5000', 'https://exzellent-backend-1.onrender.com']
+      : ['https://exzellent-backend-1.onrender.com'];
+
+    var CODES = { de: 'german', en: 'english', fr: 'french', es: 'spanish', zh: 'mandarin', uk: 'ukrainian' };
+
+    function say(msg) {
+      grid.innerHTML = '';
+      var p = document.createElement('p');
+      p.className = 'tnote';
+      p.style.gridColumn = '1 / -1';
+      p.textContent = msg;
+      grid.appendChild(p);
+    }
+
+    /* taughtLanguages is a list of strings on some records and of
+       { language, cefr_level } objects on others. Both shapes are real. */
+    function langsOf(t) {
+      var out = (t.taughtLanguages || []).map(function (l) {
+        return String(l && l.language ? l.language : l || '').toLowerCase();
+      }).filter(Boolean);
+      /* Older records carry the languages in a free-text `subject`
+         ("German & English") instead of the structured list. */
+      if (!out.length && t.subject) {
+        out = String(t.subject).toLowerCase().split(/[&,/]|and/)
+          .map(function (x) { return x.replace(/[^a-z\s]/g, '').trim(); })
+          .filter(Boolean);
+      }
+      return out;
+    }
+
+    function initials(name) {
+      return name.split(/\s+/).filter(Boolean).slice(0, 2)
+        .map(function (w) { return w[0].toUpperCase(); }).join('') || 'EX';
+    }
+
+    function card(t, i) {
+      var name = t.name || 'Exzellent tutor';
+      var langs = langsOf(t);
+      var tags = Object.keys(CODES).filter(function (c) {
+        return langs.some(function (l) { return l.indexOf(CODES[c]) !== -1; });
+      }).join(' ');
+
+      var el = document.createElement('div');
+      el.className = 'tutor';
+      el.dataset.tags = tags;
+
+      var head = document.createElement('div');
+      head.className = 'thead';
+      var av = document.createElement('span');
+      av.className = 'tav';
+      av.textContent = initials(name);
+      var who = document.createElement('div');
+      var nm = document.createElement('div');
+      nm.className = 'tname'; nm.textContent = name;
+      var sp = document.createElement('div');
+      sp.className = 'tspec';
+      var shown = (t.taughtLanguages || []).map(function (l) {
+        return String(l && l.language ? l.language : l || '').trim();
+      }).filter(Boolean).join(' · ') || (t.subject ? String(t.subject) : 'Languages');
+      sp.textContent = shown + (t.yearsExperience ? ' · ' + t.yearsExperience + ' yrs' : '');
+      who.appendChild(nm); who.appendChild(sp);
+      head.appendChild(av); head.appendChild(who);
+
+      var meta = document.createElement('div');
+      meta.className = 'tmeta';
+      [t.location || t.countryOfResidence || 'Online'].concat(langs.length > 2 ? ['+' + (langs.length - 2) + ' more'] : [])
+        .forEach(function (m) { var x = document.createElement('span'); x.textContent = m; meta.appendChild(x); });
+
+      var foot = document.createElement('div');
+      foot.className = 'tfoot';
+      var price = document.createElement('span');
+      price.className = 'tprice';
+      if (t.sessionPrice > 0) {
+        var b = document.createElement('b');
+        b.textContent = (t.currency === 'EUR' || !t.currency ? '\u20ac' : t.currency + ' ') + t.sessionPrice;
+        var sm = document.createElement('small');
+        sm.textContent = ' / hour';
+        price.appendChild(b); price.appendChild(sm);
+      } else {
+        price.textContent = 'Ask for a price';
+      }
+      /* The old button opened a mailto. Booking lives at /book, which is the
+         flow that actually creates a lesson. */
+      var book = document.createElement('a');
+      book.className = 'book';
+      book.href = '/book';
+      book.textContent = 'Book';
+      foot.appendChild(price); foot.appendChild(book);
+
+      el.appendChild(head); el.appendChild(meta); el.appendChild(foot);
+      return el;
+    }
+
+    function load(i) {
+      if (i >= BASES.length) { say('The tutor directory is not reachable right now. Please try again shortly.'); return; }
+      fetch(BASES[i] + '/api/calendar/providers')
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (res) {
+          var list = (res && res.data ? res.data : res) || [];
+          var tutors = list.filter(function (t) { return !t.role || t.role === 'tutor'; });
+          if (!tutors.length) { say('Tutors are being onboarded — check back shortly, or ask us and we will match you.'); return; }
+          grid.innerHTML = '';
+          tutors.forEach(function (t, n) { grid.appendChild(card(t, n)); });
+        })
+        .catch(function () { load(i + 1); });
+    }
+
+    say('Loading tutors\u2026');
+    load(0);
+  })();
+
   document.querySelectorAll('.book').forEach(b => b.addEventListener('click', () => {
     const who = b.dataset.who;
     location.href = 'mailto:exzellent.co@gmail.com?subject=' +
@@ -668,7 +764,12 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px
     grid.appendChild(d);
   }
 
-  var BASES = ["https://exzellent-backend-1.onrender.com", "http://localhost:5000"];
+  var LOCAL = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  // Production first everywhere except a local machine, where hitting the live
+  // backend from a dev page is exactly the surprise we do not want.
+  var BASES = LOCAL
+    ? ["http://localhost:5000", "https://exzellent-backend-1.onrender.com"]
+    : ["https://exzellent-backend-1.onrender.com"];
 
   function tryBases(i) {
     if (i >= BASES.length) { message("Couldn't load courses right now. Please try again later."); return; }
