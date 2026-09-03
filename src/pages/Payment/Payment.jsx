@@ -22,7 +22,7 @@ import { ArrowRight } from "lucide-react";
 function buildTiers() {
   return [
     {
-      id: "Academia",
+      id: "starter",
       title: "Starter",
       bestFor: "Explore the platform",
       tagline: "Dip your toes in — for a small sum.",
@@ -97,7 +97,7 @@ function buildTiers() {
       },
     },
     {
-      id: "crash-course",
+      id: "pro-term-plan",
       title: "Pro Term Plan",
       bestFor: "Fast-track learners",
       tagline:
@@ -171,7 +171,7 @@ export default function PricingTiers() {
 
   const tiers = useMemo(buildTiers, []);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (planId) => {
     const userStr = localStorage.getItem("user");
     if (!userStr) {
       navigate("/login");
@@ -186,6 +186,7 @@ export default function PricingTiers() {
       );
       const response = await axios.post(
         "/api/payments/create-checkout-session",
+        { plan: planId },
       );
       const { url } = response.data;
       if (url) {
@@ -271,7 +272,7 @@ export default function PricingTiers() {
                   ))}
                 </ul>
                 <button
-                  onClick={handleSubscribe}
+                  onClick={() => handleSubscribe(tier.id)}
                   disabled={isPaid}
                   className={`group/btn relative px-8 py-3 sm:text-base font-semibold rounded-xl overflow-hidden cursor-pointer border-4  hover:border-transparent hover:scale-105 transition-all duration-700`}
                 >
