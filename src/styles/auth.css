@@ -109,3 +109,55 @@
 .auth-dot.on { background: var(--a-grad); color: #0a0a14; border-color: transparent; }
 .auth-bar { width: 30px; height: 2px; background: var(--a-line); }
 .auth-bar.on { background: var(--a-violet-l); }
+
+/* ─── phone + country picker on the signup form ───────────────────────────────
+   react-phone-input-2 ships a light stylesheet (white panels, dark text) and
+   nothing overrode it, so on this dark form the dial codes — "+48" and the rest
+   — were white on white and could not be read at all. These rules restyle the
+   widget to the form's own palette. Scoped to .auth-phone so the library is not
+   restyled anywhere else it might be used. */
+.auth-phone .react-tel-input .form-control{
+  width:100%; height:auto; padding:12px 14px 12px 52px; border-radius:12px;
+  background:rgba(255,255,255,.03); color:#EEF1FB;
+  border:1px solid rgba(154,163,194,.28); font-size:15px;
+}
+.auth-phone .react-tel-input .form-control:focus{
+  border-color:#8C51F0; box-shadow:0 0 0 3px rgba(140,81,240,.25); outline:none;
+}
+.auth-phone .react-tel-input .form-control::placeholder{ color:#7A82A3; }
+
+/* the flag button sitting inside the field */
+.auth-phone .react-tel-input .flag-dropdown,
+.auth-phone .react-tel-input .selected-flag,
+.auth-phone .react-tel-input .flag-dropdown.open .selected-flag{
+  background:transparent; border:0; border-radius:12px 0 0 12px;
+}
+.auth-phone .react-tel-input .selected-flag:hover,
+.auth-phone .react-tel-input .selected-flag:focus{ background:rgba(255,255,255,.06); }
+.auth-phone .react-tel-input .selected-flag .arrow{ border-top-color:#9AA3C2; }
+.auth-phone .react-tel-input .selected-flag .arrow.up{ border-bottom-color:#9AA3C2; }
+
+/* the country list: this is where the dial codes were invisible */
+.auth-phone .react-tel-input .country-list{
+  background:#151428; color:#EEF1FB; border:1px solid rgba(154,163,194,.22);
+  border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,.5); margin-top:6px;
+}
+.auth-phone .react-tel-input .country-list .country{ color:#EEF1FB; }
+.auth-phone .react-tel-input .country-list .country .dial-code{ color:#9AA3C2; }
+.auth-phone .react-tel-input .country-list .country:hover,
+.auth-phone .react-tel-input .country-list .country.highlight{
+  background:rgba(140,81,240,.22); color:#fff;
+}
+.auth-phone .react-tel-input .country-list .country.highlight .dial-code,
+.auth-phone .react-tel-input .country-list .country:hover .dial-code{ color:#D9CCFA; }
+.auth-phone .react-tel-input .country-list .divider{ border-bottom-color:rgba(154,163,194,.2); }
+.auth-phone .react-tel-input .country-list .search{
+  background:#151428; border-bottom:1px solid rgba(154,163,194,.2); padding:8px;
+}
+.auth-phone .react-tel-input .country-list .search-box{
+  width:100%; margin:0; padding:9px 12px; border-radius:9px;
+  background:rgba(255,255,255,.05); color:#EEF1FB;
+  border:1px solid rgba(154,163,194,.28);
+}
+.auth-phone .react-tel-input .country-list .search-box::placeholder{ color:#7A82A3; }
+.auth-phone .react-tel-input .country-list .no-entries-message{ color:#9AA3C2; }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import GlassCard from "../components/UI/GlassCard";
-import AriaChatWidget from "../components/shared/AriaChatWidget";
+import ExziChatWidget from "../components/shared/ExziChatWidget";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import {
   Calendar,
@@ -1724,13 +1724,12 @@ const StudentDashboard = () => {
         loading={progressLoading}
       />
 
-      {/* Floating "Aria" AI assistant — shared component, also used on the
-          Course Details page, so both stay visually/behaviorally in sync
-          instead of maintaining two copies. */}
+      {/* Floating Exzi assistant — shared component, also used on the Course
+          Details page, so both stay in sync instead of being two copies. */}
       {aiTab && <AiToolsHub role="student" initialTab={aiTab} onClose={() => setAiTab(null)} />}
       {speechOpen && <StudentSpeechLab onClose={() => setSpeechOpen(false)} student={studentData} />}
 
-      <AriaChatWidget />
+      <ExziChatWidget />
 
       {reviewOpen && topDeckId && (
         <SpacedRepetitionSession

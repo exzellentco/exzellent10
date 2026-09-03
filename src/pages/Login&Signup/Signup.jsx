@@ -15,14 +15,6 @@ const toggle = (active) => ({
   background: active ? "var(--a-grad)" : "rgba(255,255,255,.03)",
   border: active ? "1px solid transparent" : "1px solid var(--a-line)",
 });
-const phoneDark = {
-  inputStyle: { width: "100%", height: "46px", fontSize: "14px", borderRadius: "12px", paddingLeft: "50px",
-    background: "rgba(255,255,255,.03)", border: "1px solid rgba(148,163,215,.14)", color: "#eef1fb" },
-  buttonStyle: { borderTopLeftRadius: "12px", borderBottomLeftRadius: "12px", border: "1px solid rgba(148,163,215,.14)",
-    borderRight: "none", background: "rgba(255,255,255,.03)" },
-  dropdownStyle: { zIndex: 9999, borderRadius: "10px", background: "#0f1220", color: "#eef1fb" },
-};
-
 // ─── EmailStep ───────────────────────────────────────────────────────────────
 const EmailStep = ({ formData, onChange, onSubmit, loading, errors, needInvite }) => {
   const setRole = (role) => { onChange({ target: { name: "role", value: role } }); };
@@ -183,9 +175,13 @@ const ProfileStep = ({ formData, onChange, onSubmit, loading, errors, setErrors,
             {err(errors.gender)}
 
             <label className="auth-label">Phone number</label>
-            <div style={{ marginBottom: 16 }}>
+            {/* auth-phone: the library ships a light stylesheet, and dressing only
+                the input/button/dropdown inline left the LIST rows light — a
+                hovered country turned near-white under near-white text, which is
+                why the dial codes ("+48" and the rest) could not be read. All of
+                it now comes from auth.css, in one place. */}
+            <div className="auth-phone" style={{ marginBottom: 16 }}>
               <PhoneInput country={"in"} value={formData.countryCode.replace("+", "") + formData.phone} onChange={handlePhoneChange}
-                inputStyle={phoneDark.inputStyle} buttonStyle={phoneDark.buttonStyle} dropdownStyle={phoneDark.dropdownStyle}
                 enableSearch disableCountryCode={false} countryCodeEditable={false} />
               {err(errors.phone)}
             </div>
@@ -211,7 +207,7 @@ const ProfileStep = ({ formData, onChange, onSubmit, loading, errors, setErrors,
             {referralStatus === "invalid" && <p style={{ color: "#fca5a5", fontSize: ".82rem", marginBottom: 8 }}>Invalid referral code</p>}
 
             <label style={{ display: "flex", alignItems: "flex-start", gap: 10, margin: "14px 0", cursor: "pointer" }}>
-              <input type="checkbox" name="terms" checked={formData.terms} onChange={onChange} style={{ width: 18, height: 18, marginTop: 2, accentColor: "var(--a-violet)" }} />
+              <input type="checkbox" name="terms" checked={formData.terms} onChange={onChange} style={{ width: 18, height: 18, marginTop: 2, accentColor: "var(--a-violet)", colorScheme: "dark" }} />
               <span style={{ fontSize: ".85rem", color: "var(--a-muted)", lineHeight: 1.5 }}>
                 I read and agree to the <Link to="/terms" className="auth-link" target="_blank" rel="noopener noreferrer">Terms and Conditions</Link>
               </span>

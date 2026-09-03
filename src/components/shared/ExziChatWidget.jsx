@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
+import { apiUrl } from "../../APIs/apiBase";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { BrainCircuit } from "lucide-react";
 
 /**
- * Floating "Aria" AI assistant — button + slide-up chat panel.
+ * Floating Exzi AI assistant — button + slide-up chat panel.
  *
  * Originally built inline on the Student Dashboard; extracted here so the
  * Student Dashboard and the Course Details page (and any future page) can
@@ -17,16 +18,16 @@ import { BrainCircuit } from "lucide-react";
  *   `profile` payload (e.g. `{ mode: "tutor", courseTitle, targetLanguage }`
  *   for course-specific context). Defaults to the original generic-mode
  *   behavior used on the dashboard.
- * @param {string} [label] - Header label, defaults to "Aria".
+ * @param {string} [label] - Header label, defaults to "Exzi".
  * @param {string} [greeting] - Empty-state greeting text.
  * @param {string} [sessionKey] - Prefix for the chat session id, so two
  *   widgets on different pages don't collide if both happen to mount in
  *   the same browser session.
  */
-const AriaChatWidget = ({
+const ExziChatWidget = ({
   profile,
-  label = "Aria",
-  greeting = "Hi! I'm Aria. Ask me anything.",
+  label = "Exzi",
+  greeting = "Hi, I'm Exzi. Ask me anything.",
   sessionKey = "session",
 }) => {
   const prefersReducedMotion = useReducedMotion();
@@ -64,7 +65,7 @@ const AriaChatWidget = ({
       const token = localStorage.getItem("token") || tokenFromCookie;
 
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/chat/message`,
+        apiUrl("/api/chat/message"),
         {
           method: "POST",
           headers: {
@@ -251,4 +252,4 @@ const AriaChatWidget = ({
   );
 };
 
-export default AriaChatWidget;
+export default ExziChatWidget;

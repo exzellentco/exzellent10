@@ -814,11 +814,18 @@ section[id]{scroll-margin-top:76px}
 @media(max-width:860px){.foot-grid{grid-template-columns:1fr;gap:36px;padding:40px 0 32px}}
 
 /* ===== site search (replaced the Exzi ask bar) ===== */
-.askbar{position:relative}
+.askbar{position:relative;cursor:text}
+/* --text is the readable body colour; --ink is the DARK ink used on light and
+   accent surfaces. This was set to --ink, which put near-black text on the dark
+   bar and made anything typed invisible. */
 .askbar input#q{flex:1;min-width:0;background:transparent;border:0;outline:none;
-  font:500 14.5px/1.3 Inter,sans-serif;color:var(--ink)}
-.askbar input#q::placeholder{color:var(--dim)}
-.askbar .send{cursor:pointer;border:0;background:transparent}
+  font:500 14.5px/1.3 Inter,sans-serif;color:var(--text);caret-color:rgb(var(--acc))}
+.askbar input#q::placeholder{color:var(--dim);opacity:1}
+/* Clicking it used to change nothing on screen: outline:none removed the only
+   focus cue. The whole bar now lights up, so it is obvious it took the cursor. */
+.askbar:focus-within{border-color:rgb(var(--acc));box-shadow:0 0 0 3px rgba(103,232,249,.18),0 16px 50px rgba(103,232,249,.16)}
+.askbar .send{cursor:pointer;border:0;background:transparent;color:var(--text)}
+.askbar .send:hover{color:rgb(var(--acc))}
 .sugg{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:60;padding:6px;
   border-radius:16px;border:1px solid var(--line);background:var(--solid);
   box-shadow:0 26px 60px rgba(0,0,0,.5);text-align:left;max-height:320px;overflow:auto}

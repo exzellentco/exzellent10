@@ -12,7 +12,7 @@ import CountUp from "../components/StudentComponent/CountUp";
 import MessagesPanel from "../components/Messages/MessagesPanel";
 import AiToolsHub from "../components/AiTools/AiToolsHub";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
-import AriaChatWidget from "../components/shared/AriaChatWidget";
+import ExziChatWidget from "../components/shared/ExziChatWidget";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 
@@ -332,7 +332,7 @@ const FreeTeacherDashboard = () => {
       {panel === "aitools" && <AiToolsHub role="teacher" onClose={() => setPanel(null)} />}
       {panel === "speech" && <StudentSpeechLab onClose={() => setPanel(null)} student={me} />}
 
-      <AriaChatWidget />
+      <ExziChatWidget />
     </div>
   );
 };
