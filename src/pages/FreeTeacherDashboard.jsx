@@ -236,7 +236,9 @@ const FreeTeacherDashboard = () => {
                     transition={{ duration: 0.3, delay: reduced ? 0 : i * 0.06 }}
                     className="text-left"
                   >
-                    <GlassCard glowColor={t.tint} intensity={1}>
+                    {/* No halo: three glowing tinted cards in a row is the
+                        single most recognisable generated-dashboard look. */}
+                    <GlassCard glowColor={t.tint} intensity={0}>
                       <span className="inline-flex mb-3" style={{ color: t.tint }}>{t.icon}</span>
                       <b className="block mb-1">{t.label}</b>
                       <span className="text-xs" style={{ color: "var(--td-ink-muted)" }}>{t.note}</span>
@@ -282,7 +284,7 @@ const FreeTeacherDashboard = () => {
                       <span className="flex-none w-14 text-sm tabular-nums">{b.start}</span>
                       <span className="flex-1 min-w-0"><b className="block truncate">{b.title}</b></span>
                       <span className="text-xs inline-flex items-center gap-1" style={{ color: "var(--td-ink-muted)" }}>
-                        <Clock size={11} /> {b.who || "—"}
+                        <Clock size={11} /> {b.who || b.studentName || "—"}
                       </span>
                     </li>
                   ))}

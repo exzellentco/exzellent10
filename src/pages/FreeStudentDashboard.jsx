@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import SpacedRepetitionSession from "../components/AI/SpacedRepetitionSession";
 import EditProfileForm from "../components/StudentComponent/EditProfileForm";
+import AiToolsHub from "../components/AiTools/AiToolsHub";
+import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
 import CountUp from "../components/StudentComponent/CountUp";
 import Leaderboard from "../components/StudentComponent/Leaderboard";
@@ -44,12 +46,11 @@ import {
   fetchCourseLeaderboard,
   getCourseProgress,
 } from "../APIs/StudentApi/StudentDetails";
+import { getMessages } from "../APIs/messages";
 import MyBookings from "../components/StudentComponent/MyBookings";
 import Swal from "sweetalert2";
 import axios from "../utils/axios";
 import GrowthDashboard from "../components/GrowthComponents/GrowthDashboard";
-import StorySession from "../components/StorySession/StorySession";
-import { useSessions } from "../context/SessionsContext";
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);
@@ -66,6 +67,8 @@ const StudentDashboard = () => {
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [progressData, setProgressData] = useState(null);
   const [progressLoading, setProgressLoading] = useState(false);
+  const [aiTab, setAiTab] = useState(null);          // "exam" | "course" -> AI Tools overlay
+  const [speechOpen, setSpeechOpen] = useState(false);
   const [_registeredWebinarsCount, setRegisteredWebinarsCount] = useState(0);
   const [registeredWebinars, setRegisteredWebinars] = useState([]);
   const [quizProgress, setQuizProgress] = useState(null);
@@ -81,10 +84,8 @@ const StudentDashboard = () => {
   const profilePanelRef = useRef(null);
   const [profilePanelHeight, setProfilePanelHeight] = useState(0);
 
-  // Notifications — UI shell only. See MOCK_NOTIFICATIONS below.
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const { sessions: bookedSessions } = useSessions();
   const prefersReducedMotion = useReducedMotion();
 
   const navigate = useNavigate();
@@ -641,16 +642,34 @@ const StudentDashboard = () => {
     }
   }, [profileOpen, isEditing, studentData, formData]);
 
-  // ── Notifications — UI SHELL ONLY ───────────────────────────────────
-  // TODO: replace with real data from a notifications API once one
-  // exists (e.g. GET /api/notifications). These are realistic placeholder
-  // items purely so the bell + panel can be designed and previewed now.
-  const MOCK_NOTIFICATIONS = [
-    { id: "mock-1", title: "New message from your teacher", time: "2h ago", unread: true },
-    { id: "mock-2", title: "Webinar starting soon: German A2 Grammar", time: "5h ago", unread: true },
-    { id: "mock-3", title: "Your weekly progress report is ready", time: "1d ago", unread: false },
-  ];
-  const unreadNotifCount = MOCK_NOTIFICATIONS.filter((n) => n.unread).length;
+  // ── Notifications ────────────────────────────────────────────────────
+  // Real: the learner's unread incoming messages. This used to be three
+  // hard-coded placeholder items ("New message from your teacher"), which a
+  // real user would reasonably take as true. An empty bell is honest; a fake
+  // full one is not.
+  const [notifs, setNotifs] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    const me = (() => { try { return JSON.parse(localStorage.getItem("user"))?._id; } catch { return null; } })();
+    if (!me) return undefined;
+    const ago = (d) => {
+      const m = Math.max(1, Math.round((Date.now() - new Date(d).getTime()) / 60000));
+      if (m < 60) return `${m} min ago`;
+      const h = Math.round(m / 60); if (h < 24) return `${h}h ago`;
+      return `${Math.round(h / 24)}d ago`;
+    };
+    getMessages(me).then((res) => {
+      if (!alive) return;
+      const rows = Array.isArray(res) ? res : res?.data || [];
+      setNotifs(rows
+        .filter((m) => String(m.toId) === String(me) && !m.read)
+        .sort((x, y) => new Date(y.date) - new Date(x.date))
+        .slice(0, 8)
+        .map((m) => ({ id: m._id, title: `Message from ${m.fromName || "your teacher"}`, sub: String(m.text || "").slice(0, 70), time: ago(m.date), unread: true })));
+    }).catch(() => { /* the bell simply stays empty */ });
+    return () => { alive = false; };
+  }, []);
+  const unreadNotifCount = notifs.length;
 
   // ── Quick Links — sidebar shortcut list ─────────────────────────────
   // Routes are cross-checked against App.jsx where a matching page exists;
@@ -664,12 +683,12 @@ const StudentDashboard = () => {
     {
       label: "Teacher",
       icon: Users,
-      to: "/teachers", // matches the existing "Find Your Teacher" browse page in App.jsx
+      to: "/book", // /teachers is the ADMIN teachers list; /book is the public picker
     },
     {
       label: "Additional Resources",
       icon: Library,
-      to: "/study-materials", // matches the existing Study Materials page in App.jsx
+      to: "/courses", // there is no /study-materials route; course pages carry the materials
     },
   ];
 
@@ -719,43 +738,7 @@ const StudentDashboard = () => {
 
   /* growth dashboard */
 
-  /*   const sessions = enrolledCourses.map((course) => ({
-    _id: course._id,
-    type: "tutoring", // or "course-based"
-    date: course.createdAt || course.enrolledAt || new Date().toISOString(),
-    score: course.completedPercentage || 0,
-  })); */
 
-  const psychologySessions = registeredWebinars
-    .filter((w) => w.category === "psychology")
-    .map((w) => ({
-      _id: w._id,
-      type: "psychology",
-      date: w.scheduledAt,
-      score: 0,
-    }));
-
-  const webinarSessions = registeredWebinars
-    .filter((w) => w.category !== "psychology")
-    .map((w) => ({
-      _id: w._id,
-      type: "webinar",
-      date: w.scheduledAt,
-      score: 0,
-    }));
-
-  const localSessions = [
-    ...enrolledCourses.map((c) => ({
-      _id: c._id,
-      type: "tutoring",
-      date: c.enrolledAt || c.createdAt,
-      score: c.completedPercentage || 0,
-    })),
-    ...psychologySessions,
-    ...webinarSessions,
-  ];
-
-  const allSessions = [...localSessions, ...bookedSessions];
 
   return (
     <div className="w-full" style={pageBgStyle}>
@@ -770,28 +753,6 @@ const StudentDashboard = () => {
             reimagined as soft violet/gold light behind the hero instead
             of a flat pattern. Purely decorative; skipped entirely when
             the user prefers reduced motion. */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <motion.div
-            className="absolute -top-24 left-1/2 -translate-x-[65%] w-[32rem] h-[32rem] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(140,81,240,0.28) 0%, transparent 70%)", filter: "blur(40px)" }}
-            animate={
-              prefersReducedMotion
-                ? undefined
-                : { opacity: [0.6, 0.9, 0.6], scale: [1, 1.08, 1] }
-            }
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute -top-16 left-1/2 translate-x-[15%] w-80 h-80 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(201,162,39,0.20) 0%, transparent 70%)", filter: "blur(50px)" }}
-            animate={
-              prefersReducedMotion
-                ? undefined
-                : { opacity: [0.5, 0.8, 0.5], scale: [1, 1.1, 1] }
-            }
-            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          />
-        </div>
 
         <div className="relative">
           <motion.span
@@ -810,19 +771,10 @@ const StudentDashboard = () => {
           >
             Welcome back,
             <br className="sm:hidden" />{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, var(--sd-primary-light), var(--sd-gold))",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              {studentData?.name || "Anon"}
-            </span>
+            <span style={{ color: "var(--sd-primary-light)" }}>{studentData?.name || "there"}</span>
           </h1>
           <p className="font-normal text-base md:text-lg max-w-md mx-auto" style={{ color: "var(--sd-ink-muted)" }}>
-            Track your progress and manage your learning journey.
+            Where you are, and what is next.
           </p>
 
           <AnimatePresence>
@@ -918,36 +870,13 @@ const StudentDashboard = () => {
                     flat label. Shimmer loops with a long pause so it never
                     feels busy, and is skipped entirely under
                     prefers-reduced-motion. */}
-                <motion.span
-                  initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
-                  className="relative inline-flex items-center gap-1.5 mt-1.5 px-3 py-1 rounded-full text-xs font-semibold overflow-hidden"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(#18142a, #18142a), linear-gradient(135deg, var(--sd-gold), var(--sd-primary-light))",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
-                    border: "1px solid transparent",
-                    color: "var(--sd-gold)",
-                    boxShadow: "0 0 14px rgba(201,162,39,0.25)",
-                  }}
+                <span
+                  className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                  style={{ border: "1px solid var(--sd-border)", color: "var(--sd-gold)" }}
                 >
-                  <motion.span
-                    aria-hidden="true"
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)",
-                    }}
-                    initial={{ x: "-120%" }}
-                    animate={prefersReducedMotion ? undefined : { x: ["-120%", "220%"] }}
-                    transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 3.5, ease: "easeInOut" }}
-                  />
-                  <Crown className="w-3.5 h-3.5 relative flex-shrink-0" />
-                  <span className="relative">{tierBadge}</span>
-                </motion.span>
+                  <Crown className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>{tierBadge}</span>
+                </span>
               </div>
 
               <motion.span
@@ -1282,14 +1211,13 @@ const StudentDashboard = () => {
                   My Courses
                 </h2>
                 <p style={{ color: "var(--sd-ink-muted)" }}>
-                  Continue your learning journey with your enrolled courses
+                  Pick up where you left off
                 </p>
               </div>
 
               <div className="flex items-center gap-3 flex-shrink-0">
                 {/* Notification bell — lives in this page's own header area,
-                    not the global Navbar (out of scope). UI shell only: see
-                    MOCK_NOTIFICATIONS above for the placeholder-data note.
+                    not the global Navbar (out of scope).
                     `relative` here is the positioning context the dropdown
                     panel below anchors to. */}
                 <div className="relative flex-shrink-0">
@@ -1343,7 +1271,10 @@ const StudentDashboard = () => {
                             </h3>
                           </div>
                           <div className="max-h-72 overflow-y-auto">
-                            {MOCK_NOTIFICATIONS.map((n) => (
+                            {notifs.length === 0 && (
+                              <p className="px-4 py-5 text-sm" style={{ color: "var(--sd-ink-muted)" }}>Nothing new.</p>
+                            )}
+                            {notifs.map((n) => (
                               <div
                                 key={n.id}
                                 className="flex items-start gap-3 px-4 py-3"
@@ -1355,7 +1286,8 @@ const StudentDashboard = () => {
                                 />
                                 <div className="min-w-0">
                                   <p className="text-sm" style={{ color: "var(--sd-ink)" }}>{n.title}</p>
-                                  <p className="text-xs mt-0.5" style={{ color: "var(--sd-ink-muted)" }}>{n.time}</p>
+                                  {n.sub && <p className="text-xs mt-0.5 truncate" style={{ color: "var(--sd-ink-muted)" }}>{n.sub}</p>}
+                                  <p className="text-xs mt-0.5" style={{ color: "var(--sd-ink-muted)", opacity: 0.7 }}>{n.time}</p>
                                 </div>
                               </div>
                             ))}
@@ -1368,7 +1300,7 @@ const StudentDashboard = () => {
 
                 {/* Pattern A: solid fill recedes to a bright glowing outline on hover + zoom */}
                 <motion.button
-                  onClick={() => navigate("/courses/all")}
+                  onClick={() => navigate("/courses")}
                   whileHover={prefersReducedMotion ? undefined : { scale: 1.04, y: -1 }}
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
                   transition={{ duration: 0.2 }}
@@ -1386,10 +1318,10 @@ const StudentDashboard = () => {
                   No courses enrolled yet
                 </p>
                 <p className="mb-6" style={{ color: "var(--sd-ink-muted)" }}>
-                  Start your learning journey by enrolling in courses
+                  Enrol in a course and it appears here
                 </p>
                 <motion.button
-                  onClick={() => navigate("/courses/all")}
+                  onClick={() => navigate("/courses")}
                   whileHover={prefersReducedMotion ? undefined : { scale: 1.03, y: -1 }}
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
                   transition={{ duration: 0.2 }}
@@ -1436,10 +1368,11 @@ const StudentDashboard = () => {
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={prefersReducedMotion ? undefined : { y: -3 }}
               >
-                <GlassCard glowColor="#8C51F0" intensity={1}>
-                  <Link
-                    to="/language-exam"
-                    className="flex items-center gap-5 p-5 group"
+                <GlassCard glowColor="#8C51F0" intensity={0}>
+                  <button
+                    type="button"
+                    onClick={() => setAiTab("exam")}
+                    className="w-full text-left flex items-center gap-5 p-5 group"
                   >
                     <div
                       className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
@@ -1454,7 +1387,7 @@ const StudentDashboard = () => {
                       </p>
                     </div>
                     <span className="text-lg flex-shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: "var(--sd-primary)" }}>→</span>
-                  </Link>
+                  </button>
                 </GlassCard>
               </motion.div>
 
@@ -1464,9 +1397,9 @@ const StudentDashboard = () => {
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={prefersReducedMotion ? undefined : { y: -3 }}
               >
-                <GlassCard glowColor="#B392F5" intensity={1}>
+                <GlassCard glowColor="#B392F5" intensity={0}>
                   <div
-                    onClick={() => navigate("/study-materials")}
+                    onClick={() => setAiTab("course")}
                     className="flex items-center gap-5 p-5 cursor-pointer group"
                   >
                     <div
@@ -1478,7 +1411,7 @@ const StudentDashboard = () => {
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>Study Materials</p>
                       <p className="text-sm mt-0.5" style={{ color: "var(--sd-ink-muted)" }}>
-                        Upload notes, get AI summaries, quizzes &amp; flashcards
+                        Build a study plan around your goal
                       </p>
                     </div>
                     <span className="text-lg flex-shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: "var(--sd-primary-light)" }}>→</span>
@@ -1492,9 +1425,9 @@ const StudentDashboard = () => {
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={prefersReducedMotion ? undefined : { y: -3 }}
               >
-                <GlassCard glowColor="#C9A227" intensity={1}>
+                <GlassCard glowColor="#C9A227" intensity={0}>
                   <div
-                    onClick={() => navigate("/oral-practice")}
+                    onClick={() => setSpeechOpen(true)}
                     className="flex items-center gap-5 p-5 cursor-pointer group"
                   >
                     <div
@@ -1515,13 +1448,13 @@ const StudentDashboard = () => {
               </motion.div>
             </motion.div>
 
-            {/* AI Quiz Progress Section */}
+            {/* Quiz progress */}
             <div className="mt-8">
               <h2
                 className="text-xl font-semibold mb-4 flex items-center gap-2"
                 style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}
               >
-                <ChartLine className="w-5 h-5" style={{ color: "var(--sd-primary)" }} /> AI Quiz Progress
+                <ChartLine className="w-5 h-5" style={{ color: "var(--sd-primary)" }} /> Quiz progress
               </h2>
 
               {quizProgressLoading ? (
@@ -1692,8 +1625,7 @@ const StudentDashboard = () => {
           proficiencyLevel={studentData?.proficiencyLevel || "B1"}
         />
 
-        <div className="rounded-xl p-8 text-center mt-4" style={{ border: "1px solid var(--sd-border)" }}>
-              <StorySession sessions={allSessions} studentData={studentData} />
+        <div className="rounded-xl p-6 mt-4" style={{ border: "1px solid var(--sd-border)" }}>
               <GrowthDashboard />
             </div>
           </motion.div>
@@ -1741,6 +1673,9 @@ const StudentDashboard = () => {
       {/* Floating "Aria" AI assistant — shared component, also used on the
           Course Details page, so both stay visually/behaviorally in sync
           instead of maintaining two copies. */}
+      {aiTab && <AiToolsHub role="student" initialTab={aiTab} onClose={() => setAiTab(null)} />}
+      {speechOpen && <StudentSpeechLab onClose={() => setSpeechOpen(false)} student={studentData} />}
+
       <AriaChatWidget />
 
       {reviewOpen && topDeckId && (

@@ -49,7 +49,7 @@ const ProgressReport = ({ studentId, courseId, studentName = "Student", proficie
       </div>
 
       {!report && !loading && (
-        <p className="text-sm opacity-70 mb-4">
+        <p className="text-sm mb-4" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>
           A short read on where you are and what to work on next.
         </p>
       )}
@@ -61,7 +61,7 @@ const ProgressReport = ({ studentId, courseId, studentName = "Student", proficie
           <p className="text-base font-medium mb-2" style={{ color: "var(--sd-ink, #fff)" }}>
             {report.headline}
           </p>
-          <p className="text-sm opacity-80 mb-4">{report.narrative}</p>
+          <p className="text-sm mb-4" style={{ color: "var(--sd-ink, #F3EEFB)" }}>{report.narrative}</p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {!!(report.strengths || []).length && (

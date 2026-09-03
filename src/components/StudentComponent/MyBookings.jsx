@@ -19,13 +19,13 @@ const Row = ({ b, past }) => (
   >
     <span className="flex-none w-14 tabular-nums">
       <b className="block text-sm" style={{ color: "var(--sd-ink, #fff)" }}>{b.start || "—"}</b>
-      <i className="block not-italic text-xs opacity-60">{b.end || ""}</i>
+      <i className="block not-italic text-xs" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>{b.end || ""}</i>
     </span>
     <span className="flex-1 min-w-0">
       <b className="block text-sm truncate" style={{ color: "var(--sd-ink, #fff)" }}>
         {b.title || "1-to-1 lesson"}
       </b>
-      <span className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs opacity-60">
+      <span className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>
         <span className="inline-flex items-center gap-1">
           <User size={11} /> {b.teacherName || b.providerName || b.who || "—"}
         </span>
@@ -61,7 +61,7 @@ const MyBookings = () => {
     };
   }, [sessions]);
 
-  if (loading) return <p className="opacity-60 text-sm">Loading your sessions…</p>;
+  if (loading) return <p className="text-sm" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>Loading your sessions…</p>;
   if (error) return <p className="text-sm" style={{ color: "#f0a09b" }}>{error}</p>;
 
   if (!upcoming.length && !past.length) {
@@ -77,7 +77,7 @@ const MyBookings = () => {
     <div className="text-left">
       {!!upcoming.length && (
         <>
-          <h4 className="text-xs uppercase tracking-widest opacity-50 mb-1">Upcoming</h4>
+          <h4 className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>Upcoming</h4>
           <ul className="list-none p-0 m-0 mb-6">
             {upcoming.map((b) => <Row key={b._id} b={b} />)}
           </ul>
@@ -85,8 +85,8 @@ const MyBookings = () => {
       )}
       {!!past.length && (
         <>
-          <h4 className="text-xs uppercase tracking-widest opacity-50 mb-1">Past</h4>
-          <ul className="list-none p-0 m-0 opacity-70">
+          <h4 className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>Past</h4>
+          <ul className="list-none p-0 m-0" style={{ opacity: 0.75 }}>
             {past.map((b) => <Row key={b._id} b={b} past />)}
           </ul>
         </>

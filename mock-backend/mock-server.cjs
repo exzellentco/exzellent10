@@ -811,8 +811,61 @@ function extractJson(content) {
   return null;
 }
 
+/* Without a Groq key every AI button on the dashboards answered 502 — which is
+   what "backend errors when clicking" looked like locally. The mock now answers
+   with a canned result shaped like the real one, chosen from the prompt, so
+   the UI can be exercised end to end with no key at all. With a key set it
+   still calls Groq. */
+const AI_SAMPLE = (user, json) => {
+  const u = String(user);
+  if (!json) return "Hallo! Ich bin Exzi. (Sample reply — set GROQ_API_KEY in mock-backend/.env for real answers.)";
+  if (/practice assessment|mcqs/i.test(u)) return {
+    title: "German A2 — Dativ in everyday speech (sample)",
+    mcqs: [
+      { question: "Ich gebe ___ Frau das Buch.", options: ["die", "der", "den", "dem"], answer: 1, explanation: "Dativ feminine: der Frau." },
+      { question: "Er hilft ___ Kind.", options: ["das", "dem", "den", "der"], answer: 1, explanation: "helfen takes the dative: dem Kind." },
+      { question: "Wir fahren mit ___ Bus.", options: ["der", "dem", "den", "das"], answer: 1, explanation: "mit + Dativ: dem Bus." },
+    ],
+    flashcards: [{ front: "mit", back: "with (+ Dativ)" }, { front: "helfen", back: "to help (+ Dativ)" }, { front: "der Frau", back: "to the woman (Dativ)" }],
+    oral_prompts: ["Describe what you gave to whom this week.", "Explain how you get to work.", "Tell me who you helped recently."],
+  };
+  if (/study plan/i.test(u)) return {
+    title: "Four weeks to a confident B1 conversation (sample)", summary: "Short daily practice, one speaking session a week.",
+    weeks: [
+      { week: 1, focus: "Dativ and everyday verbs", activities: ["10 flashcards a day", "One 20-minute dialogue", "Write 5 sentences about your day"] },
+      { week: 2, focus: "Perfekt for telling stories", activities: ["Record a 2-minute story", "Review Perfekt of 15 verbs", "One tutor session"] },
+      { week: 3, focus: "Listening at natural speed", activities: ["One podcast episode", "Shadow 5 minutes aloud", "Note 10 new words"] },
+      { week: 4, focus: "Putting it together", activities: ["Mock conversation", "Self-assessment", "Book the next month"] },
+    ],
+  };
+  if (/design a .* course|course at CEFR/i.test(u)) return {
+    title: "German A1 in eight weeks (sample)", description: "A first course built around speaking from day one.",
+    sections: [
+      { title: "Greetings and yourself", lectures: ["Hallo, ich bin…", "Numbers and ages", "Where you are from"], quizCount: 5, flashcardCount: 20 },
+      { title: "Daily life", lectures: ["Times and days", "Food and shopping", "Getting around"], quizCount: 5, flashcardCount: 20 },
+      { title: "Work and study", lectures: ["Your job", "Your week", "Making plans"], quizCount: 5, flashcardCount: 20 },
+      { title: "Living in Germany", lectures: ["At the Amt", "Renting a flat", "The doctor"], quizCount: 5, flashcardCount: 20 },
+    ],
+  };
+  if (/progress report/i.test(u)) return {
+    headline: "Steady, and speaking more than last month (sample)",
+    narrative: "You are turning up and doing the work — attendance is strong and the streak shows it. Speaking is where the next step is: aim for one more conversation a week.",
+    strengths: ["Consistent attendance", "Solid grasp of Präsens", "Growing vocabulary"],
+    focus: ["Dativ after prepositions", "Speaking without preparing first"],
+    cefr_estimate: "A2",
+  };
+  if (/study kit/i.test(u)) return {
+    title: "Study kit (sample)", description: "Built from your source text.",
+    sections: [{ title: "Key ideas", lectures: ["Main argument", "Supporting points", "Vocabulary"] }, { title: "Practice", lectures: ["Recall", "Apply", "Explain"] }, { title: "Review", lectures: ["Summary", "Self-test", "Next steps"] }],
+    flashcards: [{ front: "der Begriff", back: "the term" }, { front: "die Zusammenfassung", back: "the summary" }],
+    quiz: [{ question: "What is the main idea?", options: ["A", "B", "C", "D"], answer: 0, explanation: "See section one." }],
+    summary: "A short summary of the source, in plain German.", key_terms: ["Begriff", "Zusammenfassung", "Beispiel", "Frage", "Antwort", "Übung"],
+  };
+  return { title: "Sample", note: "No GROQ_API_KEY on the mock backend." };
+};
+
 function groqChat({ system, user, json = false, maxTokens = 1400, temperature = 0.6 }, cb) {
-  if (!GROQ_API_KEY) { cb(new Error("GROQ_API_KEY is not set on the mock backend.")); return; }
+  if (!GROQ_API_KEY) { setTimeout(() => cb(null, AI_SAMPLE(user, json)), 350); return; }
   const sys = json ? system + " Output ONLY the JSON object — no markdown fences." : system;
   const payload = JSON.stringify({
     model: "qwen/qwen3.6-27b",
@@ -2641,7 +2694,7 @@ const server = http.createServer((req, res) => {
             _id: p._id, name: p.staffName, role: p.role, month: p.month,
             base: p.base, bonus: p.bonus, deductions: p.deductions, net: p.net, status: p.status,
           })),
-          bookings: mine,
+          bookings: mine.map((b) => ({ ...b, who: b.studentName })),
         }});
         return;
       }
@@ -2667,7 +2720,7 @@ const server = http.createServer((req, res) => {
           })),
           attendance: { attended, booked: mine.length, missed: Math.max(0, mine.length - attended) },
         },
-        bookings: mine,
+        bookings: mine.map((b) => ({ ...b, who: b.teacherName })),
       }});
       return;
     }

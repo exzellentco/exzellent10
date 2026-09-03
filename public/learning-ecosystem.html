@@ -783,6 +783,35 @@ footer{ position:relative; z-index:2; }
    into view already offset by the header, for clicks, deep links and keyboard. */
 section[id]{scroll-margin-top:76px}
 @media(min-width:961px){section[id]{scroll-margin-top:122px}}
+
+/* ===== site footer: the same one the React pages show ===== */
+.site-foot{position:relative;z-index:2;margin-top:60px;border-top:1px solid var(--line);background:rgba(8,10,24,.92)}
+.foot-grid{width:min(1240px,94vw);margin-inline:auto;padding:52px 0 44px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.foot-news h3{font:700 18px/1.2 "Space Grotesk",Inter,sans-serif;color:var(--ink);margin:0 0 8px}
+.foot-news p{color:var(--muted);font-size:14px;margin:0 0 16px}
+.foot-news form{display:flex;flex-direction:column;gap:10px;max-width:560px}
+.foot-news input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:var(--ink);font:500 14px/1 Inter,sans-serif}
+.foot-news input:focus{outline:none;border-color:rgb(var(--acc))}
+.foot-news button{padding:13px 16px;border-radius:12px;border:0;cursor:pointer;color:#fff;font:600 14px/1 Inter,sans-serif;
+  background:linear-gradient(90deg,#1e3a8a,rgb(var(--acc)));transition:filter .25s,transform .25s}
+.foot-news button:hover{filter:brightness(1.1)}
+.foot-news button:disabled{opacity:.6;cursor:not-allowed}
+.foot-note{min-height:1.4em;margin-top:6px!important;font-size:13px}
+.foot-note[data-tone="good"]{color:#7fe6a6}.foot-note[data-tone="bad"]{color:#f0a09b}
+.foot-right{display:flex;flex-direction:column;align-items:center;gap:26px;text-align:center}
+.foot-links{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}
+.foot-links a{color:var(--muted);font-size:14px;text-decoration:none;transition:color .25s}
+.foot-links a:hover{color:var(--ink)}
+.foot-copy{color:var(--muted);font-size:13.5px;margin:0}
+.foot-badges{display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap}
+.tp{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:#fff;border:1px solid #6ee7b7;text-decoration:none;transition:transform .25s}
+.tp:hover{transform:translateY(-1px)}
+.tp span{color:#000;font-size:13px}.tp i{color:#00b67a;font-style:normal;font-size:18px;line-height:1}.tp b{color:#000;font-size:15px}
+.made{display:flex;flex-direction:column;gap:2px}
+.made span{display:flex;align-items:center;gap:6px;font:700 14px/1.3 Inter,sans-serif;color:var(--ink)}
+.made i{display:inline-block;width:18px;height:18px;border-radius:2px}
+[data-theme="light"] .site-foot{background:rgba(245,246,252,.96)}
+@media(max-width:860px){.foot-grid{grid-template-columns:1fr;gap:36px;padding:40px 0 32px}}
 </style>
 </head>
 <body>
@@ -989,6 +1018,96 @@ section[id]{scroll-margin-top:76px}
       </div>
     </div>
   </section>
+  <section id="teachers">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow" style="justify-content:center">Real voices</span>
+      <h2 class="h2">Hear from <span class="g">our teachers</span></h2>
+      <p class="lead" style="margin-inline:auto">A minute with the humans behind the platform — unscripted. Click a clip on the side to bring it centre stage.</p>
+    </div>
+    <div class="tc-track" id="teachTrack">
+      <div class="tvcard">
+        <video src="https://res.cloudinary.com/dsgxyezcm/video/upload/v1772471035/Pascale_Video_i4cb5l.mp4" playsinline preload="metadata" muted loop></video>
+        <button class="tc-mute" aria-label="Toggle sound">🔇</button>
+        <div class="tc-play" aria-hidden="true"><span>▶</span></div>
+        <div class="tc-scrim"><div class="tc-name">Pascale Wagen</div><span class="tc-course">German class</span></div>
+        <div class="tc-prog"><i></i></div>
+      </div>
+      <div class="tvcard">
+        <video src="https://res.cloudinary.com/dsgxyezcm/video/upload/v1772027108/Ivonna_Romaniuk_video_1_pr62pi.mp4" playsinline preload="metadata" muted loop></video>
+        <button class="tc-mute" aria-label="Toggle sound">🔇</button>
+        <div class="tc-play" aria-hidden="true"><span>▶</span></div>
+        <div class="tc-scrim"><div class="tc-name">Ivonna Romaniuk</div><span class="tc-course">English class</span></div>
+        <div class="tc-prog"><i></i></div>
+      </div>
+      <div class="tvcard">
+        <video src="https://res.cloudinary.com/dsgxyezcm/video/upload/v1772027127/Ivonna_Romaniuk_video_2_z4wgcv.mp4" playsinline preload="metadata" muted loop></video>
+        <button class="tc-mute" aria-label="Toggle sound">🔇</button>
+        <div class="tc-play" aria-hidden="true"><span>▶</span></div>
+        <div class="tc-scrim"><div class="tc-name">Ivonna Romaniuk</div><span class="tc-course">Meditation class</span></div>
+        <div class="tc-prog"><i></i></div>
+      </div>
+    </div>
+  </section>
+  <section id="students">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow" style="justify-content:center">Real results</span>
+      <h2 class="h2">Hear from <span class="g">our students</span></h2>
+      <div class="rev-grid">
+        <div class="rev-card reveal">
+          <div class="rev-stars">★★★★★</div>
+          <p class="rev-quote">"The instructors provided personalized guidance throughout the course. I now speak German confidently!"</p>
+          <div class="rev-who">
+            <div class="rev-av"><img src="https://res.cloudinary.com/domli7sla/image/upload/w_400,c_fill,ar_1:1,g_auto,r_max/v1752777791/Review-3_g8ufyi.jpg" alt="Komal Thakur" loading="lazy"></div>
+            <div><div class="rev-name">Komal Thakur</div><div class="rev-role">Language learner</div></div>
+          </div>
+        </div>
+        <div class="rev-card reveal" style="transition-delay:.08s">
+          <div class="rev-stars">★★★★★</div>
+          <p class="rev-quote">"Their curriculum is structured, interactive, and aligned with CEFR standards. Exceptional experience."</p>
+          <div class="rev-who">
+            <div class="rev-av"><img src="https://res.cloudinary.com/domli7sla/image/upload/w_400,c_fill,ar_1:1,g_auto,r_max/v1752777791/Review-1_nned4o.jpg" alt="Mina Kosari" loading="lazy"></div>
+            <div><div class="rev-name">Mina Kosari</div><div class="rev-role">Language learner</div></div>
+          </div>
+        </div>
+        <div class="rev-card reveal" style="transition-delay:.16s">
+          <div class="rev-stars">★★★★★</div>
+          <p class="rev-quote">"I managed to learn at my own pace and passed my A2 certification with ease thanks to their teaching approach."</p>
+          <div class="rev-who">
+            <div class="rev-av"><img src="https://res.cloudinary.com/domli7sla/image/upload/w_400,c_fill,ar_1:1,g_auto,r_max/v1752777791/Review-2_zwga08.webp" alt="Madhulekha Bhattacahriya" loading="lazy"></div>
+            <div><div class="rev-name">Madhulekha Bhattacahriya</div><div class="rev-role">Language learner</div></div>
+          </div>
+        </div>
+      </div>
+      <a class="trustpilot" href="https://www.trustpilot.com/review/www.exzellent.co" target="_blank" rel="noopener">★ Review us on Trustpilot</a>
+    </div>
+  </section>
+  <section id="partners">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow" style="justify-content:center">Our Partners</span>
+      <h2 class="h2">Partnered with <span class="g">industry leaders</span></h2>
+      <p class="lead" style="margin-inline:auto">Join professionals from top institutions who trust Exzellent for their language learning journey.</p>
+      <div class="partner-marquee">
+        <div class="partner-track">
+          <a class="partner-logo" href="https://www.boomtown.de/" target="_blank" rel="noopener"><img src="/partners/boomtown.svg" alt="Boomtown Cottbus" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.b-tu.de/en/" target="_blank" rel="noopener"><img src="/partners/btu.svg" alt="BTU" loading="lazy"></a>
+          <a class="partner-logo" href="https://erasmus-plus.ec.europa.eu/" target="_blank" rel="noopener"><img src="/partners/erasmus.svg" alt="Erasmus+" loading="lazy"></a>
+          <a class="partner-logo" href="https://european-union.europa.eu/" target="_blank" rel="noopener"><img src="/partners/eu.svg" alt="European Union" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.ihk.de/cottbus/" target="_blank" rel="noopener"><img src="/partners/ihk.svg" alt="IHK Cottbus" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.exzellent.co" target="_blank" rel="noopener"><img src="/partners/rrr.svg" alt="RRR" loading="lazy"></a>
+          <a class="partner-logo" href="https://startuplausitz.de/" target="_blank" rel="noopener"><img src="/partners/startup-lausitz.webp" alt="Startup Lausitz" loading="lazy"></a>
+          <a class="partner-logo" href="https://tu-freiberg.de/en" target="_blank" rel="noopener"><img src="/partners/tu-friedberg.svg" alt="TU Bergakademie Freiberg" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.boomtown.de/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/boomtown.svg" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.b-tu.de/en/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/btu.svg" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://erasmus-plus.ec.europa.eu/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/erasmus.svg" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://european-union.europa.eu/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/eu.svg" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.ihk.de/cottbus/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/ihk.svg" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://www.exzellent.co" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/rrr.svg" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://startuplausitz.de/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/startup-lausitz.webp" alt="" loading="lazy"></a>
+          <a class="partner-logo" href="https://tu-freiberg.de/en" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="/partners/tu-friedberg.svg" alt="" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
+  </section>
   <div class="tr-lightbox" id="trLightbox" hidden>
     <button class="tr-lb-close" id="trLbClose" aria-label="Close">✕</button>
     <img id="trLbImg" alt=""/>
@@ -1102,11 +1221,65 @@ section[id]{scroll-margin-top:76px}
 </div>
 </div>
 
-<footer>
-  <div class="wrap foot">
-    <span>&copy; 2026 Exzellent &middot; Cottbus, Germany</span>
+<footer class="site-foot">
+  <div class="foot-grid">
+    <div class="foot-news">
+      <h3>Stay updated</h3>
+      <p>Get the updates on our courses and features.</p>
+      <form id="newsForm" novalidate>
+        <input id="newsEmail" type="email" placeholder="Enter your email address" autocomplete="email" required>
+        <button type="submit" id="newsBtn">Subscribe</button>
+      </form>
+      <p class="foot-note" id="newsNote" role="status" aria-live="polite"></p>
+    </div>
+    <div class="foot-right">
+      <nav class="foot-links" aria-label="Legal">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+        <a href="/data-policy">Data Policy</a>
+        <a href="/impressum">Impressum</a>
+      </nav>
+      <p class="foot-copy">&copy; <span id="footYear">2026</span> Exzellent Learning Platform. All rights reserved.</p>
+      <div class="foot-badges">
+        <a class="tp" href="https://www.trustpilot.com/review/www.exzellent.co" target="_blank" rel="noopener noreferrer">
+          <span>Review us on</span><i aria-hidden="true">&#9733;</i><b>Trustpilot</b>
+        </a>
+        <div class="made" aria-label="Made in Germany">
+          <span><i style="background:#000"></i>Made</span>
+          <span><i style="background:#dd0000"></i>In</span>
+          <span><i style="background:#ffce00"></i>Germany</span>
+        </div>
+      </div>
+    </div>
   </div>
 </footer>
+<script>
+/* Same footer as the rest of the site (components/Footer.jsx), as static HTML.
+   The newsletter posts to the same endpoint the React footer uses. On
+   localhost it stays relative so the Vite proxy sends it to the mock — a
+   dev subscribe must never land on the real list. */
+(function(){
+  var form=document.getElementById("newsForm"), email=document.getElementById("newsEmail"),
+      btn=document.getElementById("newsBtn"), note=document.getElementById("newsNote");
+  document.getElementById("footYear").textContent=new Date().getFullYear();
+  var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var base=local?"":((document.querySelector(".le")||{}).dataset||{}).api||"";
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var v=(email.value||"").trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){note.textContent="Please enter a valid email address.";note.dataset.tone="bad";return;}
+    btn.disabled=true;btn.textContent="Subscribing…";note.textContent="";
+    fetch(base+"/api/newsletter",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:v})})
+      .then(function(r){return r.json().catch(function(){return {};}).then(function(j){return {ok:r.ok,j:j};});})
+      .then(function(x){
+        if(x.ok&&x.j.success!==false){note.textContent="You’re on the list. Welcome.";note.dataset.tone="good";email.value="";}
+        else{note.textContent=(x.j&&x.j.message)||"That did not work. Please try again.";note.dataset.tone="bad";}
+      })
+      .catch(function(){note.textContent="Could not reach the server. Please try again.";note.dataset.tone="bad";})
+      .finally(function(){btn.disabled=false;btn.textContent="Subscribe";});
+  });
+})();
+</script>
 
 <div class="ptoast" id="ptoast" role="status" aria-live="polite"><b id="ptoastN">+50</b><span id="ptoastT"></span></div>
 <div class="ptmodal" id="ptmodal"><div class="ptcard" style="position:relative" role="dialog" aria-label="Exzellent Points">
