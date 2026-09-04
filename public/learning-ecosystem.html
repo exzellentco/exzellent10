@@ -120,8 +120,30 @@ a{color:inherit;text-decoration:none}
   .burger{display:grid;place-items:center}
   .petalbtn small{display:none}
 }
+/* Phones. The header was packing brand + points + theme + language +
+   "Start free" + the menu button into 94vw: about 432px of controls in the
+   352px a 375px phone gives you. "Start free" was clipped at the edge and the
+   MENU BUTTON sat completely off-screen, so there was no way to reach the
+   navigation at all. Theme and language move into the sheet — where the rest
+   of the navigation already lives — and stay in the DOM so the sheet can
+   drive the existing handlers rather than duplicate them. */
+@media(max-width:760px){
+  .h1r{gap:8px}
+  .hright{gap:6px}
+  .hright .u-btn{display:none}
+  /* Touch targets: these were 30-38px tall, under the 44px minimum. */
+  .burger{width:44px;height:44px}
+  .ptsbtn{min-height:40px}
+  .a-start{min-height:40px;display:inline-flex;align-items:center;padding:0 1em}
+}
+@media(max-width:760px){
+  .brand{min-height:44px}
+}
+@media(max-width:370px){
+  .brand .bname{display:none}
+}
 /* mobile sheet */
-.msheet{position:fixed;inset:0;z-index:80;background:rgba(4,5,10,.6);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.msheet{position:fixed;inset:0;z-index:95;background:rgba(4,5,10,.6);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
 .msheet[data-open="true"]{opacity:1;visibility:visible;transition:opacity .3s}
 .msheet .pane{position:absolute;right:0;top:0;bottom:0;width:min(360px,88vw);background:var(--bg);
   border-left:1px solid var(--line);padding:18px 16px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;
@@ -129,6 +151,14 @@ a{color:inherit;text-decoration:none}
 .msheet[data-open="true"] .pane{transform:none}
 .msheet .close{position:absolute;right:14px;top:14px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line)}
 .msheet .mh{font:600 10px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:16px 4px 8px}
+/* Theme and language, relocated here from the header on phones. */
+.msheet .msrow{display:flex;gap:8px;margin:12px 4px 0}
+.msheet .msbtn{flex:1;min-height:44px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--text);font:600 13px/1 Inter,sans-serif;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:border-color .2s,color .2s}
+.msheet .msbtn:hover,.msheet .msbtn:focus-visible{border-color:var(--line2)}
+/* The sheet's own links were ~31px tall; a finger needs 44. */
+.msheet .mi{min-height:44px;padding-block:11px;font-size:14px}
 
 /* ================= hero — less writing ================= */
 .hero{position:relative;z-index:2;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -137,6 +167,10 @@ a{color:inherit;text-decoration:none}
 .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--lav),var(--orange) 70%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
 .explore{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
 .explore .e{font:600 10.5px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+/* 10.5px uppercase with wide tracking is unreadable at arm's length. */
+@media(max-width:640px){
+  .explore .e,.exlab{font-size:12px;letter-spacing:.14em}
+}
 .lp{display:inline-flex;align-items:center;gap:.6em;padding:.85em 1.3em;border-radius:999px;
   border:1px solid rgba(var(--lc),.5);background:rgba(var(--lc),.07);
   font:600 14px/1 Inter,sans-serif;color:var(--text);transition:transform .25s var(--ease),box-shadow .25s,background .25s}
@@ -666,6 +700,8 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line)}
   transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
 .le .tutor-book:hover{transform:translateY(-1px);box-shadow:0 8px 20px -6px rgba(var(--pRGB),.7)}
 @media(max-width:520px){.le .tutor-card{flex-basis:78vw}}
+/* 1:1 meant one tutor filled the screen on a phone. */
+@media(max-width:640px){.le .tutor-photo{aspect-ratio:16/10}}
 .le /* ---------- dashboard preview upgrade ---------- */
 .dash-preview .dash-frame{position:relative;
   transition:transform .5s var(--ease),border-color .5s var(--ease),box-shadow .5s var(--ease)}
@@ -846,7 +882,7 @@ section[id]{scroll-margin-top:76px}
 <!-- ================= header ================= -->
 <header class="hdr" id="hdr">
   <div class="h1r">
-    <a class="brand" href="/learning-ecosystem.html" aria-label="EXZELLENT — home"><span class="mark" aria-hidden="true"></span>EXZELLENT</a>
+    <a class="brand" href="/learning-ecosystem.html" aria-label="EXZELLENT — home"><span class="mark" aria-hidden="true"></span><span class="bname">EXZELLENT</span></a>
     <div class="hright">
       <button class="ptsbtn" id="ptsBtn" aria-label="Exzellent Points">&#10022; <b>0</b></button>
       <span class="rolet" aria-label="Role">
@@ -1533,7 +1569,24 @@ function buildSheet(){
      <a class="mi" style="--mc:138,75,245" href="#dashboard"><b></b>${T().nDash}</a>
      <a class="mi" style="--mc:103,232,249" href="/labs/language.html"><b></b>${T().nLabs}</a>
      <a class="mi" style="--mc:240,196,66" href="/labs/language.html"><b></b>${T().nTutors}</a>
-     <a class="mi" style="--mc:61,240,160" href="/community"><b></b>${T().nEvents}</a>`;
+     <a class="mi" style="--mc:61,240,160" href="/community"><b></b>${T().nEvents}</a>
+     <div class="mh">Account</div>
+     <a class="mi" style="--mc:154,163,194" href="/login"><b></b>${T().login}</a>
+     <a class="mi" style="--mc:138,75,245" href="/signup"><b></b>${T().start}</a>
+     <div class="msrow">
+       <button type="button" class="msbtn" data-proxy="uTheme"></button>
+       <button type="button" class="msbtn" data-proxy="uLang"></button>
+     </div>`;
+  /* Theme and language leave the header on phones. Rather than reimplement
+     them, these press the original controls, which are still in the DOM and
+     still own the logic. Labels are read back from them so the sheet cannot
+     drift out of sync with the real state. */
+  document.querySelectorAll("#msBody .msbtn").forEach((b)=>{
+    const src=document.getElementById(b.dataset.proxy);
+    if(!src){b.remove();return;}
+    b.textContent=(src.textContent||"").trim()||src.getAttribute("aria-label")||"";
+    b.addEventListener("click",()=>{src.click();buildSheet();});
+  });
 }
 document.getElementById("burger").addEventListener("click",()=>{buildSheet();msheet.dataset.open="true";});
 document.getElementById("msClose").addEventListener("click",()=>msheet.dataset.open="false");
