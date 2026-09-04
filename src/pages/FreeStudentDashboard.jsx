@@ -39,6 +39,7 @@ import AiToolsHub from "../components/AiTools/AiToolsHub";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 import { useSessions } from "../context/SessionsContext";
+import TaskList from "../components/shared/TaskList";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
 import CountUp from "../components/StudentComponent/CountUp";
@@ -1746,6 +1747,17 @@ const StudentDashboard = () => {
               ]}
             />
           </motion.div>
+        </div>
+      </section>
+
+      {/* Tasks — the learner's own list, above their lessons. */}
+      <section className="py-2">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <TaskList
+            subtitle="Whatever you want to get to. Only you can see this."
+            theme={{ card: "var(--sd-card-bg)", border: "var(--sd-border)", ink: "var(--sd-ink)",
+                     muted: "var(--sd-ink-muted)", accent: "var(--sd-primary)", heading: "var(--sd-font-heading)" }}
+          />
         </div>
       </section>
 

@@ -14,6 +14,7 @@ import AiToolsHub from "../components/AiTools/AiToolsHub";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import ExziChatWidget from "../components/shared/ExziChatWidget";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
+import TaskList from "../components/shared/TaskList";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 
 /**
@@ -292,6 +293,13 @@ const FreeTeacherDashboard = () => {
                 </div>
               )}
             </Section>
+
+            {/* Tasks — the teacher's own list, beside their teaching. */}
+            <TaskList
+              subtitle="Prep, follow-ups, anything you owe a student. Only you can see this."
+              theme={{ card: "var(--td-card-bg)", border: "var(--td-border)", ink: "var(--td-ink)",
+                       muted: "var(--td-ink-muted)", accent: "var(--td-accent-light)", heading: "var(--td-font-heading)" }}
+            />
 
             {/* ── my lessons ── */}
             <Section title="My lessons" sub="What you teach next, and what you just taught.">

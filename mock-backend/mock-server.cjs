@@ -345,6 +345,7 @@ const aiCostFor = (path) => {
 // ---- invite-only waitlist (BestSecret-style "request an invite") -------------
 const WAITLIST = []; // { _id, email, name, note, invited, inviteCode, createdAt }
 let WAITLIST_SEQ = 1;
+const MY_TASKS = {};   // personal to-do lists, keyed by user id
 const INVITE_ONLY = true; // require a valid invite/referral code to register
 const findReferral = (code) => REFERRALS.find((r) => (r.code || "").toLowerCase() === String(code || "").toLowerCase() && r.active !== false);
 const AFFILIATE_COMMISSION = 5;    // € earned per converted referral — affiliates/ambassadors (real payout)
@@ -1407,6 +1408,44 @@ const routes = [
     success: true, accessToken: makeToken(role || "Student", "mock-refresh"),
   })],
   ["POST", /^\/api\/users\/logout$/, () => ({ success: true })],
+  // ─── personal tasks ───────────────────────────────────────────────────────
+  // Deliberately NOT /api/tasks, which is the staff backlog. Keyed by the
+  // caller like the real routes are, so a bug where one account sees another's
+  // list would show up here too. In memory only: restarting clears them.
+  ["GET", /^\/api\/my-tasks$/, (_b, _p, _r, token) => {
+    const me = userIdFromToken(token) || "anon";
+    return { success: true, data: (MY_TASKS[me] || []).slice().sort((a, b) => (a.done - b.done) || (b.createdAt - a.createdAt)) };
+  }],
+  ["POST", /^\/api\/my-tasks$/, (body, _p, _r, token) => {
+    const me = userIdFromToken(token) || "anon";
+    const title = String((body && body.title) || "").trim();
+    if (!title) return { success: false, message: "Write the task first." };
+    const due = /^\d{4}-\d{2}-\d{2}$/.test(String((body && body.dueDate) || "")) ? body.dueDate : "";
+    const t = { _id: "mt-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+                title: title.slice(0, 160), done: false, due, createdAt: Date.now() };
+    (MY_TASKS[me] = MY_TASKS[me] || []).push(t);
+    return { success: true, data: t };
+  }],
+  ["PATCH", /^\/api\/my-tasks\/[^/]+$/, (body, path, _r, token) => {
+    const me = userIdFromToken(token) || "anon";
+    const id = path.split("/").pop();
+    const t = (MY_TASKS[me] || []).find((x) => x._id === id);
+    if (!t) return { success: false, message: "Not found." };
+    if (typeof (body && body.done) === "boolean") t.done = body.done;
+    if (typeof (body && body.title) === "string" && body.title.trim()) t.title = body.title.trim().slice(0, 160);
+    if (body && body.dueDate !== undefined) t.due = /^\d{4}-\d{2}-\d{2}$/.test(String(body.dueDate || "")) ? body.dueDate : "";
+    return { success: true, data: t };
+  }],
+  ["DELETE", /^\/api\/my-tasks\/[^/]+$/, (_b, path, _r, token) => {
+    const me = userIdFromToken(token) || "anon";
+    const id = path.split("/").pop();
+    const list = MY_TASKS[me] || [];
+    const i = list.findIndex((x) => x._id === id);
+    if (i < 0) return { success: false, message: "Not found." };
+    list.splice(i, 1);
+    return { success: true };
+  }],
+
   ["GET", /^\/api\/users\/profile$/, (_b, _p, role, token) => {
     if ((role || "Student") !== "Student") return { success: true, data: userFor(role || "Student") };
     const id = userIdFromToken(token) || "mock-student-001";
