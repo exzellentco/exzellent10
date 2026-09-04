@@ -31,6 +31,7 @@ import {
   Library,
   UserPlus,
   ArrowRight,
+  ClipboardList,
 } from "lucide-react";
 import SpacedRepetitionSession from "../components/AI/SpacedRepetitionSession";
 import EditProfileForm from "../components/StudentComponent/EditProfileForm";
@@ -40,6 +41,7 @@ import UpgradeBanner from "../components/UI/UpgradeBanner";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 import { useSessions } from "../context/SessionsContext";
 import Missions from "../components/shared/Missions";
+import StudentAssignments from "../components/Assignments/StudentAssignments";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
 import CountUp from "../components/StudentComponent/CountUp";
@@ -77,6 +79,7 @@ const StudentDashboard = () => {
   const [progressLoading, setProgressLoading] = useState(false);
   const [aiTab, setAiTab] = useState(null);          // "exam" | "course" -> AI Tools overlay
   const [speechOpen, setSpeechOpen] = useState(false);
+  const [homeworkOpen, setHomeworkOpen] = useState(false);
 
   /* This component only ever renders for a FREE account — the gate sends paid
      learners to the console — so anything the plan config marks paid-only is
@@ -1526,6 +1529,35 @@ const StudentDashboard = () => {
                 </GlassCard>
               </motion.div>
 
+              {/* Homework Card — the work a teacher actually set. Free:
+                  this is the teaching loop, not a model call. */}
+              <motion.div
+                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={prefersReducedMotion ? undefined : { y: -3 }}
+              >
+                <GlassCard glowColor="#67E8F9" intensity={0}>
+                  <div
+                    onClick={() => setHomeworkOpen(true)}
+                    className="flex flex-wrap items-center gap-x-5 gap-y-3 p-5 cursor-pointer group"
+                  >
+                    <div
+                      className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
+                      style={{ background: "rgba(103,232,249,0.14)" }}
+                    >
+                      <ClipboardList className="w-6 h-6" style={{ color: "#0e7490" }} />
+                    </div>
+                    <div className="flex-1 min-w-[13rem]">
+                      <p className="font-semibold" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>Homework</p>
+                      <p className="text-sm mt-0.5" style={{ color: "var(--sd-ink-muted)" }}>
+                        Speaking practice your teacher set, and what you have handed in
+                      </p>
+                    </div>
+                    <span className="text-lg flex-shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: "#0e7490" }}>&rarr;</span>
+                  </div>
+                </GlassCard>
+              </motion.div>
+
               {/* Oral Practice Card */}
               <motion.div
                 variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
@@ -1805,6 +1837,7 @@ const StudentDashboard = () => {
           Details page, so both stay in sync instead of being two copies. */}
       {aiTab && <AiToolsHub role="student" initialTab={aiTab} onClose={() => setAiTab(null)} />}
       {speechOpen && <StudentSpeechLab onClose={() => setSpeechOpen(false)} student={studentData} />}
+      {homeworkOpen && <StudentAssignments onClose={() => setHomeworkOpen(false)} me={studentData} />}
 
       <ExziChatWidget />
 

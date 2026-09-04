@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   Users, CalendarCheck, BookOpen, Video, Sparkles, Mic, MessageSquare,
   Crown, ChevronRight, RefreshCw, LogOut, GraduationCap, Clock, Coins,
+  ClipboardList,
 } from "lucide-react";
 import axios from "../utils/axios";
 import { signOut as endSession } from "../utils/signOut";
@@ -15,6 +16,7 @@ import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import ExziChatWidget from "../components/shared/ExziChatWidget";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import Missions from "../components/shared/Missions";
+import TeacherAssignments from "../components/Assignments/TeacherAssignments";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 
 /**
@@ -144,6 +146,7 @@ const FreeTeacherDashboard = () => {
     { key: "aitools", feature: "aiExam", label: "AI Tools", note: "Build an exam, a course, a report", icon: <Sparkles size={18} />, tint: "#F0B23C" },
     { key: "speech", feature: "speechLab", label: "Speech Lab", note: "Model pronunciation for a lesson", icon: <Mic size={18} />, tint: "#B392F5" },
     { key: "messages", feature: "messages", label: "Messages", note: "Your students' questions", icon: <MessageSquare size={18} />, tint: "#5AE287" },
+    { key: "homework", feature: "homework", label: "Homework", note: "Set speaking practice and mark it", icon: <ClipboardList size={18} />, tint: "#67E8F9" },
   ];
 
   const fade = reduced ? {} : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 } };
@@ -375,6 +378,15 @@ const FreeTeacherDashboard = () => {
       {panel === "messages" && <MessagesPanel onClose={() => setPanel(null)} />}
       {panel === "aitools" && <AiToolsHub role="teacher" onClose={() => setPanel(null)} />}
       {panel === "speech" && <StudentSpeechLab onClose={() => setPanel(null)} student={me} />}
+      {panel === "homework" && (
+        <TeacherAssignments
+          onClose={() => setPanel(null)}
+          // roster calls the name "student"; this panel wants "name". Passing
+          // it through unmapped renders a list of blanks.
+          students={roster.map((r) => ({ _id: r._id, name: r.student }))}
+          me={{ _id: me._id, name: me.name }}
+        />
+      )}
 
       <ExziChatWidget />
     </div>
