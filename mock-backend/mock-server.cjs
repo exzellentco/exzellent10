@@ -346,6 +346,35 @@ const aiCostFor = (path) => {
 const WAITLIST = []; // { _id, email, name, note, invited, inviteCode, createdAt }
 let WAITLIST_SEQ = 1;
 const MY_TASKS = {};   // personal to-do lists, keyed by user id
+const MISSION_DONE = {}, MISSION_CLAIMED = {}, MISSION_CREDITS = {};
+/** Starting credits for whoever is signed in, matching what the dashboard shows. */
+function missionCredits(userId, role) {
+  if (MISSION_CREDITS[userId] !== undefined) return MISSION_CREDITS[userId];
+  if (role === "Teacher") {
+    const t = TEACHERS.find((x) => x._id === userId) || TEACHERS.find((x) => x.paid === false);
+    return (t && t.credits) || 0;
+  }
+  const st = STUDENTS.find((x) => x._id === userId);
+  return (st && st.credits) || 90;
+}
+const MISSION_DEFS = {
+  student: [
+    { id: "student:profile", title: "Finish your profile", blurb: "Add your phone number, date of birth and gender.", credits: 10 },
+    { id: "student:goal", title: "Say what you are aiming for", blurb: "Pick a target language and a goal.", credits: 10 },
+    { id: "student:course", title: "Enrol in your first course", blurb: "Browse the courses and join one.", credits: 20 },
+    { id: "student:lesson", title: "Book your first lesson", blurb: "Meet a tutor one to one.", credits: 25 },
+    { id: "student:speak", title: "Try speaking practice", blurb: "Record a sentence and get feedback.", credits: 15 },
+    { id: "student:review", title: "Review your first flashcards", blurb: "Daily review is what makes vocabulary stick.", credits: 15 },
+  ],
+  teacher: [
+    { id: "teacher:profile", title: "Finish your profile", blurb: "A photo and your years of experience.", credits: 10 },
+    { id: "teacher:price", title: "Set your hourly rate", blurb: "Your card cannot show a price until this is set.", credits: 15 },
+    { id: "teacher:languages", title: "List what you teach", blurb: "This is how learners filter the directory.", credits: 10 },
+    { id: "teacher:availability", title: "Open some availability", blurb: "Nobody can book you until there are hours.", credits: 20 },
+    { id: "teacher:taught", title: "Teach your first lesson", blurb: "The one that matters.", credits: 25 },
+    { id: "teacher:message", title: "Message a student", blurb: "Answering between lessons keeps people coming back.", credits: 15 },
+  ],
+};
 const INVITE_ONLY = true; // require a valid invite/referral code to register
 const findReferral = (code) => REFERRALS.find((r) => (r.code || "").toLowerCase() === String(code || "").toLowerCase() && r.active !== false);
 const AFFILIATE_COMMISSION = 5;    // € earned per converted referral — affiliates/ambassadors (real payout)
@@ -1408,6 +1437,35 @@ const routes = [
     success: true, accessToken: makeToken(role || "Student", "mock-refresh"),
   })],
   ["POST", /^\/api\/users\/logout$/, () => ({ success: true })],
+  // ─── missions ─────────────────────────────────────────────────────────────
+  // The real routes decide "done" from actual records. The mock cannot, so it
+  // fakes a plausible mix and keeps the important half honest: a claim is
+  // refused unless done, and pays only once.
+  ["GET", /^\/api\/missions$/, (_b, _p, role, token) => {
+    const me = userIdFromToken(token) || "anon";
+    const list = (role === "Teacher" ? MISSION_DEFS.teacher : MISSION_DEFS.student);
+    const done = MISSION_DONE[me] || (MISSION_DONE[me] = list.slice(0, 3).map((m) => m.id));
+    const claimed = MISSION_CLAIMED[me] || (MISSION_CLAIMED[me] = []);
+    return {
+      success: true,
+      credits: missionCredits(me, role),
+      data: list.map((m) => ({ ...m, done: done.includes(m.id) || claimed.includes(m.id), claimed: claimed.includes(m.id) })),
+    };
+  }],
+  ["POST", /^\/api\/missions\/claim$/, (body, _p, role, token) => {
+    const me = userIdFromToken(token) || "anon";
+    const list = (role === "Teacher" ? MISSION_DEFS.teacher : MISSION_DEFS.student);
+    const m = list.find((x) => x.id === ((body && body.id) || ""));
+    if (!m) return { success: false, message: "No such mission." };
+    const done = MISSION_DONE[me] || [];
+    const claimed = MISSION_CLAIMED[me] || (MISSION_CLAIMED[me] = []);
+    if (!done.includes(m.id)) return { success: false, message: "That one is not done yet." };
+    if (claimed.includes(m.id)) return { success: false, message: "Already claimed." };
+    claimed.push(m.id);
+    MISSION_CREDITS[me] = missionCredits(me, role) + m.credits;
+    return { success: true, awarded: m.credits, credits: MISSION_CREDITS[me] };
+  }],
+
   // ─── personal tasks ───────────────────────────────────────────────────────
   // Deliberately NOT /api/tasks, which is the staff backlog. Keyed by the
   // caller like the real routes are, so a bug where one account sees another's

@@ -14,6 +14,7 @@ import AiToolsHub from "../components/AiTools/AiToolsHub";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import ExziChatWidget from "../components/shared/ExziChatWidget";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
+import Missions from "../components/shared/Missions";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 
 /**
@@ -292,6 +293,17 @@ const FreeTeacherDashboard = () => {
                 </div>
               )}
             </Section>
+
+            {/* Missions — same idea as the student side, teacher's own set. */}
+            <Missions
+              // Claiming pays credits, and the pill in the header shows them.
+              // Without this it kept the figure it loaded with, so a claim
+              // looked like it had done nothing.
+              onCreditsChange={(credits) => setD((prev) => ({ ...prev, me: { ...(prev.me || {}), credits } }))}
+              theme={{ card: "var(--td-card-bg)", border: "var(--td-border)", ink: "var(--td-ink)",
+                       muted: "var(--td-ink-muted)", accent: "var(--td-accent)", gold: "var(--td-accent-light)",
+                       heading: "var(--td-font-heading)" }}
+            />
 
             {/* ── my lessons ── */}
             <Section title="My lessons" sub="What you teach next, and what you just taught.">

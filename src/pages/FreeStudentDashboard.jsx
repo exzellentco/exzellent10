@@ -39,7 +39,7 @@ import AiToolsHub from "../components/AiTools/AiToolsHub";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 import { useSessions } from "../context/SessionsContext";
-import TaskList from "../components/shared/TaskList";
+import Missions from "../components/shared/Missions";
 import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import EnrolledCourseCard from "../components/StudentComponent/EnrolledCourseCard";
 import CountUp from "../components/StudentComponent/CountUp";
@@ -1750,13 +1750,15 @@ const StudentDashboard = () => {
         </div>
       </section>
 
-      {/* Tasks — the learner's own list, above their lessons. */}
+      {/* Missions — worth doing, and a tour of the place at the same time. */}
       <section className="py-2">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <TaskList
-            subtitle="Whatever you want to get to. Only you can see this."
+          <Missions
+            // Keeps the Credits figure in Quick Stats honest after a claim.
+            onCreditsChange={(credits) => setStudentData((prev) => (prev ? { ...prev, credits } : prev))}
             theme={{ card: "var(--sd-card-bg)", border: "var(--sd-border)", ink: "var(--sd-ink)",
-                     muted: "var(--sd-ink-muted)", accent: "var(--sd-primary)", heading: "var(--sd-font-heading)" }}
+                     muted: "var(--sd-ink-muted)", accent: "var(--sd-primary)", gold: "var(--sd-gold)",
+                     heading: "var(--sd-font-heading)" }}
           />
         </div>
       </section>
