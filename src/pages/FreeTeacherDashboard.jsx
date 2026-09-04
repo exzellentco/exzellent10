@@ -5,6 +5,7 @@ import {
   Users, CalendarCheck, BookOpen, Video, Sparkles, Mic, MessageSquare,
   Crown, ChevronRight, RefreshCw, LogOut, GraduationCap, Clock, Coins,
   ClipboardList,
+  NotebookPen,
 } from "lucide-react";
 import axios from "../utils/axios";
 import { signOut as endSession } from "../utils/signOut";
@@ -16,6 +17,7 @@ import StudentSpeechLab from "../components/SpeechAnalyzer/StudentSpeechLab";
 import ExziChatWidget from "../components/shared/ExziChatWidget";
 import UpgradeBanner from "../components/UI/UpgradeBanner";
 import Missions from "../components/shared/Missions";
+import { saveLessonNotes } from "../APIs/calendar";
 import TeacherAssignments from "../components/Assignments/TeacherAssignments";
 import { isLocked, LOCK_NOTE, PLAN_ROUTE } from "../config/plan";
 
@@ -84,6 +86,103 @@ const Section = ({ title, sub, children, action }) => (
     {children}
   </section>
 );
+
+/**
+ * One lesson, openable to say what it is for and — afterwards — what happened.
+ *
+ * A booking used to carry only a title, so the hour had nothing attached on
+ * either side of it. The objective is what the student sees before; the notes
+ * are what survives it. Writing is teacher-only and enforced on the server.
+ */
+const LessonRow = ({ b, past }) => {
+  const [open, setOpen] = useState(false);
+  const [objective, setObjective] = useState(b.objective || "");
+  const [notes, setNotes] = useState(b.notes || "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [err, setErr] = useState("");
+
+  const save = async () => {
+    setSaving(true); setErr(""); setSaved(false);
+    try {
+      await saveLessonNotes(b._id, { objective, notes });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (e) {
+      setErr(e.message || "Could not save.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const marked = (b.objective || "").trim() || (b.notes || "").trim();
+
+  return (
+    <li style={{ borderBottom: "1px solid var(--td-border)" }}>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3" style={{ opacity: past ? 0.75 : 1 }}>
+        <span className="flex-none w-24 text-xs tabular-nums" style={{ color: "var(--td-ink-muted)" }}>{b.date}</span>
+        <span className="flex-none w-14 text-sm tabular-nums">{b.start}</span>
+        <span className="flex-1 min-w-[10rem]"><b className="block truncate">{b.title}</b></span>
+        <span className="text-xs inline-flex items-center gap-1" style={{ color: "var(--td-ink-muted)" }}>
+          <Clock size={11} /> {b.who || b.studentName || "—"}
+        </span>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label={`Lesson plan and notes for ${b.title} on ${b.date}`}
+          className="flex-none inline-flex items-center gap-1.5 px-3 rounded-full text-xs"
+          style={{
+            minHeight: 32, cursor: "pointer", background: "transparent",
+            border: `1px solid ${marked ? "var(--td-accent-light)" : "var(--td-border)"}`,
+            color: marked ? "var(--td-accent-light)" : "var(--td-ink-muted)",
+          }}
+        >
+          <NotebookPen size={12} /> {past ? "Notes" : "Plan"}{marked ? " ·" : ""}
+        </button>
+      </div>
+
+      {open && (
+        <div className="pb-4 flex flex-col gap-3">
+          <label className="text-xs" style={{ color: "var(--td-ink-muted)" }}>
+            What this lesson is for — your student sees this
+            <textarea
+              value={objective}
+              onChange={(e) => setObjective(e.target.value)}
+              maxLength={500}
+              rows={2}
+              className="w-full mt-1 p-2.5 rounded-xl text-sm"
+              style={{ background: "transparent", border: "1px solid var(--td-border)", color: "var(--td-ink)" }}
+            />
+          </label>
+          <label className="text-xs" style={{ color: "var(--td-ink-muted)" }}>
+            What happened — written up afterwards
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              maxLength={4000}
+              rows={3}
+              className="w-full mt-1 p-2.5 rounded-xl text-sm"
+              style={{ background: "transparent", border: "1px solid var(--td-border)", color: "var(--td-ink)" }}
+            />
+          </label>
+          <div className="flex items-center gap-3">
+            <button
+              type="button" onClick={save} disabled={saving}
+              className="inline-flex items-center px-4 rounded-full text-sm font-semibold"
+              style={{ minHeight: 36, cursor: saving ? "wait" : "pointer",
+                       border: "1px solid var(--td-accent-light)", color: "var(--td-accent-light)", background: "transparent" }}
+            >
+              {saving ? "Saving…" : "Save"}
+            </button>
+            {saved && <span className="text-xs" style={{ color: "var(--td-accent-light)" }}>Saved</span>}
+            {err && <span className="text-xs" style={{ color: "#f0a09b" }}>{err}</span>}
+          </div>
+        </div>
+      )}
+    </li>
+  );
+};
 
 const FreeTeacherDashboard = () => {
   const navigate = useNavigate();
@@ -313,18 +412,7 @@ const FreeTeacherDashboard = () => {
               <p className="text-xs uppercase tracking-wider m-0 mb-1" style={{ color: "var(--td-ink-muted)" }}>Upcoming</p>
               {upcoming.length ? (
                 <ul className="list-none p-0 m-0">
-                  {upcoming.map((b) => (
-                    <li key={b._id} className="flex items-center gap-4 py-3" style={{ borderBottom: "1px solid var(--td-border)" }}>
-                      <span className="flex-none w-24 text-xs tabular-nums" style={{ color: "var(--td-ink-muted)" }}>
-                        {b.date}
-                      </span>
-                      <span className="flex-none w-14 text-sm tabular-nums">{b.start}</span>
-                      <span className="flex-1 min-w-0"><b className="block truncate">{b.title}</b></span>
-                      <span className="text-xs inline-flex items-center gap-1" style={{ color: "var(--td-ink-muted)" }}>
-                        <Clock size={11} /> {b.who || b.studentName || "—"}
-                      </span>
-                    </li>
-                  ))}
+                  {upcoming.map((b) => <LessonRow key={b._id} b={b} />)}
                 </ul>
               ) : (
                 <p className="text-sm m-0 py-2" style={{ color: "var(--td-ink-muted)" }}>
@@ -336,18 +424,7 @@ const FreeTeacherDashboard = () => {
                 <>
                   <p className="text-xs uppercase tracking-wider m-0 mt-5 mb-1" style={{ color: "var(--td-ink-muted)" }}>Recently taught</p>
                   <ul className="list-none p-0 m-0">
-                    {recent.map((b) => (
-                      <li key={b._id} className="flex items-center gap-4 py-3" style={{ borderBottom: "1px solid var(--td-border)", opacity: .75 }}>
-                        <span className="flex-none w-24 text-xs tabular-nums" style={{ color: "var(--td-ink-muted)" }}>
-                          {b.date}
-                        </span>
-                        <span className="flex-none w-14 text-sm tabular-nums">{b.start}</span>
-                        <span className="flex-1 min-w-0"><b className="block truncate">{b.title}</b></span>
-                        <span className="text-xs inline-flex items-center gap-1" style={{ color: "var(--td-ink-muted)" }}>
-                          <Clock size={11} /> {b.who || b.studentName || "—"}
-                        </span>
-                      </li>
-                    ))}
+                    {recent.map((b) => <LessonRow key={b._id} b={b} past />)}
                   </ul>
                 </>
               )}

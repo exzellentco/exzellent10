@@ -14,7 +14,7 @@ const dt = (b) => new Date(`${b.date}T${b.start || "00:00"}:00`);
 
 const Row = ({ b, past }) => (
   <li
-    className="flex items-center gap-3 py-3"
+    className="flex flex-wrap items-center gap-3 py-3"
     style={{ borderBottom: "1px solid var(--sd-border, rgba(255,255,255,.08))" }}
   >
     <span className="flex-none w-14 tabular-nums">
@@ -45,6 +45,26 @@ const Row = ({ b, past }) => (
       >
         <Video size={13} /> Join
       </a>
+    )}
+
+    {/* What the teacher set out for this lesson, and what they wrote up
+        afterwards. Read-only here — writing is the teacher's, server-side. */}
+    {(b.objective || b.notes) && (
+      <div
+        className="w-full rounded-xl p-3 mt-1 flex flex-col gap-2"
+        style={{ background: "rgba(255,255,255,.03)", border: "1px solid var(--sd-border, rgba(255,255,255,.08))" }}
+      >
+        {b.objective && (
+          <p className="m-0 text-xs" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>
+            <b style={{ color: "var(--sd-ink, #fff)" }}>Focus · </b>{b.objective}
+          </p>
+        )}
+        {b.notes && (
+          <p className="m-0 text-xs" style={{ color: "var(--sd-ink-muted, #a79cc7)" }}>
+            <b style={{ color: "var(--sd-ink, #fff)" }}>Notes · </b>{b.notes}
+          </p>
+        )}
+      </div>
     )}
   </li>
 );

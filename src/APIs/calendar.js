@@ -48,6 +48,21 @@ export const updateBooking = async (id, data) =>
 export const cancelBooking = async (id) =>
   req("DELETE", `/api/calendar/bookings/${id}`);
 
+/**
+ * What a lesson is for, and what happened in it. Teacher-only, server-side.
+ *
+ * req() throws only when the response is not ok AND the body does not already
+ * say success:false — so a refusal, which is exactly that shape, comes back as
+ * an ordinary value. Trusting it showed "Saved" over a write the server had
+ * rejected. This one checks.
+ */
+export const saveLessonNotes = async (id, { objective, notes }) => {
+  const res = await req("PATCH", `/api/calendar/bookings/${id}/lesson`,
+    { ...(objective !== undefined ? { objective } : {}), ...(notes !== undefined ? { notes } : {}) });
+  if (!res || res.success === false) throw new Error(res?.message || "Could not save this lesson.");
+  return res;
+};
+
 // Bookable people (tutors/mentors/coaches), optionally filtered by lab.
 export const getProviders = async (lab) =>
   (await req("GET", `/api/calendar/providers${lab ? `?lab=${lab}` : ""}`)).data;

@@ -1726,6 +1726,17 @@ const routes = [
     if (body && body.title !== undefined) b.topic = body.title;
     return { success: true, data: b };
   }],
+  ["PATCH", /^\/api\/calendar\/bookings\/[^/]+\/lesson$/, (body, path) => {
+    const id = path.split("/")[4];
+    const b = BOOKINGS.find((x) => x._id === id) || (OPS.calendar || []).find((x) => x._id === id);
+    if (!b) return { success: false, message: "Class not found." };
+    if (body && typeof body.objective === "string") b.objective = body.objective.trim().slice(0, 500);
+    if (body && typeof body.notes === "string") {
+      b.notes = body.notes.trim().slice(0, 4000);
+      b.notesAt = b.notes ? new Date().toISOString() : null;
+    }
+    return { success: true, data: b };
+  }],
   ["GET", /^\/api\/calendar\/bookings(\?.*)?$/, (_b, path) => {
     const u = new URL(path, "http://localhost");
     const role = u.searchParams.get("role");
