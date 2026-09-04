@@ -821,6 +821,67 @@ const StudentDashboard = () => {
 
       {/* Main Content */}
       <section className="py-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── first run ──────────────────────────────────────────────────
+          A new learner used to land on six panels all reading zero — no
+          courses, no quiz attempts, no streak, no next lesson — and nothing
+          proposing a first move. This shows only while there is genuinely
+          nothing yet, and every step here is free on this plan.
+
+          It sits ABOVE the two-column row, not inside it. As a child of that
+          row it became a third column: it stretched to the row's full height
+          (2549px of card around 246px of content) and took 537px of width off
+          the course column, which squeezed the quick-action text to one word
+          per line. */}
+        {!loading && !enrolledCourses.length && !(mySessions || []).length && (
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-8 rounded-2xl p-6"
+            style={{ background: "var(--sd-card-bg)", border: "1px solid var(--sd-gold)", boxShadow: "0 2px 24px rgba(91,33,182,0.10)" }}
+          >
+            <p className="text-xs uppercase tracking-widest m-0 mb-1" style={{ color: "var(--sd-gold)" }}>Start here</p>
+            <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>
+              Three ways to begin
+            </h2>
+            <p className="mb-5" style={{ color: "var(--sd-ink-muted)" }}>
+              All of these are free on your plan. Pick whichever suits today.
+            </p>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                { icon: <BookOpen className="w-5 h-5" />, title: "Pick a course",
+                  body: "Browse the German and English courses and enrol in one.",
+                  cta: "Browse courses", go: () => navigate("/courses") },
+                { icon: <UserPlus className="w-5 h-5" />, title: "Book a first lesson",
+                  body: "Meet a tutor 1-to-1. Browsing the directory is free.",
+                  cta: "Find a tutor", go: () => navigate("/book") },
+                { icon: <Mic className="w-5 h-5" />, title: "Say something out loud",
+                  body: "Record a sentence and get pronunciation feedback.",
+                  cta: "Open Oral Practice", go: () => setSpeechOpen(true) },
+              ].map((step, i) => (
+                <div key={step.title} className="rounded-xl p-4 flex flex-col"
+                     style={{ border: "1px solid var(--sd-border)", background: "var(--sd-surface)" }}>
+                  <span className="inline-flex items-center gap-2 mb-2" style={{ color: "var(--sd-gold)" }}>
+                    {step.icon}
+                    <b className="text-xs tabular-nums" style={{ color: "var(--sd-ink-muted)" }}>0{i + 1}</b>
+                  </span>
+                  <b className="block mb-1" style={{ color: "var(--sd-ink)" }}>{step.title}</b>
+                  <p className="text-sm flex-1 mb-3 m-0" style={{ color: "var(--sd-ink-muted)" }}>{step.body}</p>
+                  <button
+                    type="button" onClick={step.go}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold self-start"
+                    style={{ color: "var(--sd-primary-light)", background: "none", border: 0, cursor: "pointer" }}
+                  >
+                    {step.cta} <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+        </div>
         <div className="mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row gap-8">
           {/* Profile Section */}
           <motion.div
@@ -1239,60 +1300,6 @@ const StudentDashboard = () => {
             </div>
           </motion.div>
 
-          {/* ── first run ──────────────────────────────────────────────────
-              A new learner used to land on six panels all reading zero — no
-              courses, no quiz attempts, no streak, no next lesson — and nothing
-              proposing a first move. This shows only while there is genuinely
-              nothing yet, and every step here is free on this plan. */}
-          {!loading && !enrolledCourses.length && !(mySessions || []).length && (
-            <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-8 rounded-2xl p-6"
-              style={{ background: "var(--sd-card-bg)", border: "1px solid var(--sd-gold)", boxShadow: "0 2px 24px rgba(91,33,182,0.10)" }}
-            >
-              <p className="text-xs uppercase tracking-widest m-0 mb-1" style={{ color: "var(--sd-gold)" }}>Start here</p>
-              <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>
-                Three ways to begin
-              </h2>
-              <p className="mb-5" style={{ color: "var(--sd-ink-muted)" }}>
-                All of these are free on your plan. Pick whichever suits today.
-              </p>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                {[
-                  { icon: <BookOpen className="w-5 h-5" />, title: "Pick a course",
-                    body: "Browse the German and English courses and enrol in one.",
-                    cta: "Browse courses", go: () => navigate("/courses") },
-                  { icon: <UserPlus className="w-5 h-5" />, title: "Book a first lesson",
-                    body: "Meet a tutor 1-to-1. Browsing the directory is free.",
-                    cta: "Find a tutor", go: () => navigate("/book") },
-                  { icon: <Mic className="w-5 h-5" />, title: "Say something out loud",
-                    body: "Record a sentence and get pronunciation feedback.",
-                    cta: "Open Oral Practice", go: () => setSpeechOpen(true) },
-                ].map((step, i) => (
-                  <div key={step.title} className="rounded-xl p-4 flex flex-col"
-                       style={{ border: "1px solid var(--sd-border)", background: "var(--sd-surface)" }}>
-                    <span className="inline-flex items-center gap-2 mb-2" style={{ color: "var(--sd-gold)" }}>
-                      {step.icon}
-                      <b className="text-xs tabular-nums" style={{ color: "var(--sd-ink-muted)" }}>0{i + 1}</b>
-                    </span>
-                    <b className="block mb-1" style={{ color: "var(--sd-ink)" }}>{step.title}</b>
-                    <p className="text-sm flex-1 mb-3 m-0" style={{ color: "var(--sd-ink-muted)" }}>{step.body}</p>
-                    <button
-                      type="button" onClick={step.go}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold self-start"
-                      style={{ color: "var(--sd-primary-light)", background: "none", border: 0, cursor: "pointer" }}
-                    >
-                      {step.cta} <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
           {/* Enrolled Courses Section */}
           <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
@@ -1471,7 +1478,7 @@ const StudentDashboard = () => {
                   <button
                     type="button"
                     onClick={openOrUpgrade("aiExam", () => setAiTab("exam"))}
-                    className="w-full text-left flex items-center gap-5 p-5 group"
+                    className="w-full text-left flex flex-wrap items-center gap-x-5 gap-y-3 p-5 group"
                   >
                     <div
                       className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
@@ -1479,7 +1486,7 @@ const StudentDashboard = () => {
                     >
                       <GraduationCap className="w-6 h-6" style={{ color: "var(--sd-primary)" }} />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-[13rem]">
                       <p className="font-semibold" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>Placement Exam</p>
                       <p className="text-sm mt-0.5" style={{ color: "var(--sd-ink-muted)" }}>
                         Test your level with our AI-powered CEFR placement exam
@@ -1499,7 +1506,7 @@ const StudentDashboard = () => {
                 <GlassCard glowColor="#B392F5" intensity={0}>
                   <div
                     onClick={openOrUpgrade("aiCourse", () => setAiTab("course"))}
-                    className="flex items-center gap-5 p-5 cursor-pointer group"
+                    className="flex flex-wrap items-center gap-x-5 gap-y-3 p-5 cursor-pointer group"
                   >
                     <div
                       className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
@@ -1507,7 +1514,7 @@ const StudentDashboard = () => {
                     >
                       <BookOpenText className="w-6 h-6" style={{ color: "var(--sd-primary-light)" }} />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-[13rem]">
                       <p className="font-semibold" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>Study Materials</p>
                       <p className="text-sm mt-0.5" style={{ color: "var(--sd-ink-muted)" }}>
                         Build a study plan around your goal
@@ -1527,7 +1534,7 @@ const StudentDashboard = () => {
                 <GlassCard glowColor="#C9A227" intensity={0}>
                   <div
                     onClick={openOrUpgrade("speechLab", () => setSpeechOpen(true))}
-                    className="flex items-center gap-5 p-5 cursor-pointer group"
+                    className="flex flex-wrap items-center gap-x-5 gap-y-3 p-5 cursor-pointer group"
                   >
                     <div
                       className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
@@ -1535,7 +1542,7 @@ const StudentDashboard = () => {
                     >
                       <Mic className="w-6 h-6" style={{ color: "#8a6a12" }} />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-[13rem]">
                       <p className="font-semibold" style={{ color: "var(--sd-ink)", fontFamily: "var(--sd-font-heading)" }}>Oral Practice</p>
                       <p className="text-sm mt-0.5" style={{ color: "var(--sd-ink-muted)" }}>
                         Record speech, get instant confidence and pronunciation feedback
